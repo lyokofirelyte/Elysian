@@ -1,0 +1,599 @@
+package com.github.lyokofirelyte.Elysian.Commands;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import org.bukkit.Bukkit;
+import org.bukkit.GameMode;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.EntityType;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
+import org.bukkit.event.Listener;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.SkullMeta;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
+import com.github.lyokofirelyte.Divinity.Commands.DivCommand;
+import com.github.lyokofirelyte.Divinity.Events.DivinityChannelEvent;
+import com.github.lyokofirelyte.Divinity.Events.DivinityTeleportEvent;
+import com.github.lyokofirelyte.Divinity.Storage.DAI;
+import com.github.lyokofirelyte.Divinity.Storage.DPI;
+import com.github.lyokofirelyte.Divinity.Storage.DivinityPlayer;
+import com.github.lyokofirelyte.Elysian.Elysian;
+
+public class ElyStaff implements Listener {
+
+	 Elysian main;
+	 
+	 public ElyStaff(Elysian i){
+		 main = i;
+	 }
+	 
+	 @DivCommand(perm = "wa.staff.mod2", aliases = {"back"}, desc = "Back Command", help = "/tp <player> [player]", player = true)
+	 public void onBack(Player p, String[] args){
+		 
+		 DivinityPlayer dp = main.api.getDivPlayer(p);
+		 List<String> locs = dp.getListDPI(DPI.PREVIOUS_LOCATIONS);
+		 String[] l = new String[]{};
+		 
+		 if (locs.size() > 0){
+			 if (args.length == 1){
+				 if (main.api.divUtils.isInteger(args[0])){
+					 if (locs.size() > Integer.parseInt(args[0])){
+						 l = locs.get((locs.size()-1)-Integer.parseInt(args[0])).split(" ");
+						 main.api.event(new DivinityTeleportEvent(p, l[0], l[1], l[2], l[3]));
+					 } else {
+						 main.s(p, "&c&oYou don't have that many previous locations.");
+					 }
+				 } else {
+					 main.s(p, "invalidNumber");
+				 }
+			 } else {
+				 l = locs.get(locs.size()-1).split(" ");
+				 main.api.event(new DivinityTeleportEvent(p, l[0], l[1], l[2], l[3]));
+			 }
+		 } else {
+			 main.s(p, "&c&oYou have no previous locations.");
+		 }
+	 }
+	 
+	 @DivCommand(perm = "wa.staff.mod", aliases = {"heal"}, desc = "Heal Command", help = "/heal", player = true)
+	 public void onHeal(Player p, String[] args){
+		 p.setHealth(p.getMaxHealth());
+		 main.s(p, "Restored to full health!");
+	 }
+	 
+	 @DivCommand(perm = "wa.rank.national", aliases = {"feed"}, desc = "Feed", help = "/feed", player = true)
+	 public void onFeed(Player p, String[] args){
+		 p.setFoodLevel(20);
+		 p.setSaturation(20);
+		 main.s(p, "Yum! Pixel food!");
+	 }
+	 
+	 @DivCommand(perm = "wa.staff.mod2", aliases = {"tp", "teleport"}, desc = "Staff Telport Command", help = "/tp <player, alliance, coords> [player]", player = false, min = 1)
+	 public void onTP(CommandSender p, String[] args){
+		 
+		 if (args.length == 1 && p instanceof Player && main.doesPartialPlayerExist(args[0])){
+
+			 if (main.isOnline(args[0])){
+					main.api.event(new DivinityTeleportEvent((Player)p, main.getPlayer(args[0]).getLocation()));
+			 }
+
+		 } else if (!(p instanceof Player)){
+			 
+			 main.s(p, "&c&oConsole can not tp to anyone!");
+			 
+		 } else if (main.doesPartialPlayerExist(args[0]) && main.doesPartialPlayerExist(args[1])){
+			 
+			 if (main.isOnline(args[0]) && main.isOnline(args[1])){
+				 main.api.event(new DivinityTeleportEvent(main.getPlayer(args[0]), main.getPlayer(args[1]).getLocation()));
+			 } else {
+				 main.s(p, "playerNotFound");
+			 }
+			 
+		 } else if (main.api.divManager.getAllianceMap().containsKey(args[0])){
+			 
+			 String[] coords = main.api.getDivAlliance(args[0]).getDAI(DAI.CENTER).split(" ");
+			 
+			 if (args.length > 1 && main.doesPartialPlayerExist(args[1])){
+				 main.api.event(new DivinityTeleportEvent(main.getPlayer(args[0]), "world", coords[0], coords[1], coords[2]));
+			 } else {
+				 main.api.event(new DivinityTeleportEvent((Player)p, "world", coords[0], coords[1], coords[2]));
+			 }
+			 
+		 } else if (args.length >= 3){
+			 
+			 if (main.api.divUtils.isInteger(args[0]) && main.api.divUtils.isInteger(args[1]) && main.api.divUtils.isInteger(args[2])){
+			
+				 if (args.length == 4 && main.doesPartialPlayerExist(args[3])){
+					 main.api.event(new DivinityTeleportEvent(main.getPlayer(args[3]), ((Player)p).getWorld().getName(), args[0], args[1], args[2]));
+				 } else {
+					 main.api.event(new DivinityTeleportEvent((Player)p, "world", args[0], args[1], args[2]));
+				 }
+
+			 }
+			 
+	     } else {
+			 main.s(p, "playerNotFound");
+		 }
+	 }
+	 
+	 @DivCommand(perm = "wa.staff.mod2", aliases = {"tphere"}, desc = "Staff Telport Command", help = "/tphere <player>", player = true, min = 1)
+	 public void onTPHere(Player p, String[] args){
+		 
+		 if (main.doesPartialPlayerExist(args[0]) && main.isOnline(args[0])){
+			 main.api.event(new DivinityTeleportEvent(main.getPlayer(args[0]), p.getLocation()));
+		 } else {
+			 main.s(p, "playerNotFound");
+		 }
+	 }
+	 
+	 @DivCommand(perm = "wa.staff.admin", aliases = {"tpall"}, desc = "Staff Telport Command", help = "/tpall", player = true)
+	 public void onTPAll(Player sender, String[] args){
+		 
+		 for (Player p : Bukkit.getOnlinePlayers()){
+			 main.api.event(new DivinityTeleportEvent(p, sender.getLocation()));
+		 }
+		 
+		 main.s(sender, "&oMass temporal shift completed.");
+	 }
+	 
+	 @DivCommand(perm = "wa.rank.statesman", aliases = {"tpa"}, desc = "TPA Command", help = "/tpa <player>", player = true, min = 1)
+	 public void onTPA(Player sender, String[] args){
+		 
+		 if (main.doesPartialPlayerExist(args[0])){
+			 if (main.isOnline(args[0])){
+				 DivinityPlayer who = main.matchDivPlayer(args[0]);
+				 who.setDPI(DPI.TP_INVITE, sender.getName() + " " + who.name());
+				 main.s(main.getPlayer(args[0]), sender.getDisplayName() + " &b&ohas requested to TP to you.");
+				 main.s(main.getPlayer(args[0]), "&oAccept it with &6/tpaccept&b. Decline with &6/tpdeny&b.");
+				 main.s(sender, "Sent!");
+			 } else {
+				 main.s(sender, "playerNotFound");
+			 }
+		 } else {
+			 main.s(sender, "playerNotFound");
+		 }
+	 }
+	 
+	 @DivCommand(perm = "wa.rank.emperor", aliases = {"tpahere"}, desc = "TPAHere Command", help = "/tpahere <player>", player = true, min = 1)
+	 public void onTPAHere(Player sender, String[] args){
+		 
+		 if (main.doesPartialPlayerExist(args[0])){
+			 if (main.isOnline(args[0])){
+				 DivinityPlayer who = main.matchDivPlayer(args[0]);
+				 who.setDPI(DPI.TP_INVITE, who.name() + " " + sender.getName());
+				 main.s(main.getPlayer(args[0]), sender.getDisplayName() + " &b&ohas requested for you to TP to them.");
+				 main.s(main.getPlayer(args[0]), "&oAccept it with &6/tpaccept&b. Decline with &6/tpdeny&b.");
+				 main.s(sender, "Sent!");
+			 } else {
+				 main.s(sender, "playerNotFound");
+			 }
+		 } else {
+			 main.s(sender, "playerNotFound");
+		 }
+	 }
+	 
+	 @DivCommand(name = "TPAuth", perm = "wa.rank.dweller", aliases = {"tpaccept", "tpdeny"}, desc = "TP Auth Command", help = "/tpaccept or /tpdeny", player = true)
+	 public void onTPAuth(Player sender, String[] args, String cmd){
+		 
+		 DivinityPlayer dp = main.api.getDivPlayer(sender);
+		 
+		 if (!dp.getDPI(DPI.TP_INVITE).equals("none")){
+			 
+			 String[] req = dp.getDPI(DPI.TP_INVITE).split(" ");
+			 
+			 if (main.isOnline(req[0]) && main.isOnline(req[1])){
+				 
+				 if (cmd.equalsIgnoreCase("tpaccept")){
+					 
+					 if (!dp.getDPI(DPI.TP_INVITE).equals("none")){
+						 main.api.event(new DivinityTeleportEvent(main.getPlayer(req[0]), main.getPlayer(req[1]).getLocation()));
+						 main.s(main.getPlayer(req[1]), "Accepted.");
+					 }
+					 
+				 } else {
+					 main.s(sender, "&c&oDenied. Teleport Cancelled.");
+					 main.s(main.getPlayer(req[1]), "&c&oDenied. Teleport Cancelled.");
+				 }
+				 
+			 } else {
+				 main.s(sender, "&c&oSomeone logged off. Cancelled teleport.");
+			 }
+			 
+		 } else {
+			 main.s(sender, "&c&oYou have no requests.");
+		 }
+		 
+		 dp.setDPI(DPI.TP_INVITE, "none");
+	 }
+	 
+	 @DivCommand(perm = "wa.rank.citizen", aliases = {"tpblock"}, desc = "TP Block Command", help = "/tpblock", player = true)
+	 public void onTPBlock(Player sender, String[] args){
+		 
+		 DivinityPlayer dp = main.api.getDivPlayer(sender);
+		 dp.setDPI(DPI.TP_BLOCK, !dp.getBoolDPI(DPI.TP_BLOCK));
+		 main.s(sender, "&oTeleport block " + (dp.getBoolDPI(DPI.TP_BLOCK) + "").replace("true", "&aactive.").replace("false", "&cdisabled."));
+	 }
+	 
+	 @DivCommand(aliases = {"staff"}, desc = "Staff List Command", help = "/staff", player = false)
+	 public void onStaff(CommandSender p, String[] args){
+		 
+		 String interns = "";
+		 String mods = "";
+		 String mod2s = "";
+		 String admins = "";
+		 
+		 for (DivinityPlayer dp : main.api.divManager.getAllUsers()){
+			 List<String> perms = dp.getListDPI(DPI.PERMS);
+			 if (perms.contains("wa.staff.admin")){
+				 admins = admins + " " + dp.getDPI(DPI.DISPLAY_NAME);
+			 } else if (perms.contains("wa.staff.mod2")){
+				 mod2s = mod2s + " " + dp.getDPI(DPI.DISPLAY_NAME);
+			 } else if (perms.contains("wa.staff.mod")){
+				 mods = mods + " " + dp.getDPI(DPI.DISPLAY_NAME);
+			 } else if (perms.contains("wa.staff.intern")){
+				 interns = interns + " " + dp.getDPI(DPI.DISPLAY_NAME);
+			 }
+		 }
+		 
+		 main.s(p, "&aIntern:");
+		 interns = interns.trim();
+		 interns = interns.replaceAll(" ", "&6, &7");
+		 main.s(p, interns);
+		 
+		 main.s(p, "&2Mod:");
+		 mods = mods.trim();
+		 mods = mods.replaceAll(" ", "&6, &7");
+		 main.s(p, mods);
+		 
+		 main.s(p, "&9Mod+:");
+		 mod2s = mod2s.trim();
+		 mod2s = mod2s.replaceAll(" ", "&6, &7");
+		 main.s(p, mod2s);
+		 
+		 main.s(p, "&4Admin:");
+		 admins = admins.trim();
+		 admins = admins.replaceAll(" ", "&6, &7");
+		 main.s(p, admins);
+		 
+		 main.s(p, "&cOwner:");
+		 main.s(p, "&7tdstaz69");
+	 }
+	 
+	 @DivCommand(perm = "wa.staff.mod2", aliases = {"gm"}, desc = "GameMode Command", help = "/gm <c, s, a> [player]", player = true, min = 1)
+	 public void onGM(Player p, String[] args){
+		 
+		 Player toSet = null;
+		 GameMode gm = null;
+		 
+		 if (args.length == 2 && main.perms(p, "wa.staff.admin")){
+			 for (Player pp : Bukkit.getOnlinePlayers()){
+				 if (pp.getName().toLowerCase().contains(args[1].toLowerCase())){
+					 toSet = pp;
+					 break;
+				 }
+			 }
+		 } else {
+			 toSet = p;
+		 }
+		 
+		 switch (args[0]){
+		 	case "c": gm = GameMode.CREATIVE; break;
+		 	case "a": gm = GameMode.ADVENTURE; break;
+		 	case "s": default: gm = GameMode.SURVIVAL; break;
+		 }
+		 
+		 toSet.setGameMode(gm);
+		 main.s(toSet, "none", "&o" + gm.toString().toLowerCase() + " mode activated");
+		 
+		 if (!p.equals(toSet)){
+			 main.s(p, "&o" + gm.toString().toLowerCase() + " activated for " + toSet.getDisplayName());
+		 }
+	 }
+	 
+	 @DivCommand(aliases = {"more"}, desc = "Give yourself 64 of the item in your hand", help = "/more", perm = "wa.staff.mod2", player = true)
+	 public void onMore(Player p, String[] args){
+
+		if (p.getInventory().getItemInHand() != null){
+			p.getInventory().getItemInHand().setAmount(64);
+		}
+	 }
+	 
+	 @DivCommand(perm = "wa.staff.mod2", aliases = {"fly"}, desc = "Fly Command", help = "/fly [player]", player = true)
+	 public void onFly(Player p, String[] args){
+		 
+		 Player toSet = null;
+		 
+		 if (args.length == 1 && main.perms(p, "wa.staff.admin")){
+			 for (Player pp : Bukkit.getOnlinePlayers()){
+				 if (pp.getName().toLowerCase().contains(args[0].toLowerCase())){
+					 toSet = pp;
+					 break;
+				 }
+			 }
+		 } else {
+			 toSet = p;
+		 }
+		 
+		 if (!toSet.isFlying()){
+			 toSet.setAllowFlight(true);
+		 }
+		 
+		 toSet.setFlying(!toSet.isFlying());
+		 main.s(toSet, "none", ("&ofly mode " + toSet.isFlying()).replace("true", "&aactivated").replace("false", "&cdeactivated"));
+		 
+		 if (!p.equals(toSet)){
+			 main.s(p, "none", ("&ofly mode " + toSet.isFlying()).replace("true", "&aactivated").replace("false", "&cdeactivated") + " &b&ofor " + toSet.getDisplayName());
+		 }
+	 }
+	 
+	@DivCommand(perm = "wa.staff.intern", aliases = {"o"}, desc = "Staff chat command", help = "/o <message>", player = true, min = 1)
+	public void onO(Player p, String[] args){
+		main.api.event(new DivinityChannelEvent(p, "wa.staff.intern", "&c&oOh! &4\u2744", args, "&c"));
+	}
+	 
+	@DivCommand(aliases = {"skull"}, min = 1, max = 1, player = true, perm = "wa.staff.intern")
+	public void onSkull(Player p, String[] args){
+			
+		ItemStack is = new ItemStack(Material.SKULL_ITEM, 1, (short) 3);
+		SkullMeta sm = (SkullMeta) is.getItemMeta();
+		sm.setOwner(args[0]);
+		is.setItemMeta(sm);
+		p.setItemInHand(is);
+	}
+		
+	@DivCommand(aliases = {"top"}, desc = "Teleport to the highest block above", help = "/top", max = 0, perm = "wa.staff.mod2", player = true)
+	public void onTop(Player p, String[] args){
+		
+		if (p.getWorld().getHighestBlockYAt(p.getLocation()) != -1){
+			p.teleport(new Location(p.getWorld(), p.getLocation().getX(), p.getWorld().getHighestBlockYAt(p.getLocation())+1, p.getLocation().getZ(), p.getLocation().getYaw(), p.getLocation().getPitch()));	
+		} else {
+			main.s(p, "none", "No location found!");
+		}
+	}
+	
+	@SuppressWarnings("deprecation")
+	@DivCommand(aliases = {"sm"}, desc = "Spawn Mob", help = "/sm <type> <health> <nameTag> <armorType> <weapon> <potionEffect> <location> <passenger(s)> <amount>", max = 9, perm = "wa.staff.mod2", player = true)
+	public void onSM(Player p, String[] args){
+
+		String armors = "diamond iron chain gold leather";
+		int x = 0;
+				
+		if (args.length < 9 && args.length != 2){
+			main.s(p, "/sm <type> <health> <nameTag> <armorType> <weapon> <potionEffect> <location> <passenger(s)> <amount>");
+			main.s(p, "&6Example: &7/sm zombie 20 Grumpy_Guy diamond diamond_sword damage Hugh_Jasses skeleton,zombie 1");
+			main.s(p, "&dUse a '_' for spaces. Location can be 'aim' or a player.");
+			main.s(p, "&dFor more passengers, seperate different mobs with a ','. Use # if you don't want a passenger.");
+			main.s(p, "&dYou can use /sm <type> ## to indicate no extra features. Example: /sm zombie ##");
+		}
+			
+		for (EntityType e : EntityType.values()){
+			if (e.toString().toLowerCase().equals(args[0].toLowerCase())){
+				if (main.api.divUtils.isInteger(args[1])){
+					if (armors.contains(args[3].toLowerCase())){
+						int y = 0;
+						for (Material m : Material.values()){
+							if (m.toString().toLowerCase().equals(args[4].toLowerCase())){
+								int z = 0;
+								for (PotionEffectType pe : PotionEffectType.values()){
+									if (String.valueOf(pe).toString().toLowerCase().contains(args[5].toLowerCase())){
+										if (main.getPlayer(args[6]) != null || args[6].equals("aim")){
+											if (main.api.divUtils.isInteger(args[8])){
+												if (args[7].contains(",") || args[7].equals("#")){
+													List<String> passengers = new ArrayList<String>();
+													if (args[7].contains(",")){
+														passengers = Arrays.asList(args[7].split(","));
+													}
+													List<EntityType> goodPassengers = new ArrayList<EntityType>();
+													for (String passenger : passengers){
+														int a = 0;
+														for (EntityType ee : EntityType.values()){
+															if (passenger.toLowerCase().equals(ee.toString().toLowerCase())){
+																goodPassengers.add(ee);
+															} else {
+																a++;
+																if (a >= EntityType.values().length){
+																	main.s(p, "The passenger " + passenger + " is not a valid entity.");
+																	break;
+																}
+															}
+														}
+													}
+													formMob(p, e, Integer.parseInt(args[1]), args[2], args[3], m, pe, args[6], goodPassengers, Integer.parseInt(args[8]));
+													break;
+												} else {
+													int b = 0;
+													for (EntityType ee : EntityType.values()){
+														if (args[7].toLowerCase().equals(ee.toString().toLowerCase())){
+															List<EntityType> gp = Arrays.asList(ee);
+															formMob(p, e, Integer.parseInt(args[1]), args[2], args[3], m, pe, args[6], gp, Integer.parseInt(args[8]));
+															break;
+														} else {
+															b++;
+															if (b >= EntityType.values().length){
+																main.s(p, "The passenger " + args[7] + " is not a valid entity.");
+																break;
+															}
+														}
+													}
+												}
+											} else {
+												main.s(p, "You must use a number for the amount!");
+												break;
+											}
+										} else {
+											main.s(p, "You've entered an invalid player since and you didn't say 'aim'.");
+											break;
+										}
+									} else {
+										z++;
+										if (z >= PotionEffectType.values().length){
+											main.s(p, "The potion effect " + args[5] + " was not found.");
+											break;
+										}
+									}
+								}
+							} else {
+								y++;
+								if (y >= Material.values().length){
+									main.s(p, "The material " + args[4] + " was not found.");
+									break;
+								}
+							}
+						}
+					} else {
+						main.s(p, "Choose from " + armors.replace(" ", ", "));
+						break;
+					}
+				} else if (args[1].equals("##")){
+					p.getWorld().spawnEntity(p.getTargetBlock(null, 20).getLocation(), e);
+					break;
+				} else {
+					main.s(p, "Health must be a number!");
+					break;
+				}
+			} else if (args[0].equals("#")){
+				main.s(p, "Why the hell did you use this command then? GAH");
+			} else {
+				x++;
+				if (x >= EntityType.values().length){
+					main.s(p, "The entity " + args[0] + " was not found.");
+					break;
+				}
+			}
+		}		
+	}
+	
+	@SuppressWarnings("deprecation")
+	@DivCommand(aliases = {"i"}, desc = "Give an item to yourself", help = "/i <item>", max = 1, perm = "wa.staff.mod2", player = true)
+	public void onI(Player p, String[] args){
+		
+		boolean found = false;
+
+		if (args.length == 0 || p.getInventory().firstEmpty() == -1){
+			main.s(p, "/i <item> (must have room!)");
+		} else {
+			for (Material m : Material.values()){
+				if (m.name().toString().toLowerCase().equals(args[0].toLowerCase())){
+					p.getInventory().addItem(new ItemStack(m, 64));
+					found = !found;
+					break;
+				} else if (main.api.divUtils.isInteger(args[0]) && m.getId() == Integer.parseInt(args[0])){
+					p.getInventory().addItem(new ItemStack(m, 64));
+					found = !found;
+					break;
+				}
+			}
+			if (!found){
+				for (Material m : Material.values()){
+					if (m.name().toString().toLowerCase().contains(args[0].toLowerCase())){
+						p.getInventory().addItem(new ItemStack(m, 64));
+						break;
+					}
+				}
+			}
+		}
+	}
+	
+	@DivCommand(perm = "wa.rank.townsman", aliases = {"ci"}, desc = "Clear Inventory (or restore inventory. Results may vary. TM)", help = "/ci [u]", player = true)
+	public void onCI(Player p, String[] args){
+		
+		DivinityPlayer dp = main.api.getDivPlayer(p);
+
+		if (args.length == 0){
+			dp.setDPI(DPI.BACKUP_INVENTORY, p.getInventory().getContents());
+			p.getInventory().clear();
+			main.s(p, "&oInventory inceneration activated");
+		} else if (dp.getStackDPI(DPI.BACKUP_INVENTORY).length > 0){
+			p.getInventory().setContents(dp.getStackDPI(DPI.BACKUP_INVENTORY));
+			dp.setDPI(DPI.BACKUP_INVENTORY, new ItemStack(){});
+			main.s(p, "&oInventory restoration completed");
+		} else {
+			main.s(p, "&c&oNo backup inventory found.");
+		}		
+	}
+	
+	@SuppressWarnings("deprecation")
+	public void formMob(Player p, EntityType e, int health, String nameTag, String armorType, Material m, PotionEffectType pe, String location, List<EntityType> goodPassengers, int amount) {
+		
+		List<LivingEntity> les = new ArrayList<LivingEntity>();
+		List<LivingEntity> passengers = new ArrayList<LivingEntity>();
+		int z = 1;
+		
+		if (location.equals("aim")){
+			for (int x = 0; x < amount; x++){
+				LivingEntity le = (LivingEntity) p.getWorld().spawnEntity(p.getTargetBlock(null, 20).getLocation(), e);
+				les.add(le);
+			}
+		} else {
+			for (int x = 0; x < amount; x++){
+				LivingEntity le = (LivingEntity) p.getWorld().spawnEntity(Bukkit.getPlayer(location).getLocation(), e);
+				les.add(le);
+			}
+		}
+
+		for (LivingEntity le : les){
+			
+			for (EntityType et : goodPassengers){
+				LivingEntity la = (LivingEntity) p.getWorld().spawnEntity(p.getTargetBlock(null, 20).getLocation(), et);
+				passengers.add(la);
+			}
+
+			for (LivingEntity la : passengers){
+				if (z < passengers.size()){
+					la.setPassenger(passengers.get(z));
+				}
+				z++;
+			}		
+			
+			if (passengers.size() > 0){
+				le.setPassenger(passengers.get(0));
+			}
+			
+			le.addPotionEffect(new PotionEffect(pe, 99999, 1));
+			le.setCustomName(main.AS(nameTag.replaceAll("_", " ")));
+			le.setCustomNameVisible(true);
+			le.getEquipment().setItemInHand(new ItemStack(m, 1));
+			le.setMaxHealth(health);
+			le.setHealth(health);
+			passengers = new ArrayList<LivingEntity>();
+			
+			switch(armorType){
+				case "diamond":
+					le.getEquipment().setBoots(new ItemStack(Material.DIAMOND_BOOTS));
+					le.getEquipment().setHelmet(new ItemStack(Material.DIAMOND_HELMET));
+					le.getEquipment().setLeggings(new ItemStack(Material.DIAMOND_LEGGINGS));
+					le.getEquipment().setChestplate(new ItemStack(Material.DIAMOND_CHESTPLATE));
+				break;
+				case "iron":
+					le.getEquipment().setBoots(new ItemStack(Material.IRON_BOOTS));
+					le.getEquipment().setHelmet(new ItemStack(Material.IRON_HELMET));
+					le.getEquipment().setLeggings(new ItemStack(Material.IRON_LEGGINGS));
+					le.getEquipment().setChestplate(new ItemStack(Material.IRON_CHESTPLATE));
+				break;
+				case "leather":
+					le.getEquipment().setBoots(new ItemStack(Material.LEATHER_BOOTS));
+					le.getEquipment().setHelmet(new ItemStack(Material.LEATHER_HELMET));
+					le.getEquipment().setLeggings(new ItemStack(Material.LEATHER_LEGGINGS));
+					le.getEquipment().setChestplate(new ItemStack(Material.LEATHER_CHESTPLATE));
+				break;
+				case "chain":
+					le.getEquipment().setBoots(new ItemStack(Material.CHAINMAIL_BOOTS));
+					le.getEquipment().setHelmet(new ItemStack(Material.CHAINMAIL_HELMET));
+					le.getEquipment().setLeggings(new ItemStack(Material.CHAINMAIL_LEGGINGS));
+					le.getEquipment().setChestplate(new ItemStack(Material.CHAINMAIL_CHESTPLATE));
+				break;
+				case "gold":
+					le.getEquipment().setBoots(new ItemStack(Material.GOLD_BOOTS));
+					le.getEquipment().setHelmet(new ItemStack(Material.GOLD_HELMET));
+					le.getEquipment().setLeggings(new ItemStack(Material.GOLD_LEGGINGS));
+					le.getEquipment().setChestplate(new ItemStack(Material.GOLD_CHESTPLATE));
+				break;		
+			}
+		}
+	}
+}
