@@ -52,7 +52,7 @@ public class ElyChat implements Listener {
 		qc.put("money", "I currently have % shinies.");
 	}
 	
-	@DivCommand(name = "PM", aliases = {"tell", "pm", "msg", "message", "t", "r"}, desc = "Private Message Command", help = "/tell <player> <message>", min = 1, player = false)
+	@DivCommand(name = "PM", aliases = {"tell", "pm", "msg", "message", "t", "r"}, desc = "Private Message Command", help = "/tell <player> <message>", min = 2, player = false)
 	public void onPrivateMessage(CommandSender cs, String[] args, String cmd){
 
 		DivinityPlayer dp = cs instanceof Player ? main.api.getDivPlayer((Player)cs) : main.api.getSystem();

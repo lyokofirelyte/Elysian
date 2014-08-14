@@ -51,6 +51,13 @@ public class ElyJoinQuit implements Listener {
 		p.setDPI(DPI.LAST_LOGOUT, main.api.divUtils.getTimeFull());
 		p.setDPI(DPI.LOGOUT_LOCATION, pl.getLocation());
 		p.setDPI(DPI.DISPLAY_NAME,  pl.getDisplayName());
+		p.setDPI(DPI.SPECTATING, false);
+		
+		if (!p.getDPI(DPI.SPECTATE_TARGET).equals("none")){
+			main.matchDivPlayer(p.getDPI(DPI.SPECTATE_TARGET)).setDPI(DPI.SPECTATE_TARGET, "none");
+			main.matchDivPlayer(p.getDPI(DPI.SPECTATE_TARGET)).setDPI(DPI.SPECTATING, false);
+			p.setDPI(DPI.SPECTATE_TARGET, "none");
+		}
 		
 		DivinityUtils.customBC("&4- " + pl.getDisplayName() + " &e&o(" + p.getDPI(DPI.QUIT_MESSAGE) + "&e&o)");
 	}

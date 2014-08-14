@@ -55,7 +55,7 @@ public class GuiColourSelection extends DivGui {
 		
 			default:
 				
-				p.performCommand("toggle" + " " + item.getItemMeta().getLore().get(0).substring(0, 2));
+				p.performCommand("toggle" + " " + command + " " + item.getItemMeta().getLore().get(0).substring(0, 2));
 				main.invManager.displayGui(p, parent);
 				
 			break;

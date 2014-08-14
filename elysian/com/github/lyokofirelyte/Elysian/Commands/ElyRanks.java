@@ -48,6 +48,7 @@ public class ElyRanks {
 					
 					if (dp.getIntDPI(DPI.BALANCE) >= Integer.parseInt(rank[1].replace("k", "000").replace("m", "000000"))){
 						dp.getListDPI(DPI.PERMS).add("wa.rank." + s);
+						dp.setDPI(DPI.BALANCE, dp.getIntDPI(DPI.BALANCE) - Integer.parseInt(rank[1].replace("k", "000").replace("m", "000000")));
 						dp.setDPI(DPI.RANK_COLOR, rank[0]);
 						dp.setDPI(DPI.RANK_DESC, rank[0] + s.substring(0, 1).toUpperCase() + s.substring(1) + "\n" + "&6" + rank[3].replace(", ", "&7, &6"));
 						dp.setDPI(DPI.RANK_NAME, !main.silentPerms(p, "wa.staff.intern") ? s.substring(0, 1).toUpperCase() : dp.getDPI(DPI.RANK_NAME));
@@ -65,7 +66,7 @@ public class ElyRanks {
 			}
 		}
 	}
-	
+
 	@DivCommand(aliases = {"ranks"}, desc = "Ranks Command", help = "/ranks", player = true)
 	public void onRanks(Player p, String[] args){
 		

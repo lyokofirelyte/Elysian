@@ -210,18 +210,14 @@ public class ElyLogger implements Listener, Runnable {
 				
 			} else {
 				
-				boolean cont = false;
-				
-				for (DivinityPlayer DP : main.api.divManager.getAllUsers()){
-					if (DP.getListDPI(DPI.OWNED_CHESTS).contains(loc)){
-						cont = true;
-						break;
+				if (!dp.getListDPI(DPI.OWNED_CHESTS).contains(loc) && !main.silentPerms(e.getPlayer(), "wa.staff.mod2")){
+					for (DivinityPlayer DP : main.api.divManager.getAllUsers()){
+						if (DP.getListDPI(DPI.OWNED_CHESTS).contains(loc)){
+							e.setCancelled(true);
+							main.s(e.getPlayer(), "none", "&c&oThat is not your storage unit!");
+							return;
+						}
 					}
-				}
-				
-				if (cont && !dp.getListDPI(DPI.OWNED_CHESTS).contains(loc) && !main.silentPerms(e.getPlayer(), "wa.staff.mod2")){
-					e.setCancelled(true);
-					main.s(e.getPlayer(), "none", "&c&oThat is not your storage unit!");
 				}
 			}
 			
@@ -311,10 +307,14 @@ public class ElyLogger implements Listener, Runnable {
 			Location l = e.getBlock().getLocation();
 			String loc = l.getWorld().getName() + " " + l.toVector().getBlockX() + " " + l.toVector().getBlockY() + " " + l.toVector().getBlockZ();
 			if (!dp.getListDPI(DPI.OWNED_CHESTS).contains(loc) && !main.silentPerms(e.getPlayer(), "wa.staff.mod2")){
-				e.setCancelled(true);
-				main.s(e.getPlayer(), "none", "&c&oThat is not your storage unit.");
-				main.api.event(new DivinityChannelEvent("&6System", "wa.staff.intern", "&c&oOh! &4\u2744", e.getPlayer().getDisplayName() + " &cattempted to destroy a storage unit!", "&c"));
-				return;
+				for (DivinityPlayer DP : main.api.divManager.getAllUsers()){
+					if (DP.getListDPI(DPI.OWNED_CHESTS).contains(loc)){
+						e.setCancelled(true);
+						main.s(e.getPlayer(), "none", "&c&oThat is not your storage unit!");
+						main.api.event(new DivinityChannelEvent("&6System", "wa.staff.intern", "&c&oOh! &4\u2744", e.getPlayer().getDisplayName() + " &cattempted to destroy a storage unit!", "&c"));
+						return;
+					}
+				}
 			} else {
 				dp.getListDPI(DPI.OWNED_CHESTS).remove(loc);
 			}
@@ -324,24 +324,6 @@ public class ElyLogger implements Listener, Runnable {
 			addToQue(e.getBlock().getLocation(), "&b" + e.getPlayer().getName(), "&cdestroyed &b" + matName, "break", matName + "split" + e.getBlock().getData(), "AIRsplit0");
 		}
 	}
-	
-	/*@EventHandler
-	public void onIgnite(BlockIgniteEvent e){
-		String matName = e.getBlock().getType().toString().toLowerCase();
-		addToQue(e.getBlock().getLocation(), "&b" + "envirnoment-fire-spread", "&cset fire to &bair", "ignite", matName + "split" + e.getBlock().getData(), "AIRsplit0");
-	}*/
-	
-	/*@EventHandler
-	public void onDecay(LeavesDecayEvent e){
-		String matName = e.getBlock().getType().toString().toLowerCase();
-		addToQue(e.getBlock().getLocation(), "&b" + "environment", "&3decayed &b" + e.getBlock().getType().toString().toLowerCase(), "decay", matName, "AIR");
-	}*/
-	
-	/*@EventHandler
-	public void onForm(BlockFormEvent e){
-		String matName = e.getBlock().getType().toString().toLowerCase();
-		addToQue(e.getBlock().getLocation(), "&b" + "environment", "&3formed &b" + e.getBlock().getType().toString().toLowerCase(), "form", "AIR", matName);
-	}*/
 	
 	@SuppressWarnings("deprecation")
 	@EventHandler
@@ -369,6 +351,7 @@ public class ElyLogger implements Listener, Runnable {
 		}
 	}
 	
+	@SuppressWarnings("deprecation")
 	@EventHandler(priority = EventPriority.LOW)
 	public void onEntityExplode(EntityExplodeEvent event) {
 		
@@ -390,10 +373,7 @@ public class ElyLogger implements Listener, Runnable {
 	    		event.setCancelled(true);
 	    		break;
 	    	}
-	    }
-	    
-	    if (!event.isCancelled()){
-			addToQue(e.getLocation(), "&benvironment-explosion", "&cblew up &b" + e.getType().name().toLowerCase(), "explode", e.getType().name().toLowerCase(), "AIR");
+			addToQue(e.getLocation(), "&benvironment-explosion", "&cblew up &b" + block.getType().name().toLowerCase(), "break", block.getType().name().toLowerCase() + "split" + block.getData(), "AIRsplit0");
 	    }
 	}
 	

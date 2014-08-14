@@ -102,6 +102,10 @@ public class ElyCommand {
 		help.put("/heal", s("Mod+", "Heals you to full health"));
 		help.put("/feed", s("National+", "Fills your food bar to max"));
 		help.put("/root", s("Member+", "Main Menu"));
+		help.put("/vanish", s("Mod+", "Renders you invisible to all players"));
+		help.put("/creative", s("Member+", "Teleport into or out of the creative world"));
+		help.put("/spectate", s("Mod2+", "View someone in first person"));
+		help.put("/seen", s("Dweller+", "View traffic stats for a player"));
 	}
 	
 	private String[] s(String arg, String arg1){
@@ -155,7 +159,7 @@ public class ElyCommand {
 					if (i.s().equalsIgnoreCase(args[1])){
 						try {
 							String dispName = p instanceof Player ? ((Player) p).getDisplayName() : "&6Console";
-							main.matchDivPlayer(args[0]).setDPI(i, args[2]);
+							main.matchDivPlayer(args[0]).setDPI(i, main.api.divUtils.createString(args, 2));
 							main.api.event(new DivinityChannelEvent("&6System", "wa.staff.intern", "&c&oOh! &4\u2744", dispName + " &cmodified " + i.s() + " for " + main.matchDivPlayer(args[0]).getDPI(DPI.DISPLAY_NAME) + "&c!", "&c"));
 						} catch (Exception e){
 							main.s(p, "&c&oModification failed. Try a different value or stat.");
@@ -167,7 +171,7 @@ public class ElyCommand {
 					if (i.s().equalsIgnoreCase(args[1])){
 						try {
 							String dispName = p instanceof Player ? ((Player) p).getDisplayName() : "&6Console";
-							main.api.getDivAlliance(args[0]).setDAI(i, args[2]);
+							main.api.getDivAlliance(args[0]).setDAI(i,  main.api.divUtils.createString(args, 2));
 							main.api.event(new DivinityChannelEvent("&6System", "wa.staff.intern", "&c&oOh! &4\u2744", dispName + " &cmodified " + i.s() + " for " + args[0] + "&c!", "&c"));
 						} catch (Exception e){
 							main.s(p, "&c&oModification failed. Try a different value or stat.");
@@ -201,9 +205,9 @@ public class ElyCommand {
 			
 		} else {
 			
-			switch (args[0]){
+			switch (args[0].toLowerCase()){
 			
-				case "help":
+				case "help": case "helpmepleaseidontknowwhatimdoing":
 					
 					List<String> sortedHelp = new ArrayList<String>();
 					

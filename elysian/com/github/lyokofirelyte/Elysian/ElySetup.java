@@ -20,6 +20,7 @@ import com.github.lyokofirelyte.Elysian.Commands.ElyProtect;
 import com.github.lyokofirelyte.Elysian.Commands.ElyRanks;
 import com.github.lyokofirelyte.Elysian.Commands.ElyRings;
 import com.github.lyokofirelyte.Elysian.Commands.ElySpaceship;
+import com.github.lyokofirelyte.Elysian.Commands.ElySpectate;
 import com.github.lyokofirelyte.Elysian.Commands.ElyStaff;
 import com.github.lyokofirelyte.Elysian.Commands.ElyToggle;
 import com.github.lyokofirelyte.Elysian.Commands.ElyWarps;
@@ -101,6 +102,7 @@ public class ElySetup {
 			new ElyRanks(main),
 			new ElyHome(main),
 			new ElyWarps(main),
+			new ElySpectate(main),
 			main.mail,
 			main.logger,
 			main.staff,

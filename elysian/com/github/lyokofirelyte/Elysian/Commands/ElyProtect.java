@@ -31,6 +31,7 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
+import org.bukkit.event.player.PlayerAchievementAwardedEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.util.Vector;
@@ -53,6 +54,31 @@ public class ElyProtect implements Listener {
 	public ElyProtect(Elysian i){
 		main = i;
 	}
+	
+	List<String> errorMessages = Arrays.asList(
+		"&c&oI have no idea what that is. Try &6&o/ely help&c&o.",
+		"&c&oWhat? That's not right. Try &6&o/ely help&c&o.",
+		"&c&oWe don't have that here. See &6&o/ely help&c&o.",
+		"&c&oEverytime you type in an invalid command, we kill a hostage.",
+		"&c&oI too love to make up my own commands. See &6&o/ely help&c&o.",
+		"&c&oCommand not found. Did you mean &6&o/kick WinneonSword &c&o?",
+		"&c&oYour unknown command level is now 99.",
+		"&c&oHelp, I'm stuck in an error message factory!",
+		"&c&oCommand not valid. I assume you're a bad speller?",
+		"&c&oI'm afraid I can't do that, Dave. See &6&o/ely help&c&.",
+		"&c&oOut of all the possible commands you choose an invalid one.",
+		"&c&oYou tried. &6&o/ely help&c&o.",
+		"&b&oThis is a blue, misleading error message. &6&o/ely help&b&o.",
+		"&a&oSuccess! You typed an invalid command. &6&o/ely help&a&o.",
+		"&c&oI'm ashamed of you for trying that. &6&o/ely help&c&o.",
+		"&c&oNo, I will not perform that command. &6&o/ely help&c&o.",
+		"&c&oAnd the invalid command award goes to...",
+		"&c&oGo fish. &6&o/ely help&c&o.",
+		"&c&oI'll do a lot of things, but I won't do that!",
+		"&6&o/ely helpmepleaseIdontknowwhatImdoing",
+		"&c&oThere's a time and place for everything, but not now!",
+		"&c&oIf only that was really a command... &c&o/ely help&c&o."
+	);
 	
 	@EventHandler
 	public void onBreak(BlockBreakEvent e){
@@ -80,7 +106,7 @@ public class ElyProtect implements Listener {
 		}
 	}
 	
-	@EventHandler
+	@EventHandler (priority = EventPriority.LOW)
 	public void onInteract(PlayerInteractEvent e){
 		
 		String result = isInAnyRegion(e.getPlayer().getLocation());
@@ -88,7 +114,6 @@ public class ElyProtect implements Listener {
 		if (hasFlag(result, DRI.INTERACT)){
 			if (!hasRegionPerms(e.getPlayer(), result)){
 				e.setCancelled(true);
-				main.s(e.getPlayer(), "&c&oYou are not authorized to use things at &6" + result + "&c&o.");
 			}
 		}
 	}
@@ -129,6 +154,11 @@ public class ElyProtect implements Listener {
 	@EventHandler
 	public void onCommand(PlayerCommandPreprocessEvent e){
 		
+		if (Bukkit.getHelpMap().getHelpTopic(e.getMessage().split(" ")[0]) == null){
+			e.setCancelled(true);
+			main.s(e.getPlayer(), errorMessages.get(new Random().nextInt(errorMessages.size())));
+		}
+		
 		String result = isInAnyRegion(e.getPlayer().getLocation());
 		
 		if (hasFlag(result, DRI.USE_COMMANDS)){
@@ -137,6 +167,49 @@ public class ElyProtect implements Listener {
 				main.s(e.getPlayer(), "&c&oYou are not authorized to use commands at &6" + result + "&c&o.");
 			}
 		}
+		
+		if (!e.getPlayer().isOp()){
+		
+			Player p = e.getPlayer();
+			String[] args = e.getMessage().toLowerCase().split(" ");
+			
+			switch (args[0]){
+			
+				case "/plot":
+					
+					if (args.length > 1){
+						
+						switch (args[1]){
+						
+							case "home": case "claim": case "auto": case "tp": case "info": case "biome": case "add": case "deny": case "undeny":
+								
+								e.setCancelled(true);
+								op(p, e.getMessage());
+								
+							break;
+						}
+						
+					} else {
+						e.setCancelled(true);
+						op(p, e.getMessage());
+					}
+					
+				break;
+			}
+			
+			if (args[0].startsWith("//") && !e.getMessage().contains("schematic")){
+				if (e.getPlayer().getWorld().getName().equalsIgnoreCase("WACP")){
+					e.setCancelled(true);
+					op(p, e.getMessage());
+				}
+			}
+		}
+	}
+	
+	private void op(Player p, String command){
+		p.setOp(true);
+		p.performCommand(command.replaceFirst("/", ""));
+		p.setOp(false);
 	}
 	
 	@EventHandler (priority = EventPriority.LOWEST)
@@ -262,7 +335,7 @@ public class ElyProtect implements Listener {
 					"/pro redefine <region>",
 					"/pro flag <region> <flag> <value>",
 					"/pro viewflags",
-					"/pro priority",
+					"/pro priority <region> <number>",
 					"/pro view <region>",
 					"/pro perms <add, remove> <region> <perm>",
 					"/pro select <region>",
@@ -300,6 +373,11 @@ public class ElyProtect implements Listener {
 				if (!main.api.getDivPlayer(p).getBoolDPI(DPI.VISUAL)){
 					
 					DivinityRegion rg = main.api.getDivRegion(args[1]);
+					
+					if (rg.getLength() > 500 || rg.getWidth() > 500){
+						main.s(p, "&c&oThis region is too big to visualize.");
+						return;
+					}
 					
 					final List<Location> locs = new ArrayList<Location>();
 					List<Location> toRemove = new ArrayList<Location>();
@@ -340,7 +418,7 @@ public class ElyProtect implements Listener {
 						locs.remove(l);
 					}
 					
-					main.s(p, "The visualization will revert in 15 seconds.");
+					main.s(p, "The visualization will revert in 20 seconds.");
 					
 					Bukkit.getScheduler().scheduleSyncDelayedTask(main, new Runnable(){ public void run(){
 						
@@ -349,8 +427,9 @@ public class ElyProtect implements Listener {
 						}
 						
 						main.api.getDivPlayer(p).setDPI(DPI.VISUAL, false);
+						main.s(p, "Visualization terminated.");
 						
-					}}, 300L);
+					}}, 400L);
 					
 				} else {
 					main.s(p, "&c&oYou're already viewing a visualization.");

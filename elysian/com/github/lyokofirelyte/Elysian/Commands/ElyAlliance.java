@@ -33,6 +33,7 @@ public class ElyAlliance {
 	 public void onNick(Player p, String[] args){
 		 
 		 DivinityPlayer dp = main.api.getDivPlayer(p);
+		 args[0] = ChatColor.stripColor(args[0]);
 		 
 		 if (!args[0].toLowerCase().startsWith(dp.name().substring(0, 3).toLowerCase())){
 			 main.s(p, "none", "You must at least use the first 3 letters of your name.");

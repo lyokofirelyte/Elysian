@@ -34,7 +34,7 @@ public class ElyWarps {
 		warps = new File(dir).list();
 	}
 	
-	@DivCommand(name = "Warp", aliases = {"warp", "w", "s", "spawn"}, desc = "Elysian Warp Command", help = "/warp <name>", player = true)
+	@DivCommand(name = "Warp", aliases = {"warp", "w", "s", "spawn", "creative"}, desc = "Elysian Warp Command", help = "/warp <name>", player = true)
 	public void onWarp(Player p, String[] args, String cmd){
 		
 		if (cmd.equals("s") || cmd.equals("spawn")){
@@ -45,8 +45,14 @@ public class ElyWarps {
 				main.s(p, "&c&oNo spawn found!");
 			}
 			
+		} else if (cmd.equals("creative")){
+			
+			main.api.event(new DivinityTeleportEvent(p, extractLoc("wacp")));
+			
 		} else if (args.length == 0 || main.api.divUtils.isInteger(args[0])){
+			
 			warpList(p, args.length == 0 ? 1 : Integer.parseInt(args[0]));
+			
 		} else if (main.perms(p, "wa.staff.mod2")){
 			
 			if (new ArrayList<String>(Arrays.asList(warps)).contains(args[0].toLowerCase() + ".yml")){

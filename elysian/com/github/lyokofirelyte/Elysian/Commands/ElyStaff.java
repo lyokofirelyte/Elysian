@@ -16,6 +16,8 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+import org.bukkit.util.Vector;
+
 import com.github.lyokofirelyte.Divinity.Commands.DivCommand;
 import com.github.lyokofirelyte.Divinity.Events.DivinityChannelEvent;
 import com.github.lyokofirelyte.Divinity.Events.DivinityTeleportEvent;
@@ -30,6 +32,41 @@ public class ElyStaff implements Listener {
 	 
 	 public ElyStaff(Elysian i){
 		 main = i;
+	 }
+	 
+	 @DivCommand(perm = "wa.staff.mod2", aliases = {"invsee"}, desc = "Inventory Spy Command", help = "/invsee <player>", player = true, min = 1)
+	 public void onInvSee(Player p, String[] args){
+		 
+		 if (main.isOnline(args[0])){
+			 p.openInventory(main.getPlayer(args[0]).getInventory());
+		 } else {
+			 main.s(p, "playerNotFound");
+		 }
+	 }
+	 
+	 @DivCommand(perm = "wa.rank.dweller", aliases = {"seen"}, desc = "Seen Command", help = "/seen <player>", player = false, min = 1)
+	 public void onSeen(CommandSender cs, String[] args){
+		 
+		 DivinityPlayer dp = null;
+		 
+		 if (main.doesPartialPlayerExist(args[0])){
+			 
+			 dp = main.matchDivPlayer(args[0]);
+			 Vector v = dp.getLocDPI(DPI.LOGOUT_LOCATION).toVector();
+			 String lastLoc = "&6" + dp.getLocDPI(DPI.LOGOUT_LOCATION).getWorld().getName() + " &7@ &6" + v.getBlockX() + "&7, &6" + v.getBlockY() + "&7, &6" + v.getBlockZ();
+			 String lastLogin = "&6" + dp.getDPI(DPI.LAST_LOGIN);
+			 String lastLogout = "&6" + dp.getDPI(DPI.LAST_LOGOUT);
+			 String status = main.isOnline(args[0]) ? "&aonline" : "&4offline";
+			 
+			 main.s(cs, "&3Traffic Stats: " + dp.getDPI(DPI.DISPLAY_NAME) + " &3(" + status + "&3)");
+			 main.s(cs, "Logout Location: " + lastLoc);
+			 main.s(cs, "Last Login: " + lastLogin);
+			 main.s(cs, "Last Logout: " + lastLogout);
+			 cs.sendMessage(main.AS("&7&oCurrent System Time: " + main.api.divUtils.getTimeFull()));
+			 
+		 } else {
+			 main.s(cs, "playerNotFound");
+		 }
 	 }
 	 
 	 @DivCommand(perm = "wa.staff.mod2", aliases = {"back"}, desc = "Back Command", help = "/tp <player> [player]", player = true)
@@ -60,9 +97,29 @@ public class ElyStaff implements Listener {
 		 }
 	 }
 	 
-	 @DivCommand(perm = "wa.staff.mod", aliases = {"heal"}, desc = "Heal Command", help = "/heal", player = true)
+	 @DivCommand(perm = "wa.staff.mod", aliases = {"v", "vanish"}, desc = "Vanish Command", help = "/v", player = true)
+	 public void onVanish(Player p, String[] args){
+		 
+		 String hidden = "&a&ovisible";
+		 
+		 for (Player player : Bukkit.getOnlinePlayers()){
+			 if (player.canSee(p)){
+				 player.showPlayer(p);
+				 hidden = "&a&ovisible";
+			 } else {
+				 player.hidePlayer(p);
+				 hidden = "&c&oinvisible";
+			 }
+		 }
+		 
+		 main.s(p, "You are now " + hidden);
+	 }
+	 
+	 @DivCommand(perm = "wa.staff.mod2", aliases = {"heal"}, desc = "Heal Command", help = "/heal", player = true)
 	 public void onHeal(Player p, String[] args){
 		 p.setHealth(p.getMaxHealth());
+		 p.setFoodLevel(20);
+		 p.setSaturation(20);
 		 main.s(p, "Restored to full health!");
 	 }
 	 
@@ -507,7 +564,7 @@ public class ElyStaff implements Listener {
 		if (args.length == 0){
 			dp.setDPI(DPI.BACKUP_INVENTORY, p.getInventory().getContents());
 			p.getInventory().clear();
-			main.s(p, "&oInventory inceneration activated");
+			main.s(p, "&oInventory inceneration activated. Use /ci u to undo.");
 		} else if (dp.getStackDPI(DPI.BACKUP_INVENTORY).length > 0){
 			p.getInventory().setContents(dp.getStackDPI(DPI.BACKUP_INVENTORY));
 			dp.setDPI(DPI.BACKUP_INVENTORY, new ItemStack(){});

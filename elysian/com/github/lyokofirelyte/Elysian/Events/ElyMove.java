@@ -1,6 +1,5 @@
 package com.github.lyokofirelyte.Elysian.Events;
 
-
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -28,6 +27,10 @@ public class ElyMove implements Listener {
 		
 		main.afkCheck(e.getPlayer());
 		main.api.event(new ScoreboardUpdateEvent(e.getPlayer(), "move"));
+		
+		if (!main.api.getDivPlayer(e.getPlayer()).getDPI(DPI.SPECTATE_TARGET).equals("none")){
+			main.getPlayer(main.api.getDivPlayer(e.getPlayer()).getDPI(DPI.SPECTATE_TARGET)).teleport(e.getPlayer().getLocation());
+		}
 	}
 	
 	private boolean borderCheck(Player p, Vector v){

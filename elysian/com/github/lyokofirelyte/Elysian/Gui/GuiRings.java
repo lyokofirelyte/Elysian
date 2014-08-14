@@ -3,8 +3,10 @@ package com.github.lyokofirelyte.Elysian.Gui;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
+import org.bukkit.util.Vector;
 
 import com.github.lyokofirelyte.Divinity.DivGui;
+import com.github.lyokofirelyte.Divinity.Storage.DivinityRing;
 import com.github.lyokofirelyte.Elysian.Elysian;
 
 import static com.github.lyokofirelyte.Divinity.Manager.DivInvManager.createItem;
@@ -12,28 +14,34 @@ import static com.github.lyokofirelyte.Divinity.Manager.DivInvManager.createItem
 public class GuiRings extends DivGui {
 	
 	private Elysian main;
-	private DivGui parent;
+	private Vector v;
+	private int i = 0;
+	private String name;
 	
-	public GuiRings(Elysian main, DivGui parent){
+	public GuiRings(Elysian main, Vector v, String name){
 		
-		super(18, "&3Rings Destination");
+		super(9, "&3Rings Destination");
 		this.main = main;
-		this.parent = parent;
+		this.v = v;
+		this.name = name;
 	}
 	
 	@Override
 	public void create(){
-		this.addButton(0, createItem("&eSIDEBOARD", new String[] { "&6The scoreboard" }, Material.GLOWSTONE));
+		
+		for (String ring : main.api.divManager.getRingMap().keySet()){
+			if (!ring.equals(name)){
+				addButton(i, createItem("&e" + ring, new String[] { "&6&oTeleport here..."}, Material.GLOWSTONE));
+				i++;
+			}
+		}
 	}
 	
 	@Override
 	public void actionPerformed(Player p){
 		
-		switch (this.slot){
-		
-			case 0:
-				//set location
-			break;
+		if (slot <= i){
+			main.rings.calculate(p, v, this.item.getItemMeta().getDisplayName().substring(2), name, true);
 		}
 	}
 }

@@ -221,10 +221,10 @@ public class ElyMobs implements Listener {
 	public void onExp(Player p, String[] args){
 		
 		DivinityPlayer dp = main.api.getDivPlayer(p);
-		int amt = main.api.divUtils.isInteger(args[1]) ? Integer.parseInt(args[1]) : 0;
+		int amt = args.length >= 2 && main.api.divUtils.isInteger(args[1]) ? Integer.parseInt(args[1]) : 0;
 		
 		if (args.length == 0){
-			main.s(p, "Stored XP: &6" + dp.getDPI(DPI.EXP) + "&b.");
+			main.s(p, "Stored XP: &6" + dp.getIntDPI(DPI.EXP) + "&b.");
 			main.s(p, "&7&o825 = level 30. Only take out what you need, as you can't put it back!");
 		} else if (args.length == 2){
 		

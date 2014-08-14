@@ -4,6 +4,7 @@ public enum ElyTask {
 
 	LOGGER("LOGGER"),
 	WATCHER("WATCHER"),
+	SPECTATE("SPECTATE"),
 	ANNOUNCER("ANNOUNCER");
 	
 	ElyTask(String type){

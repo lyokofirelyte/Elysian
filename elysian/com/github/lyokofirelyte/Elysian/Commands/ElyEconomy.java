@@ -2,7 +2,9 @@ package com.github.lyokofirelyte.Elysian.Commands;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -122,15 +124,16 @@ public class ElyEconomy {
 		 }
 	 }
 	 
-	 public void balTop(Player sendTo){
+	 private void balTop(Player sendTo){
 		 
 		 List<Integer> balances = new ArrayList<>();
-		 List<DivinityPlayer> players = new ArrayList<>();
+		 Map<Integer, DivinityPlayer> players = new HashMap<Integer, DivinityPlayer>();
 		 int serverTotal = 0;
 		 
 		 for (DivinityPlayer p : main.api.divManager.getAllUsers()){
-			 if (p.getIntDPI(DPI.BALANCE) > 0){
+			 if (p.getIntDPI(DPI.BALANCE) > 2000){
 				 balances.add(p.getIntDPI(DPI.BALANCE));
+				 players.put(p.getIntDPI(DPI.BALANCE), p);
 				 serverTotal = serverTotal + p.getIntDPI(DPI.BALANCE);
 			 }
 		 }
@@ -138,24 +141,11 @@ public class ElyEconomy {
 		 Collections.sort(balances);
 		 Collections.reverse(balances);
 		 
-		 for (DivinityPlayer p : main.api.divManager.getAllUsers()){
-			 for (int x = 0; x <= 10; x++){
-				 if (balances.size() > x && balances.get(x) == p.getIntDPI(DPI.BALANCE)){
-					 players.add(p);
-				 }
-			 }
-		 }
-		 
 		 main.s(sendTo, "none", "Top Balances");
 		 main.s(sendTo, "none", "&6Server Total: &b" + serverTotal);
 		 
-		 for (int i : balances){
-			 for (DivinityPlayer s : players){
-				 if (s.getIntDPI(DPI.BALANCE) == i){
-					 main.s(sendTo, "none", DivinityUtils.AS(s.getDPI(DPI.DISPLAY_NAME) + " &7\u2744 &b" + s.getIntDPI(DPI.BALANCE)));
-					 break;
-				 }
-			 }
+		 for (int i = 0; i < 10; i++){
+			 main.s(sendTo, players.get(balances.get(i)).getDPI(DPI.DISPLAY_NAME) + "&f: &6" + balances.get(i));
 		 }
 	 }
 }
