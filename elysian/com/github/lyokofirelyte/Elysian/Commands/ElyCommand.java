@@ -12,6 +12,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 
+import com.github.lyokofirelyte.Divinity.DivinityUtils;
 import com.github.lyokofirelyte.Divinity.Commands.DivCommand;
 import com.github.lyokofirelyte.Divinity.Events.DivinityChannelEvent;
 import com.github.lyokofirelyte.Divinity.JSON.JSONChatExtra;
@@ -106,7 +107,7 @@ public class ElyCommand {
 		help.put("/creative", s("Member+", "Teleport into or out of the creative world"));
 		help.put("/spectate", s("Mod2+", "View someone in first person"));
 		help.put("/seen", s("Dweller+", "View traffic stats for a player"));
-		help.put("/newmember <player>", s("Intern", "Gives a player member permissions"));
+		help.put("/newmember <player>", s("Intern+", "Gives a player member permissions"));
 	}
 	
 	private String[] s(String arg, String arg1){
@@ -135,6 +136,15 @@ public class ElyCommand {
 		} else {
 			main.s(cs, "playerNotFound");
 		}
+	}
+	
+	@DivCommand(perm = "wa.staff.admin", aliases = {"bc", "broadcast"}, desc = "Broadcasts a message", help = "/broadcast", player = false, min = 1)
+	public void onBroadcast(CommandSender cs, String[] args){
+		StringBuilder text = new StringBuilder();
+		for(String s : args){
+			text.append(s + " ");
+		}
+		DivinityUtils.bc(text.toString());
 	}
 	
 	@DivCommand(perm = "wa.staff.admin", aliases = {"modify"}, desc = "Divinity Modification Command", help = "/modify list, /modify <player/alliance> <stat> <value>", player = false, min = 1)

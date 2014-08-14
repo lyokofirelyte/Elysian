@@ -75,7 +75,7 @@
     <dependency>
       <groupId>com.sk89q</groupId>
       <artifactId>WorldEdit</artifactId>
-      <version>5.5.7</version>
+      <version>5.6.3</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
