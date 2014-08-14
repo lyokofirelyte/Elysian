@@ -106,6 +106,7 @@ public class ElyCommand {
 		help.put("/creative", s("Member+", "Teleport into or out of the creative world"));
 		help.put("/spectate", s("Mod2+", "View someone in first person"));
 		help.put("/seen", s("Dweller+", "View traffic stats for a player"));
+		help.put("/newmember <player>", s("Intern", "Gives a player member permissions"));
 	}
 	
 	private String[] s(String arg, String arg1){

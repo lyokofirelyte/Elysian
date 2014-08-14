@@ -15,6 +15,7 @@ import com.github.lyokofirelyte.Elysian.Commands.ElyEffects;
 import com.github.lyokofirelyte.Elysian.Commands.ElyHome;
 import com.github.lyokofirelyte.Elysian.Commands.ElyMail;
 import com.github.lyokofirelyte.Elysian.Commands.ElyModeration;
+import com.github.lyokofirelyte.Elysian.Commands.ElyNewMember;
 import com.github.lyokofirelyte.Elysian.Commands.ElyPerms;
 import com.github.lyokofirelyte.Elysian.Commands.ElyProtect;
 import com.github.lyokofirelyte.Elysian.Commands.ElyRanks;
@@ -103,6 +104,7 @@ public class ElySetup {
 			new ElyHome(main),
 			new ElyWarps(main),
 			new ElySpectate(main),
+			new ElyNewMember(main),
 			main.mail,
 			main.logger,
 			main.staff,
