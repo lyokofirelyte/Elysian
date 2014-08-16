@@ -22,6 +22,7 @@ import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerExpChangeEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
 
 import com.github.lyokofirelyte.Divinity.DivinityUtils;
@@ -154,13 +155,24 @@ public class ElyMobs implements Listener {
 			DivinityUtils.bc(dp.getDPI(DPI.DISPLAY_NAME) + " &e&odied due to unknown causes.");
 		}
 		
-		if (dp.getDPI(DPI.DEATH_CHEST_INV).equals("none")){
-			dp.setDPI(DPI.DEATH_CHEST_INV, p.getInventory().getContents());
-			dp.setDPI(DPI.DEATH_ARMOR, p.getInventory().getArmorContents());
-			dp.setDPI(DPI.DEATH_CHEST_LOC, p.getWorld().getName() + " " + v.getBlockX() + " " + v.getBlockY() + " " + v.getBlockZ());
-			p.getLocation().getBlock().setType(Material.CHEST);
-			e.getDrops().clear();
-			main.s(e.getEntity(), "&7&oYour items are in a chest at your death location.");
+		String[] deathLoc = dp.getDPI(DPI.DEATH_CHEST_LOC).split(" ");
+		
+		if (!dp.getDPI(DPI.DEATH_CHEST_INV).equals("none")){
+			for (ItemStack i : dp.getStackDPI(DPI.DEATH_CHEST_INV)){
+				p.getWorld().dropItem(new Location(Bukkit.getWorld(deathLoc[0]), Double.parseDouble(deathLoc[1]), Double.parseDouble(deathLoc[2]), Double.parseDouble(deathLoc[3])), i);
+			}
+			main.s(p, "Your old death chest items were dropped at &6" + deathLoc[1] + " " + deathLoc[2] + " " + deathLoc[3] + "&b.");
+		}
+		
+		dp.setDPI(DPI.DEATH_CHEST_INV, p.getInventory().getContents());
+		dp.setDPI(DPI.DEATH_ARMOR, p.getInventory().getArmorContents());
+		dp.setDPI(DPI.DEATH_CHEST_LOC, p.getWorld().getName() + " " + v.getBlockX() + " " + v.getBlockY() + " " + v.getBlockZ());
+		p.getLocation().getBlock().setType(Material.CHEST);
+		e.getDrops().clear();
+		main.s(e.getEntity(), "&7&oYour items are in a chest at your death location.");
+		
+		if (dp.getBoolDPI(DPI.DEATHLOCS_TOGGLE)){
+			main.s(p, "&7&oYou died at: &6&o" + dp.getDPI(DPI.DEATH_CHEST_LOC).replace(" ", "&7, "));
 		}
 	}
 	
@@ -171,9 +183,11 @@ public class ElyMobs implements Listener {
 		
 		if (!dp.getBoolDPI(DPI.EXP_DEPOSIT)){
 			if (e.getPlayer().getWorld().getName().equals("world")){
-				dp.setDPI(DPI.EXP, dp.getIntDPI(DPI.EXP) + e.getAmount());
+				dp.setDPI(DPI.EXP, dp.getIntDPI(DPI.EXP) + new Integer(e.getAmount()));
 				e.setAmount(0);
 			}
+		} else {
+			dp.setDPI(DPI.EXP_DEPOSIT, false);
 		}
 	}
 	
@@ -189,10 +203,6 @@ public class ElyMobs implements Listener {
 				e.getPlayer().getInventory().setArmorContents(dp.getStackDPI(DPI.DEATH_ARMOR));
 				main.s(e.getPlayer(), "This duel was safe. Inventory restored.");
 			}
-		}
-		
-		if (dp.getBoolDPI(DPI.DEATHLOCS_TOGGLE)){
-			main.s(e.getPlayer(), "&7&oYou died at: &6&o" + dp.getDPI(DPI.DEATH_CHEST_LOC).replace(" ", "&7, "));
 		}
 	}
 	

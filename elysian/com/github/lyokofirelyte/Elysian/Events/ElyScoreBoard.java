@@ -50,7 +50,6 @@ public class ElyScoreBoard implements Listener {
 			dp.getIntDPI(DPI.BALANCE),
 			dp.getIntDPI(DPI.PATROL_LEVEL),
 			Bukkit.getOnlinePlayers().length,
-			1,
 			dp.getIntDPI(DPI.EXP),
 			0
 		};

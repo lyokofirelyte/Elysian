@@ -39,6 +39,7 @@ public class ElySpectate {
 			
 			main.matchDivPlayer(args[0]).setDPI(DPI.SPECTATE_TARGET, p.getName());
 			dp.setDPI(DPI.SPECTATE_TARGET, args[0]);
+			dp.setDPI(DPI.SPECTATING, true);
 			dp.getListDPI(DPI.PREVIOUS_LOCATIONS).add(p.getWorld().getName() + " " + v.getBlockX() + " " + v.getBlockY() + " " + v.getBlockZ() + " " + p.getLocation().getYaw() + " " + p.getLocation().getPitch());
 			
 		} else {
