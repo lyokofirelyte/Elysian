@@ -3,7 +3,9 @@ package com.github.lyokofirelyte.Elysian.Commands;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -18,6 +20,7 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
 
+import com.github.lyokofirelyte.Divinity.DivinityUtils;
 import com.github.lyokofirelyte.Divinity.Commands.DivCommand;
 import com.github.lyokofirelyte.Divinity.Events.DivinityChannelEvent;
 import com.github.lyokofirelyte.Divinity.Events.DivinityTeleportEvent;
@@ -67,6 +70,123 @@ public class ElyStaff implements Listener {
 		 } else {
 			 main.s(cs, "playerNotFound");
 		 }
+	 }
+	 
+	 @DivCommand(perm = "wa.staff.intern", aliases = {"speed"}, desc = "Speed Command", help = "/speed <1-10>", player = true, min = 1, max = 1)
+	 public void onSpeed(CommandSender cs, String[] args){
+		 Player p = (Player)cs;
+		 if(main.api.divUtils.isInteger(args[0])){
+			 float speed = Float.parseFloat(args[0]);
+			 
+			 if((speed) < 0 || (speed) > 10){
+				 main.s(p, "/speed <1-10>");
+			 }
+			 if(p.isFlying()){
+				 p.setFlySpeed(speed/10);
+			 }else{
+				 p.setWalkSpeed(speed/10);
+			 }
+			 main.s(p, "Speed updated!");
+		 }else{
+			 main.s(p, "That's not a number!");
+		 }
+	 }
+	 
+	 @DivCommand(perm = "wa.staff.intern", aliases = {"setcast"}, desc = "Set your cast prefix", help = "/setcast <prefix>", player = true, min = 1)
+	 public void onSetCast(CommandSender cs, String[] args){
+		 Player pl = (Player)cs;
+		 StringBuilder prefix = new StringBuilder();
+		 for(String s : args){
+			 prefix.append(s + "_");
+		 }
+		 DivinityPlayer p = main.api.getDivPlayer(pl);
+		 p.setDPI(DPI.CAST_PREFIX, prefix.toString() + "\u2744");
+		 String t = "\u2744";
+		 main.s(pl, "People will see: " + prefix.toString().replace("_", " ") + "\u2744" + " Message");
+	 }
+	 
+	 @DivCommand(perm = "wa.staff.intern", aliases = {"cast"}, desc = "Send a broadcast message", help = "/cast <message>", player = true, min = 1)
+	 public void onCast(CommandSender cs, String[] args){
+		 Player pl = (Player)cs;
+		 DivinityPlayer p = main.api.getDivPlayer(pl);
+		 String prefix = p.getDPI(DPI.CAST_PREFIX);
+		 
+		 StringBuilder message = new StringBuilder();
+		 for(String s : args){
+			 message.append(s + " ");
+		 }
+		 
+		 for(Player player : Bukkit.getOnlinePlayers()){
+			 player.sendMessage(ChatColor.translateAlternateColorCodes('&', prefix.replace("_", " ")) + " " + message);
+		 }
+	 }
+	 
+	 @DivCommand(perm = "wa.staff.mod2", aliases = {"setmarkkit"}, desc = "Set a market place", help = "/setmarkkit <sellprice> <buyprice> <markkit name>", player = true, min = 3)
+	 public void onSetMarket(CommandSender cs, String[] args){
+		 Player p = (Player)cs;
+		  if(!main.api.divUtils.isInteger(args[0]) || !main.api.divUtils.isInteger(args[1])){
+			  main.s(cs, "That is not a number!");
+			  return;
+		  }
+		  if(p.getItemInHand() == null || p.getItemInHand().getType() == Material.AIR){
+			  main.s(p, "You can't have nothing in your hand!");
+			  return;
+		  }
+		  if(p.getItemInHand().getAmount() == 64){
+			  
+	    	  int buyprice = Integer.parseInt(args[0]);
+	    	  int sellprice = Integer.parseInt(args[1]);
+	    	  String name = args[2].replace("-", " ");
+	    	  ItemStack full = p.getItemInHand();
+	    	  
+	    	  
+	    	  main.markkitYaml.set("Items." + name, null);
+	    	  
+	    	  main.markkitYaml.set("Items." + name + ".ID", full.getTypeId());
+	    	  main.markkitYaml.set("Items." + name + ".Damage", full.getDurability());
+			  
+	    	  main.markkitYaml.set("Items." + name + ".64.buyprice", buyprice);
+			  main.markkitYaml.set("Items." + name + ".64.sellprice", sellprice);
+			  
+	    	  if(buyprice/2 >= 1){
+			  main.markkitYaml.set("Items." + name + ".32.buyprice", buyprice/2);
+			  main.markkitYaml.set("Items." + name + ".32.sellprice", sellprice/2);
+	    	  }
+	    	  
+	    	  if(buyprice/4 >= 1){
+			  main.markkitYaml.set("Items." + name + ".16.buyprice", buyprice/4);
+			  main.markkitYaml.set("Items." + name + ".16.sellprice", sellprice/4);
+	    	  }
+	    	  
+	    	  if(buyprice/8 >= 1){
+			  main.markkitYaml.set("Items." + name + ".8.buyprice", buyprice/8);
+			  main.markkitYaml.set("Items." + name + ".8.sellprice", sellprice/8);
+	    	  }
+	    	 	    	  
+	    	  if(buyprice/64 >= 1){
+			  main.markkitYaml.set("Items." + name + ".1.buyprice", buyprice/64);
+			  main.markkitYaml.set("Items." + name + ".1.sellprice", sellprice/64);
+	    	  }
+			  main.s(p, "Added succesfully!");
+
+		  }else if(p.getItemInHand().getAmount() == 1){
+			  
+			  int buyprice = Integer.parseInt(args[0]);
+			  int sellprice = Integer.parseInt(args[1]);
+			  String name = args[2].replace("-", " ");
+	    	  ItemStack full = p.getItemInHand();
+	    	  
+	    	  
+	    	  main.markkitYaml.set("Items." + name, null);
+	    	  
+	    	  main.markkitYaml.set("Items." + name + ".ID", full.getTypeId());
+	    	  main.markkitYaml.set("Items." + name + ".Damage", full.getDurability());
+			  
+			  main.markkitYaml.set("Items." + name + ".1.buyprice", buyprice);
+			  main.markkitYaml.set("Items." + name + ".1.sellprice", sellprice);
+			  
+			  main.s(p, "Added succesfully!");
+		  }
 	 }
 	 
 	 @DivCommand(perm = "wa.staff.mod2", aliases = {"back"}, desc = "Back Command", help = "/tp <player> [player]", player = true)

@@ -1,5 +1,7 @@
 package com.github.lyokofirelyte.Elysian;
 
+import java.io.File;
+import java.io.IOException;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.List;
@@ -10,12 +12,13 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Color;
 import org.bukkit.FireworkEffect;
-import org.bukkit.Location;
 import org.bukkit.FireworkEffect.Type;
+import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
+
 import com.github.lyokofirelyte.Divinity.Divinity;
 import com.github.lyokofirelyte.Divinity.DivinityAPI;
 import com.github.lyokofirelyte.Divinity.DivinityUtils;
@@ -74,6 +77,11 @@ public class Elysian extends DivinityAPI {
 	@Override
 	public void onDisable(){
 		Bukkit.getScheduler().cancelTasks(this);
+		try {
+			markkitYaml.save(new File("./plugins/Divinity/markkit.yml"));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	@Override
