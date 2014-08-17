@@ -9,7 +9,11 @@ import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
+import org.bukkit.block.Sign;
 import org.bukkit.command.CommandSender;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
@@ -21,7 +25,6 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
 
-import com.github.lyokofirelyte.Divinity.DivinityUtils;
 import com.github.lyokofirelyte.Divinity.Commands.DivCommand;
 import com.github.lyokofirelyte.Divinity.Events.DivinityChannelEvent;
 import com.github.lyokofirelyte.Divinity.Events.DivinityTeleportEvent;
@@ -94,6 +97,101 @@ public class ElyStaff implements Listener {
 			 main.s(cs, "playerNotFound");
 		 }
 	 }
+	 
+	 @DivCommand(perm = "wa.staff.admin", aliases = {"placesign"}, desc = "Place a market sign down", help = "/placesign <down/side>", player = true, min = 1)
+	 public void onPlaceDown(CommandSender cs, String[] args){
+		 Player p = (Player)cs;
+
+		 if(args[0].equalsIgnoreCase("side")){
+			 Block newSign = p.getWorld().getBlockAt(new Location(p.getWorld(), p.getLocation().getBlockX(), p.getLocation().getBlockY(), p.getLocation().getBlockZ()));
+			
+			 newSign.setType(Material.WALL_SIGN);
+			 Sign s = (Sign) newSign.getState();
+			 s.setLine(0, "§dWC §5Markkit");
+			 ConfigurationSection configSection = main.markkitYaml.getConfigurationSection("Items");
+			 for (String path : configSection.getKeys(false)){
+				 System.out.println(Integer.parseInt(main.markkitYaml.getString("Items." + path + ".ID")) == p.getItemInHand().getTypeId());
+
+				 if((Integer.parseInt(main.markkitYaml.getString("Items." + path + ".ID")) == p.getItemInHand().getTypeId()) && (Integer.parseInt(main.markkitYaml.getString("Items." + path + ".Damage")) == p.getItemInHand().getDurability())){
+					 s.setLine(1, "§f" + path);
+					 org.bukkit.material.Sign sign =  new org.bukkit.material.Sign(Material.WALL_SIGN);
+					 sign.setFacingDirection(getPlayerDirection(p).getOppositeFace());
+					 s.setData(sign);
+					 s.update();
+					 return;
+				 }else{
+					 s.setLine(1, "§fNot Found");
+					 org.bukkit.material.Sign sign =  new org.bukkit.material.Sign(Material.WALL_SIGN);
+					 sign.setFacingDirection(getPlayerDirection(p).getOppositeFace());
+					 s.setData(sign);
+					 s.update();
+				 }
+			 }
+		 }else if(args[0].equalsIgnoreCase("down")){
+			 Block newSign = p.getWorld().getBlockAt(new Location(p.getWorld(), p.getLocation().getBlockX(), p.getLocation().getBlockY(), p.getLocation().getBlockZ()));
+			 newSign.setType(Material.SIGN_POST);
+			 Sign s = (Sign) newSign.getState();
+			 s.setLine(0, "§dWC §5Markkit");
+			 ConfigurationSection configSection = main.markkitYaml.getConfigurationSection("Items");
+			 for (String path : configSection.getKeys(false)){
+				 System.out.println(Integer.parseInt(main.markkitYaml.getString("Items." + path + ".ID")) == p.getItemInHand().getTypeId());
+
+				 if((Integer.parseInt(main.markkitYaml.getString("Items." + path + ".ID")) == p.getItemInHand().getTypeId()) && (Integer.parseInt(main.markkitYaml.getString("Items." + path + ".Damage")) == p.getItemInHand().getDurability())){
+					 s.setLine(1, "§f" + path);
+					 org.bukkit.material.Sign sign =  new org.bukkit.material.Sign(Material.SIGN_POST);
+					 sign.setFacingDirection(getPlayerDirection(p).getOppositeFace());
+					 s.setData(sign);
+					 s.update();
+					 return;
+				 }else{
+					 s.setLine(1, "§fNot Found");
+					 org.bukkit.material.Sign sign =  new org.bukkit.material.Sign(Material.SIGN_POST);
+					 sign.setFacingDirection(getPlayerDirection(p).getOppositeFace());
+					 s.setData(sign);
+					 s.update();
+				 }
+			 }
+		 }else{
+			 main.s(p, "/placedown <down/side>");
+		 }
+
+		 
+	 }
+	 
+	 public BlockFace getPlayerDirection(Player player)
+	    {
+	 
+	        BlockFace dir = null;
+	     
+	        float y = player.getLocation().getYaw();
+	     
+	        if( y < 0 ){y += 360;}
+	     
+	        y %= 360;
+	     
+	        int i = (int)((y+8) / 22.5);
+	     
+	        if(i == 0){dir = BlockFace.WEST;}
+	        else if(i == 1){dir = BlockFace.WEST_NORTH_WEST;}
+	        else if(i == 2){dir = BlockFace.NORTH_WEST;}
+	        else if(i == 3){dir = BlockFace.NORTH_NORTH_WEST;}
+	        else if(i == 4){dir = BlockFace.NORTH;}
+	        else if(i == 5){dir = BlockFace.NORTH_NORTH_EAST;}
+	        else if(i == 6){dir = BlockFace.NORTH_EAST;}
+	        else if(i == 7){dir = BlockFace.EAST_NORTH_EAST;}
+	        else if(i == 8){dir = BlockFace.EAST;}
+	        else if(i == 9){dir = BlockFace.EAST_SOUTH_EAST;}
+	        else if(i == 10){dir = BlockFace.SOUTH_EAST;}
+	        else if(i == 11){dir = BlockFace.SOUTH_SOUTH_EAST;}
+	        else if(i == 12){dir = BlockFace.SOUTH;}
+	        else if(i == 13){dir = BlockFace.SOUTH_SOUTH_WEST;}
+	        else if(i == 14){dir = BlockFace.SOUTH_WEST;}
+	        else if(i == 15){dir = BlockFace.WEST_SOUTH_WEST;}
+	        else {dir = BlockFace.WEST;}
+	     
+	        return dir;
+	 
+	    }
 	 
 	 @DivCommand(perm = "wa.staff.intern", aliases = {"speed"}, desc = "Speed Command", help = "/speed <1-10>", player = true, min = 1, max = 1)
 	 public void onSpeed(CommandSender cs, String[] args){
