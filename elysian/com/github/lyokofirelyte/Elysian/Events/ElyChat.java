@@ -136,7 +136,11 @@ public class ElyChat implements Listener {
 		
 		e.setCancelled(true);
 		main.afkCheck(e.getPlayer());
-
+		
+		if (!main.silentPerms(e.getPlayer(), "wa.rank.settler")){
+			e.setMessage(ChatColor.stripColor(main.AS(e.getMessage())));
+		}
+		
 		if (!main.api.getDivPlayer(e.getPlayer()).getBoolDPI(DPI.MUTED)){
 
 			new Thread(new Runnable(){ public void run(){
@@ -186,7 +190,7 @@ public class ElyChat implements Listener {
 							extra.setHoverEvent(JSONChatHoverEventType.SHOW_TEXT, main.AS("&7&oRun Command /" + message.replace("cmd:", "").replace("_", " ")));
 							extra.setClickEvent(JSONChatClickEventType.RUN_COMMAND, "/" + message.replace("cmd:", "").replace("_", " "));
 						} else {
-							extra = new JSONChatExtra(main.AS(" " + message), null, null);
+							extra = new JSONChatExtra(main.AS(" " + globalColor + message), null, null);
 							extra.setHoverEvent(JSONChatHoverEventType.SHOW_TEXT, main.AS("&7&oSearch google for " + message));
 							extra.setClickEvent(JSONChatClickEventType.OPEN_URL, "https://www.google.com/search?q=" + message);
 						}
@@ -208,7 +212,7 @@ public class ElyChat implements Listener {
 		msg = msg.replace("place", "pLace").replace("&k", "");
 
     	for (String filter : main.api.getSystem().getListDPI(DPI.FILTER)){
-    		if (ChatColor.stripColor(DivinityUtils.AS(msg.toLowerCase())).contains(filter.split(" % ")[0])){
+    		if (ChatColor.stripColor(DivinityUtils.AS(msg.toLowerCase())).contains(filter.split(" % ")[0].toLowerCase())){
     			msg = msg.replace(filter.split(" % ")[0], filter.split(" % ")[1]);
     		}
     	}

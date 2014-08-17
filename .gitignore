@@ -6,3 +6,4 @@ target/test-classes
 *.classpath
 *.project
 /target
+/bin

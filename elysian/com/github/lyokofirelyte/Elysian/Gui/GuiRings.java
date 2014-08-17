@@ -41,6 +41,12 @@ public class GuiRings extends DivGui {
 	public void actionPerformed(Player p){
 		
 		if (slot <= i){
+			if (main.api.getDivRing(item.getItemMeta().getDisplayName().substring(2)).isInOperation()){
+				return;
+			}
+			if (main.api.getDivRing(name).isInOperation()){
+				return;
+			}
 			main.rings.calculate(p, v, this.item.getItemMeta().getDisplayName().substring(2), name, true);
 		}
 	}

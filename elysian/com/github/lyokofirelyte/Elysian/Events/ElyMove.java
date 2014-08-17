@@ -28,7 +28,7 @@ public class ElyMove implements Listener {
 		main.afkCheck(e.getPlayer());
 		main.api.event(new ScoreboardUpdateEvent(e.getPlayer(), "move"));
 		
-		if (!main.api.getDivPlayer(e.getPlayer()).getDPI(DPI.SPECTATE_TARGET).equals("none")){
+		if (!main.api.getDivPlayer(e.getPlayer()).getDPI(DPI.SPECTATE_TARGET).equals("none") && !main.api.getDivPlayer(e.getPlayer()).getBoolDPI(DPI.SPECTATING)){
 			main.getPlayer(main.api.getDivPlayer(e.getPlayer()).getDPI(DPI.SPECTATE_TARGET)).teleport(e.getPlayer().getLocation());
 		}
 	}

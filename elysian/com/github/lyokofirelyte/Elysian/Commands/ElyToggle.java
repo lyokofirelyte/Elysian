@@ -42,7 +42,7 @@ public class ElyToggle {
 			 			if (args.length == 1){
 			 				dp.setDPI(DPI.valueOf(args[0].toUpperCase() + "_TOGGLE"), !dp.getBoolDPI(DPI.valueOf(args[0].toUpperCase() + "_TOGGLE")));
 			 			} else {
-			 				dp.setDPI(DPI.valueOf(args[0].toUpperCase()), args[1]);
+			 				dp.setDPI(DPI.valueOf(args[0].toUpperCase()), main.api.divUtils.createString(args, 1));
 			 			}
 			 			
 			 			main.s(p, "none", "&o" + args[0] + " updated");

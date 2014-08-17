@@ -10,6 +10,7 @@ import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -44,6 +45,28 @@ public class ElyStaff implements Listener {
 			 p.openInventory(main.getPlayer(args[0]).getInventory());
 		 } else {
 			 main.s(p, "playerNotFound");
+		 }
+	 }
+	 
+	 @DivCommand(perm = "wa.staff.mod2", aliases = {"clear"}, desc = "Clear items on floor (and monsters)", help = "/clear <radius>", player = true, min = 1)
+	 public void onClear(Player p, String[] args){
+		 
+		 if (main.api.divUtils.isInteger(args[0]) && Integer.parseInt(args[0]) <= 500){
+			 
+			 Double d = Double.parseDouble(args[0]);
+			 int killed = 0;
+			 
+			 for (Entity e : p.getNearbyEntities(d, d, d)){
+				 if (e instanceof Player == false){
+					 e.remove();
+					 killed++;
+				 }
+			 }
+			 
+			 main.s(p, "Removed &6" + killed + " &bentities.");
+			 
+		 } else {
+			 main.s(p, "&c&oThat's not a number, or it's too big.");
 		 }
 	 }
 	 

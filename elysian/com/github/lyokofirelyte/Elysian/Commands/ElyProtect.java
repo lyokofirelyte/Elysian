@@ -65,7 +65,7 @@ public class ElyProtect implements Listener {
 		"&c&oYour unknown command level is now 99.",
 		"&c&oHelp, I'm stuck in an error message factory!",
 		"&c&oCommand not valid. I assume you're a bad speller?",
-		"&c&oI'm afraid I can't do that, Dave. See &6&o/ely help&c&.",
+		"&c&oI'm afraid I can't do that, Dave. See &6&o/ely help&c&o.",
 		"&c&oOut of all the possible commands you choose an invalid one.",
 		"&c&oYou tried. &6&o/ely help&c&o.",
 		"&b&oThis is a blue, misleading error message. &6&o/ely help&b&o.",
@@ -197,8 +197,8 @@ public class ElyProtect implements Listener {
 				break;
 			}
 			
-			if (args[0].startsWith("//") && !e.getMessage().contains("schematic")){
-				if (e.getPlayer().getWorld().getName().equalsIgnoreCase("WACP")){
+			if ((args[0].startsWith("//") && !e.getMessage().contains("schematic")) || args[0].startsWith("/wand")){
+				if (e.getPlayer().getWorld().getName().equalsIgnoreCase("WACP") || e.getPlayer().getWorld().getName().equalsIgnoreCase("not_cylum")){
 					e.setCancelled(true);
 					op(p, e.getMessage());
 				}
