@@ -26,32 +26,32 @@ public class ElyRanks {
 		
 		DivinityPlayer dp = main.api.getDivPlayer(p);
 		
-		if (dp.getListDPI(DPI.PERMS).contains("wa.rank.immortal")){
+		if (dp.getList(DPI.PERMS).contains("wa.rank.immortal")){
 			main.s(p, "&c&oYou are currently the highest rank!");
 			return;
 		}
 		
-		if (dp.getDPI(DPI.RANK_NAME).equalsIgnoreCase("Guest")){
+		if (dp.getStr(DPI.RANK_NAME).equalsIgnoreCase("Guest")){
 			
 			DivinityUtils.bc(p.getDisplayName() + " &bis now a member of WA!");
-			dp.setDPI(DPI.RANK_NAME, "M");
-			dp.setDPI(DPI.RANK_COLOR, "&7");
-			dp.setDPI(DPI.RANK_DESC, "&7&oA registered member of the server!\n&6/home, build access.");
-			dp.setDPI(DPI.STAFF_DESC, "&7&oA registered member!");
+			dp.set(DPI.RANK_NAME, "M");
+			dp.set(DPI.RANK_COLOR, "&7");
+			dp.set(DPI.RANK_DESC, "&7&oA registered member of the server!\n&6/home, build access.");
+			dp.set(DPI.STAFF_DESC, "&7&oA registered member!");
 			
 		} else {
 		
 			for (String s : main.perms.memberGroups){
-				if (!dp.getListDPI(DPI.PERMS).contains("wa.rank." + s) && !s.equals("member")){
+				if (!dp.getList(DPI.PERMS).contains("wa.rank." + s) && !s.equals("member")){
 					
 					String[] rank = main.perms.rankNames.get(s).split(" % ");
 					
-					if (dp.getIntDPI(DPI.BALANCE) >= Integer.parseInt(rank[1].replace("k", "000").replace("m", "000000"))){
-						dp.getListDPI(DPI.PERMS).add("wa.rank." + s);
-						dp.setDPI(DPI.BALANCE, dp.getIntDPI(DPI.BALANCE) - Integer.parseInt(rank[1].replace("k", "000").replace("m", "000000")));
-						dp.setDPI(DPI.RANK_COLOR, rank[0]);
-						dp.setDPI(DPI.RANK_DESC, rank[0] + s.substring(0, 1).toUpperCase() + s.substring(1) + "\n" + "&6" + rank[3].replace(", ", "&7, &6"));
-						dp.setDPI(DPI.RANK_NAME, !main.silentPerms(p, "wa.staff.intern") ? s.substring(0, 1).toUpperCase() : dp.getDPI(DPI.RANK_NAME));
+					if (dp.getInt(DPI.BALANCE) >= Integer.parseInt(rank[1].replace("k", "000").replace("m", "000000"))){
+						dp.getList(DPI.PERMS).add("wa.rank." + s);
+						dp.set(DPI.BALANCE, dp.getInt(DPI.BALANCE) - Integer.parseInt(rank[1].replace("k", "000").replace("m", "000000")));
+						dp.set(DPI.RANK_COLOR, rank[0]);
+						dp.set(DPI.RANK_DESC, rank[0] + s.substring(0, 1).toUpperCase() + s.substring(1) + "\n" + "&6" + rank[3].replace(", ", "&7, &6"));
+						dp.set(DPI.RANK_NAME, !main.silentPerms(p, "wa.staff.intern") ? s.substring(0, 1).toUpperCase() : dp.getStr(DPI.RANK_NAME));
 						DivinityUtils.bc(p.getDisplayName() + " &bhas been promoted to &6" + s.substring(0, 1).toUpperCase() + s.substring(1) + "&b!");
 						main.fw(p.getWorld(), p.getLocation(), Type.BURST, main.api.divUtils.getRandomColor());
 						main.s(p, "&3&oNew Unlocks:");

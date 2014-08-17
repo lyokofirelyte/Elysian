@@ -56,7 +56,7 @@ public class ElyChat implements Listener {
 	public void onPrivateMessage(CommandSender cs, String[] args, String cmd){
 
 		DivinityPlayer dp = cs instanceof Player ? main.api.getDivPlayer((Player)cs) : main.api.getSystem();
-		String sendTo = !cmd.equals("r") ? args[0] : dp.getDPI(DPI.PREVIOUS_PM);;
+		String sendTo = !cmd.equals("r") ? args[0] : dp.getStr(DPI.PREVIOUS_PM);;
 		String message = !cmd.equals("r") ? args[1] : args[0];
 		int start = !cmd.equals("r") ? 2 : 1;
 		
@@ -68,17 +68,17 @@ public class ElyChat implements Listener {
 			if (sendTo.equals("console") || main.isOnline(sendTo)){
 				
 				if (!sendTo.equals("console")){	
-					Bukkit.getPlayer(main.matchDivPlayer(sendTo).uuid()).sendMessage(main.AS(("&3<- " + dp.getDPI(DPI.DISPLAY_NAME) + "&f: " + main.matchDivPlayer(sendTo).getDPI(DPI.PM_COLOR) + message)));
-					cs.sendMessage(main.AS(("&3-> " + main.matchDivPlayer(sendTo).getDPI(DPI.DISPLAY_NAME)) + "&f: " + dp.getDPI(DPI.PM_COLOR) + message));
-					main.matchDivPlayer(sendTo).setDPI(DPI.PREVIOUS_PM, dp.name());
+					Bukkit.getPlayer(main.matchDivPlayer(sendTo).uuid()).sendMessage(main.AS(("&3<- " + dp.getStr(DPI.DISPLAY_NAME) + "&f: " + main.matchDivPlayer(sendTo).getStr(DPI.PM_COLOR) + message)));
+					cs.sendMessage(main.AS(("&3-> " + main.matchDivPlayer(sendTo).getStr(DPI.DISPLAY_NAME)) + "&f: " + dp.getStr(DPI.PM_COLOR) + message));
+					main.matchDivPlayer(sendTo).set(DPI.PREVIOUS_PM, dp.name());
 				} else {
-					Bukkit.getConsoleSender().sendMessage(main.AS(("&3<- " + dp.getDPI(DPI.DISPLAY_NAME) + "&f: " + message)));
-					cs.sendMessage(main.AS(("&3-> " + "&6Console" + "&f: " + dp.getDPI(DPI.PM_COLOR) + message)));
-					main.api.getSystem().setDPI(DPI.PREVIOUS_PM, dp.name());
-					dp.setDPI(DPI.PREVIOUS_PM, "console");
+					Bukkit.getConsoleSender().sendMessage(main.AS(("&3<- " + dp.getStr(DPI.DISPLAY_NAME) + "&f: " + message)));
+					cs.sendMessage(main.AS(("&3-> " + "&6Console" + "&f: " + dp.getStr(DPI.PM_COLOR) + message)));
+					main.api.getSystem().set(DPI.PREVIOUS_PM, dp.name());
+					dp.set(DPI.PREVIOUS_PM, "console");
 				}
 				
-				dp.setDPI(DPI.PREVIOUS_PM, sendTo);
+				dp.set(DPI.PREVIOUS_PM, sendTo);
 				
 			} else {
 				main.s(cs, "&c&oThat player is not online.");
@@ -96,19 +96,19 @@ public class ElyChat implements Listener {
 		List<String> toRemove = new ArrayList<String>();
 		String dispName = cs instanceof Player ? ((Player)cs).getDisplayName() : "&6Console";
 		
-		for (String filter : system.getListDPI(DPI.FILTER)){
+		for (String filter : system.getList(DPI.FILTER)){
 			if (filter.split(" % ")[0].equalsIgnoreCase(args[0])){
 				toRemove.add(filter);
 			}
 		}
 		
 		if (toRemove.size() <= 0){
-			system.getListDPI(DPI.FILTER).add(args[0].toLowerCase() + " % " + args[1].toLowerCase());
+			system.getList(DPI.FILTER).add(args[0].toLowerCase() + " % " + args[1].toLowerCase());
 			main.s(cs, "Added &6" + args[0].toLowerCase() + " &4-> &6" + args[1].toLowerCase());
 			main.api.event(new DivinityChannelEvent("&6System", "wa.staff.intern", "&c&oOh! &4\u2744", dispName + " filtered &6" + args[0].toLowerCase() + " &4-> &6" + args[1].toLowerCase() + "&c!", "&c"));
 		} else {
 			for (String s : toRemove){
-				system.getListDPI(DPI.FILTER).remove(s);
+				system.getList(DPI.FILTER).remove(s);
 				main.s(cs, "Removed &6" + s.split(" % ")[0] + " &4-> &6" + s.split(" % ")[1]);
 				main.api.event(new DivinityChannelEvent("&6System", "wa.staff.intern", "&c&oOh! &4\u2744", dispName + " un-filtered &6" + s.split(" % ")[0] + " &4-> &6" + s.split(" % ")[1] + "&c!", "&c"));
 			}
@@ -141,7 +141,7 @@ public class ElyChat implements Listener {
 			e.setMessage(ChatColor.stripColor(main.AS(e.getMessage())));
 		}
 		
-		if (!main.api.getDivPlayer(e.getPlayer()).getBoolDPI(DPI.MUTED)){
+		if (!main.api.getDivPlayer(e.getPlayer()).getBool(DPI.MUTED)){
 
 			new Thread(new Runnable(){ public void run(){
 				
@@ -150,20 +150,20 @@ public class ElyChat implements Listener {
 					DivinityPlayer sendTo = main.api.getDivPlayer(p);
 					DivinityPlayer sentFrom = main.api.getDivPlayer(e.getPlayer());
 					String rawMsg = new String(e.getMessage());
-					sendTo.setDPI(DPI.ELY, false);
-					sentFrom.setDPI(DPI.ELY, false);
+					sendTo.set(DPI.ELY, false);
+					sentFrom.set(DPI.ELY, false);
 					
-					if (sendTo.getBoolDPI(DPI.CHAT_FILTER_TOGGLE)){
+					if (sendTo.getBool(DPI.CHAT_FILTER_TOGGLE)){
 						rawMsg = (filter(rawMsg));
 					}
 					
-					String rankColor = sentFrom.getDPI(DPI.RANK_COLOR);
-					String rankName = sentFrom.getDPI(DPI.RANK_NAME);
-					String rankDesc = sentFrom.getDPI(DPI.RANK_DESC);
-					String staffDesc = sentFrom.getDPI(DPI.STAFF_DESC);
-					String staffColor = sentFrom.getDPI(DPI.STAFF_COLOR);
-					String playerDesc = sentFrom.getDPI(DPI.PLAYER_DESC);
-					String globalColor = sendTo.getDPI(DPI.GLOBAL_COLOR);
+					String rankColor = sentFrom.getStr(DPI.RANK_COLOR);
+					String rankName = sentFrom.getStr(DPI.RANK_NAME);
+					String rankDesc = sentFrom.getStr(DPI.RANK_DESC);
+					String staffDesc = sentFrom.getStr(DPI.STAFF_DESC);
+					String staffColor = sentFrom.getStr(DPI.STAFF_COLOR);
+					String playerDesc = sentFrom.getStr(DPI.PLAYER_DESC);
+					String globalColor = sendTo.getStr(DPI.GLOBAL_COLOR);
 					
 					JSONChatMessage msg = new JSONChatMessage("", null, null);
 					
@@ -211,7 +211,7 @@ public class ElyChat implements Listener {
 
 		msg = msg.replace("place", "pLace").replace("&k", "");
 
-    	for (String filter : main.api.getSystem().getListDPI(DPI.FILTER)){
+    	for (String filter : main.api.getSystem().getList(DPI.FILTER)){
     		if (ChatColor.stripColor(DivinityUtils.AS(msg.toLowerCase())).contains(filter.split(" % ")[0].toLowerCase())){
     			msg = msg.replace(filter.split(" % ")[0], filter.split(" % ")[1]);
     		}

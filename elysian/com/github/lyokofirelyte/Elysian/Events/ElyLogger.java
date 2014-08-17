@@ -57,6 +57,7 @@ public class ElyLogger implements Listener, Runnable {
 		Material.JUKEBOX,
 		Material.DISPENSER,
 		Material.DROPPER,
+		Material.BEACON,
 		Material.TRAPPED_CHEST
 	);
 	
@@ -118,22 +119,22 @@ public class ElyLogger implements Listener, Runnable {
 			}
 		}
 		
-		if (e.getAction() == Action.LEFT_CLICK_BLOCK && e.getClickedBlock() != null && main.api.getDivPlayer(e.getPlayer()).getBoolDPI(DPI.LOGGER) && e.getPlayer().getItemInHand().getType().equals(Material.ENDER_PORTAL_FRAME)){
+		if (e.getAction() == Action.LEFT_CLICK_BLOCK && e.getClickedBlock() != null && main.api.getDivPlayer(e.getPlayer()).getBool(DPI.LOGGER) && e.getPlayer().getItemInHand().getType().equals(Material.ENDER_PORTAL_FRAME)){
 			
 			lookup(e.getPlayer(), e.getClickedBlock().getLocation());
 			e.setCancelled(true);
 			
-		} else if (e.getClickedBlock() != null && !main.api.getDivPlayer(e.getPlayer()).getDPI(DPI.CHEST_MODE).equals("none") && protectedMats.contains(e.getClickedBlock().getType())){
+		} else if (e.getClickedBlock() != null && !main.api.getDivPlayer(e.getPlayer()).getStr(DPI.CHEST_MODE).equals("none") && protectedMats.contains(e.getClickedBlock().getType())){
 		
 			DivinityPlayer dp = main.api.getDivPlayer(e.getPlayer());
 			Location l = e.getClickedBlock().getLocation();
 			String loc = l.getWorld().getName() + " " + l.toVector().getBlockX() + " " + l.toVector().getBlockY() + " " + l.toVector().getBlockZ();
 			
-			List<String> names = dp.getListDPI(DPI.CHEST_NAMES);
+			List<String> names = dp.getList(DPI.CHEST_NAMES);
 			List<String> failedNames = new ArrayList<String>();
 			String failLine = "";
 			
-			if (!dp.getListDPI(DPI.OWNED_CHESTS).contains(loc) && !main.silentPerms(e.getPlayer(), "wa.staff.mod2") && !names.get(0).equals("view")){
+			if (!dp.getList(DPI.OWNED_CHESTS).contains(loc) && !main.silentPerms(e.getPlayer(), "wa.staff.mod2") && !names.get(0).equals("view")){
 				main.s(e.getPlayer(), "none", "&c&oThat is not yours to modify!");
 				return;
 			}
@@ -141,21 +142,21 @@ public class ElyLogger implements Listener, Runnable {
 			for (String s : names){
 				if (!main.doesPartialPlayerExist(s) && !s.equals("view")){
 					failedNames.add(s);
-				} else if (dp.getDPI(DPI.CHEST_MODE).equals("add") && main.matchDivPlayer(s).getListDPI(DPI.OWNED_CHESTS).contains(loc)){
+				} else if (dp.getStr(DPI.CHEST_MODE).equals("add") && main.matchDivPlayer(s).getList(DPI.OWNED_CHESTS).contains(loc)){
 					failedNames.add(s);
-				} else if (dp.getDPI(DPI.CHEST_MODE).equals("remove") && !main.matchDivPlayer(s).getListDPI(DPI.OWNED_CHESTS).contains(loc)){
+				} else if (dp.getStr(DPI.CHEST_MODE).equals("remove") && !main.matchDivPlayer(s).getList(DPI.OWNED_CHESTS).contains(loc)){
 					failedNames.add(s);
 				} else if (s.equals("view")){
 					String users = "";
 					for (DivinityPlayer d : main.api.divManager.getAllUsers()){
-						if (d.getListDPI(DPI.OWNED_CHESTS).contains(loc)){
+						if (d.getList(DPI.OWNED_CHESTS).contains(loc)){
 							users = users + "&3" + d.name() + " ";
 						}
 					}
 					users = users.trim();
 					main.s(e.getPlayer(), " ", users.replaceAll(" ", "&b, &3"));
-					dp.setDPI(DPI.CHEST_MODE, "none");
-					dp.setDPI(DPI.CHEST_NAMES, new ArrayList<String>());
+					dp.set(DPI.CHEST_MODE, "none");
+					dp.set(DPI.CHEST_NAMES, new ArrayList<String>());
 					return;
 				}
 			}
@@ -170,21 +171,21 @@ public class ElyLogger implements Listener, Runnable {
 			
 			for (String s : names){
 				DivinityPlayer toModify = main.matchDivPlayer(s);
-				if (dp.getDPI(DPI.CHEST_MODE).equals("add")){
-					toModify.getListDPI(DPI.OWNED_CHESTS).add(loc);
+				if (dp.getStr(DPI.CHEST_MODE).equals("add")){
+					toModify.getList(DPI.OWNED_CHESTS).add(loc);
 				} else {
-					toModify.getListDPI(DPI.OWNED_CHESTS).remove(loc);
+					toModify.getList(DPI.OWNED_CHESTS).remove(loc);
 				}
 			}
 			
 			if (!failLine.equals("")){
-				main.s(e.getPlayer(), "none", "&c&oFailed on adding some people!");
+				main.s(e.getPlayer(), "none", "&c&oFailed on adding some people! (Are they already added?)");
 				main.s(e.getPlayer(), "none", failLine);
 			} else {
 				main.s(e.getPlayer(), "none", "All users modified successfully.");
 			}
 			
-			dp.setDPI(DPI.CHEST_MODE, "none");
+			dp.set(DPI.CHEST_MODE, "none");
 			e.getPlayer().getWorld().playEffect(e.getClickedBlock().getLocation(), Effect.ENDER_SIGNAL, 3);
 			
 		} else if (e.getClickedBlock() != null && protectedMats.contains(e.getClickedBlock().getType())){
@@ -193,26 +194,26 @@ public class ElyLogger implements Listener, Runnable {
 			Location l = e.getClickedBlock().getLocation();
 			String loc = l.getWorld().getName() + " " + l.toVector().getBlockX() + " " + l.toVector().getBlockY() + " " + l.toVector().getBlockZ();
 			
-			if (dp.getDPI(DPI.DEATH_CHEST_LOC).equals(loc)){
+			if (dp.getStr(DPI.DEATH_CHEST_LOC).equals(loc)){
 				
-				for (ItemStack i : dp.getStackDPI(DPI.DEATH_CHEST_INV)){
+				for (ItemStack i : dp.getStack(DPI.DEATH_CHEST_INV)){
 					if (i != null){
 						e.getPlayer().getInventory().addItem(i);
 					}
 				}
 				
-				e.getPlayer().getInventory().setArmorContents(dp.getStackDPI(DPI.DEATH_ARMOR));
+				e.getPlayer().getInventory().setArmorContents(dp.getStack(DPI.DEATH_ARMOR));
 				e.getPlayer().updateInventory();
 				e.getClickedBlock().setType(Material.AIR);
 				
-				dp.setDPI(DPI.DEATH_CHEST_INV, "none");
-				dp.setDPI(DPI.DEATH_CHEST_LOC, "none");
+				dp.set(DPI.DEATH_CHEST_INV, "none");
+				dp.set(DPI.DEATH_CHEST_LOC, "none");
 				
 			} else {
 				
-				if (!dp.getListDPI(DPI.OWNED_CHESTS).contains(loc) && !main.silentPerms(e.getPlayer(), "wa.staff.mod2")){
+				if (!dp.getList(DPI.OWNED_CHESTS).contains(loc) && !main.silentPerms(e.getPlayer(), "wa.staff.mod2")){
 					for (DivinityPlayer DP : main.api.divManager.getAllUsers()){
-						if (DP.getListDPI(DPI.OWNED_CHESTS).contains(loc)){
+						if (DP.getList(DPI.OWNED_CHESTS).contains(loc)){
 							e.setCancelled(true);
 							main.s(e.getPlayer(), "none", "&c&oThat is not your storage unit!");
 							return;
@@ -255,11 +256,11 @@ public class ElyLogger implements Listener, Runnable {
 		switch (args[0]){
 		
 			case "add": case "remove":
-				dp.setDPI(DPI.CHEST_MODE, args[0]);
+				dp.set(DPI.CHEST_MODE, args[0]);
 				for (int i = 1; i < args.length; i++){
 					names.add(args[i]);
 				}
-				dp.setDPI(DPI.CHEST_NAMES, names);
+				dp.set(DPI.CHEST_NAMES, names);
 				main.s(p, "none", "Left-click on a storage unit to " + args[0] + " the names.");
 				p.setGameMode(GameMode.SURVIVAL);
 			break;
@@ -271,14 +272,14 @@ public class ElyLogger implements Listener, Runnable {
 			break;
 			
 			case "view":
-				dp.setDPI(DPI.CHEST_MODE, args[0]);
-				dp.getListDPI(DPI.CHEST_NAMES).add("view");
+				dp.set(DPI.CHEST_MODE, args[0]);
+				dp.getList(DPI.CHEST_NAMES).add("view");
 				main.s(p, "none", "Left-click on a storage unit to view the owners.");
 				p.setGameMode(GameMode.SURVIVAL);
 			break;
 			
 			case "cancel":
-				dp.setDPI(DPI.CHEST_MODE, "none");
+				dp.set(DPI.CHEST_MODE, "none");
 				main.s(p, "none", "Action cancelled.");
 			break;
 		}
@@ -298,7 +299,7 @@ public class ElyLogger implements Listener, Runnable {
 		String matName = mat.name().toLowerCase();
 		DivinityPlayer dp = main.api.getDivPlayer(e.getPlayer());
 		
-		if (!dp.getListDPI(DPI.PERMS).contains("wa.member")){
+		if (!dp.getList(DPI.PERMS).contains("wa.member")){
 			e.setCancelled(true);
 			return;
 		}
@@ -306,9 +307,9 @@ public class ElyLogger implements Listener, Runnable {
 		if (protectedMats.contains(mat) || e.getBlock() instanceof DoubleChest || e.getBlock() instanceof Chest){
 			Location l = e.getBlock().getLocation();
 			String loc = l.getWorld().getName() + " " + l.toVector().getBlockX() + " " + l.toVector().getBlockY() + " " + l.toVector().getBlockZ();
-			if (!dp.getListDPI(DPI.OWNED_CHESTS).contains(loc) && !main.silentPerms(e.getPlayer(), "wa.staff.mod2")){
+			if (!dp.getList(DPI.OWNED_CHESTS).contains(loc) && !main.silentPerms(e.getPlayer(), "wa.staff.mod2")){
 				for (DivinityPlayer DP : main.api.divManager.getAllUsers()){
-					if (DP.getListDPI(DPI.OWNED_CHESTS).contains(loc)){
+					if (DP.getList(DPI.OWNED_CHESTS).contains(loc)){
 						e.setCancelled(true);
 						main.s(e.getPlayer(), "none", "&c&oThat is not your storage unit!");
 						main.api.event(new DivinityChannelEvent("&6System", "wa.staff.intern", "&c&oOh! &4\u2744", e.getPlayer().getDisplayName() + " &cattempted to destroy a storage unit!", "&c"));
@@ -316,7 +317,7 @@ public class ElyLogger implements Listener, Runnable {
 					}
 				}
 			} else {
-				dp.getListDPI(DPI.OWNED_CHESTS).remove(loc);
+				dp.getList(DPI.OWNED_CHESTS).remove(loc);
 			}
 		}
 		
@@ -329,14 +330,14 @@ public class ElyLogger implements Listener, Runnable {
 	@EventHandler
 	public void onPlace(BlockPlaceEvent e){
 		
-		if (!main.api.getDivPlayer(e.getPlayer()).getListDPI(DPI.PERMS).contains("wa.member")){
+		if (!main.api.getDivPlayer(e.getPlayer()).getList(DPI.PERMS).contains("wa.member")){
 			e.setCancelled(true);
 			return;
 		}
 		
 		String matName = e.getBlock().getType().toString().toLowerCase();
 		
-		if (e.getBlock() != null && main.api.getDivPlayer(e.getPlayer()).getBoolDPI(DPI.LOGGER) && e.getPlayer().getItemInHand().getType().equals(Material.ENDER_PORTAL_FRAME)){
+		if (e.getBlock() != null && main.api.getDivPlayer(e.getPlayer()).getBool(DPI.LOGGER) && e.getPlayer().getItemInHand().getType().equals(Material.ENDER_PORTAL_FRAME)){
 			lookup(e.getPlayer(), e.getBlock().getLocation());
 			e.setCancelled(true);
 		} else if (e.getBlock().getWorld().getName().equals("world")){
@@ -347,7 +348,7 @@ public class ElyLogger implements Listener, Runnable {
 			main.s(e.getPlayer(), "none", "This storage unit is now protected. Allow friend access with /chest add <player>.");
 			Location l = e.getBlock().getLocation();
 			String loc = l.getWorld().getName() + " " + l.toVector().getBlockX() + " " + l.toVector().getBlockY() + " " + l.toVector().getBlockZ();
-			main.api.getDivPlayer(e.getPlayer()).getListDPI(DPI.OWNED_CHESTS).add(loc);
+			main.api.getDivPlayer(e.getPlayer()).getList(DPI.OWNED_CHESTS).add(loc);
 		}
 	}
 	
@@ -373,7 +374,7 @@ public class ElyLogger implements Listener, Runnable {
 	    		event.setCancelled(true);
 	    		break;
 	    	}
-			addToQue(e.getLocation(), "&benvironment-explosion", "&cblew up &b" + block.getType().name().toLowerCase(), "break", block.getType().name().toLowerCase() + "split" + block.getData(), "AIRsplit0");
+			addToQue(block.getLocation(), "&benvironment-explosion", "&cblew up &b" + block.getType().name().toLowerCase(), "break", block.getType().name().toLowerCase() + "split" + block.getData(), "AIRsplit0");
 	    }
 	}
 	
@@ -383,16 +384,16 @@ public class ElyLogger implements Listener, Runnable {
 		DivinityPlayer dp = main.api.getDivPlayer(p);
 		DivinityPlayer system = main.api.getSystem();
 		
-		if (system.getBoolDPI(DPI.ROLLBACK_IN_PROGRESS)){
+		if (system.getBool(DPI.ROLLBACK_IN_PROGRESS)){
 			main.s(p, "&c&oRollback in progress - command blocked to prevent file corruption.");
 			return;
 		}
 		
 		if (args.length == 0){
 			
-			dp.setDPI(DPI.LOGGER, !dp.getBoolDPI(DPI.LOGGER));
+			dp.set(DPI.LOGGER, !dp.getBool(DPI.LOGGER));
 			
-			if (dp.getBoolDPI(DPI.LOGGER)){
+			if (dp.getBool(DPI.LOGGER)){
 				main.s(p, "none", "&oLogger activated!");
 				p.setItemInHand(new ItemStack(Material.ENDER_PORTAL_FRAME, 1));
 			} else {
@@ -405,7 +406,7 @@ public class ElyLogger implements Listener, Runnable {
 			try {
 				
 				int base = Integer.parseInt(args[0])-1;
-				List<String> results = dp.getListDPI(DPI.LOGGER_RESULTS);
+				List<String> results = dp.getList(DPI.LOGGER_RESULTS);
 				main.s(p, "none", "Viewing page &6" + (base+1) + "&b. SysTime: &7" + main.api.divUtils.getTime(System.currentTimeMillis()));
 
 				for (int x = 5*base; x < (5*base)+5; x++){
@@ -432,7 +433,7 @@ public class ElyLogger implements Listener, Runnable {
 				
 				case "rollback": ///log rollback <radius> 5m/5h [player]
 					
-					main.api.getSystem().setDPI(DPI.ROLLBACK_IN_PROGRESS, true);
+					main.api.getSystem().set(DPI.ROLLBACK_IN_PROGRESS, true);
 					
 					new Thread(new Runnable(){ public void run(){
 					
@@ -548,7 +549,7 @@ public class ElyLogger implements Listener, Runnable {
 
 								final List<Location> finalLocs = new ArrayList<Location>();
 								final DivinityPlayer system = main.api.getSystem();
-								system.setDPI(DPI.EXP, 0);
+								system.set(DPI.EXP, 0);
 								
 								for (Location l : newBlocks.keySet()){
 									finalLocs.add(l);
@@ -559,28 +560,28 @@ public class ElyLogger implements Listener, Runnable {
 									return;
 								}
 								
-								system.setDPI(DPI.HOME, Bukkit.getScheduler().scheduleSyncRepeatingTask(main, new Runnable(){ @SuppressWarnings("deprecation")
+								system.set(DPI.HOME, Bukkit.getScheduler().scheduleSyncRepeatingTask(main, new Runnable(){ @SuppressWarnings("deprecation")
 								public void run(){
 									
 									for (int x = 0; x < 5; x++){
 										
 										if (finalLocs.size() > x){
 										
-											Material oldBlock = finalLocs.get(system.getIntDPI(DPI.EXP)).getBlock().getType();
-											Material newBlock = newBlocks.get(finalLocs.get(system.getIntDPI(DPI.EXP)));
-											byte newBlockId = newBlockIds.get(finalLocs.get(system.getIntDPI(DPI.EXP)));
+											Material oldBlock = finalLocs.get(system.getInt(DPI.EXP)).getBlock().getType();
+											Material newBlock = newBlocks.get(finalLocs.get(system.getInt(DPI.EXP)));
+											byte newBlockId = newBlockIds.get(finalLocs.get(system.getInt(DPI.EXP)));
 	
 											if (!oldBlock.equals(newBlock)){
-												addToQue(finalLocs.get(system.getIntDPI(DPI.EXP)), "&b" + p.getName(), "&erolled back &b" + oldBlock.name().toLowerCase() + " -> " + newBlock.name().toLowerCase(), "rollback", oldBlock.name().toLowerCase(), newBlock.name().toLowerCase());
+												addToQue(finalLocs.get(system.getInt(DPI.EXP)), "&b" + p.getName(), "&erolled back &b" + oldBlock.name().toLowerCase() + " -> " + newBlock.name().toLowerCase(), "rollback", oldBlock.name().toLowerCase(), newBlock.name().toLowerCase());
 											}
 											
-											finalLocs.get(system.getIntDPI(DPI.EXP)).getBlock().setTypeIdAndData(newBlock.getId(), newBlockId, true);
-											system.setDPI(DPI.EXP, system.getIntDPI(DPI.EXP) + 1);
+											finalLocs.get(system.getInt(DPI.EXP)).getBlock().setTypeIdAndData(newBlock.getId(), newBlockId, true);
+											system.set(DPI.EXP, system.getInt(DPI.EXP) + 1);
 											
-											if (system.getIntDPI(DPI.EXP) >= finalLocs.size()){
-												Bukkit.getScheduler().cancelTask(system.getIntDPI(DPI.HOME));
+											if (system.getInt(DPI.EXP) >= finalLocs.size()){
+												Bukkit.getScheduler().cancelTask(system.getInt(DPI.HOME));
 												main.s(p, "none", "&oRollback completed.");
-												main.api.getSystem().setDPI(DPI.ROLLBACK_IN_PROGRESS, false);
+												main.api.getSystem().set(DPI.ROLLBACK_IN_PROGRESS, false);
 												break;
 											}
 										}
@@ -618,7 +619,7 @@ public class ElyLogger implements Listener, Runnable {
 	
 	private void lookup(final Player p, final Location l){
 		
-		if (main.api.getSystem().getBoolDPI(DPI.ROLLBACK_IN_PROGRESS)){
+		if (main.api.getSystem().getBool(DPI.ROLLBACK_IN_PROGRESS)){
 			main.s(p, "&c&oRollback in progress - command blocked to prevent file corruption.");
 			return;
 		}
@@ -642,13 +643,13 @@ public class ElyLogger implements Listener, Runnable {
 				List<String> results = new ArrayList<String>(yaml.getStringList("History." + p.getWorld().getName() + "." + y));
 				Collections.reverse(results);
 				
-				main.api.getDivPlayer(p).setDPI(DPI.LOGGER_RESULTS, new ArrayList<String>());
+				main.api.getDivPlayer(p).set(DPI.LOGGER_RESULTS, new ArrayList<String>());
 				main.s(p, "none", "Viewing page &61&b/&6" + (Math.round(results.size()/5)+1) + "&b. SysTime: &7" + main.api.divUtils.getTime(System.currentTimeMillis()));
 				
 				for (String s : results){
 					String[] ss = s.split("%");
 					String time = main.api.divUtils.getTime(Long.parseLong(ss[2]));
-					main.api.getDivPlayer(p).getListDPI(DPI.LOGGER_RESULTS).add("&7" + time + " " + ss[0] + " " + ss[1]);
+					main.api.getDivPlayer(p).getList(DPI.LOGGER_RESULTS).add("&7" + time + " " + ss[0] + " " + ss[1]);
 				}
 				
 				for (int g = 0; g < 5; g++){

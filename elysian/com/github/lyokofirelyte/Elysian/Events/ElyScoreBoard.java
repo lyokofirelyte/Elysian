@@ -31,9 +31,9 @@ public class ElyScoreBoard implements Listener {
 		DivinityPlayer system = main.api.getSystem();
 		boolean a = false;
 		
-		if (e.isCancelled() || (!dp.getBoolDPI(DPI.SCOREBOARD_TOGGLE) && !e.getReason().equals("required"))){
-			if (!dp.getBoolDPI(DPI.SCOREBOARD_TOGGLE)){
-				p.setScoreboard(null);
+		if (e.isCancelled() || (!dp.getBool(DPI.SCOREBOARD_TOGGLE) && !e.getReason().equals("required"))){
+			if (!dp.getBool(DPI.SCOREBOARD_TOGGLE)){
+				p.setScoreboard(Bukkit.getScoreboardManager().getNewScoreboard());
 			}
 			return;
 		}
@@ -47,10 +47,10 @@ public class ElyScoreBoard implements Listener {
 		};
 		
 		Integer[] scoreValues = new Integer[]{
-			dp.getIntDPI(DPI.BALANCE),
-			dp.getIntDPI(DPI.PATROL_LEVEL),
+			dp.getInt(DPI.BALANCE),
+			dp.getInt(DPI.PATROL_LEVEL),
 			Bukkit.getOnlinePlayers().length,
-			dp.getIntDPI(DPI.EXP),
+			dp.getInt(DPI.EXP),
 			0
 		};
 		
@@ -64,9 +64,9 @@ public class ElyScoreBoard implements Listener {
 			a = !a;
 		}
 		
-		if (system.getListDPI(DPI.AFK_PLAYERS).contains(p.getName())){
+		if (system.getList(DPI.AFK_PLAYERS).contains(p.getName())){
 			
-			o.setDisplayName("§7[ afk " + getMinutes(Long.parseLong(dp.getDPI(DPI.AFK_TIME))) + " ]");
+			o.setDisplayName("§7[ afk " + getMinutes(Long.parseLong(dp.getStr(DPI.AFK_TIME))) + " ]");
 			
 		} else {
 			

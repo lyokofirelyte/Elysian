@@ -83,13 +83,13 @@ public class ElyPerms {
 					 			for (int i = 0; i < staffGroups.size(); i++){
 					 				if (staffGroups.get(i).equalsIgnoreCase(args[2]) || staffGroups.indexOf(args[2]) < i){
 					 					if (args[0].equalsIgnoreCase("groupadd")){
-						 					if (!dp.getListDPI(DPI.PERMS).contains("wa.staff." + staffGroups.get(i))){
-						 						dp.getListDPI(DPI.PERMS).add("wa.staff." + staffGroups.get(i));
+						 					if (!dp.getList(DPI.PERMS).contains("wa.staff." + staffGroups.get(i))){
+						 						dp.getList(DPI.PERMS).add("wa.staff." + staffGroups.get(i));
 						 						main.s(cs, "Group added.");
 						 					}
 					 					} else {
-						 					if (dp.getListDPI(DPI.PERMS).contains("wa.staff." + staffGroups.get(i))){
-						 						dp.getListDPI(DPI.PERMS).remove("wa.staff." + staffGroups.get(i));
+						 					if (dp.getList(DPI.PERMS).contains("wa.staff." + staffGroups.get(i))){
+						 						dp.getList(DPI.PERMS).remove("wa.staff." + staffGroups.get(i));
 						 						main.s(cs, "Group removed.");
 						 					}
 					 					}
@@ -101,17 +101,17 @@ public class ElyPerms {
 					 			for (int i = 0; i < mg.size(); i++){
 					 				if (mg.get(i).equalsIgnoreCase(args[2]) || mg.indexOf(args[2]) < i){
 					 					if (args[0].equalsIgnoreCase("groupadd")){
-						 					if (!dp.getListDPI(DPI.PERMS).contains("wa.rank." + mg.get(i))){
-						 						if (mg.get(i).equals("member") && !dp.getListDPI(DPI.PERMS).contains("wa.member")){
-						 							dp.getListDPI(DPI.PERMS).add("wa." + mg.get(i));
+						 					if (!dp.getList(DPI.PERMS).contains("wa.rank." + mg.get(i))){
+						 						if (mg.get(i).equals("member") && !dp.getList(DPI.PERMS).contains("wa.member")){
+						 							dp.getList(DPI.PERMS).add("wa." + mg.get(i));
 						 						} else {
-						 							dp.getListDPI(DPI.PERMS).add("wa.rank." + mg.get(i));
+						 							dp.getList(DPI.PERMS).add("wa.rank." + mg.get(i));
 						 						}
 						 						main.s(cs, "Group added.");
 						 					}
 					 					} else {
-						 					if (dp.getListDPI(DPI.PERMS).contains("wa.rank." + mg.get(i))){
-						 						dp.getListDPI(DPI.PERMS).remove("wa.rank." + mg.get(i));
+						 					if (dp.getList(DPI.PERMS).contains("wa.rank." + mg.get(i))){
+						 						dp.getList(DPI.PERMS).remove("wa.rank." + mg.get(i));
 						 						main.s(cs, "Group removed.");
 						 					}
 					 					}
@@ -125,8 +125,8 @@ public class ElyPerms {
 					 
 					 	case "add":
 					 		
-				 			if (!dp.getListDPI(DPI.PERMS).contains(args[2])){
-				 				dp.getListDPI(DPI.PERMS).add(args[2]);
+				 			if (!dp.getList(DPI.PERMS).contains(args[2])){
+				 				dp.getList(DPI.PERMS).add(args[2]);
 				 				main.s(cs, "none", "Permission &6" + args[2] + " &badded!");
 				 			} else {
 				 				main.s(cs, "none", "&cThat player already has that permission.");
@@ -136,8 +136,8 @@ public class ElyPerms {
 					 	
 					 	case "remove":
 
-					 		if (dp.getListDPI(DPI.PERMS).contains(args[2])){
-					 			dp.getListDPI(DPI.PERMS).remove(args[2]);
+					 		if (dp.getList(DPI.PERMS).contains(args[2])){
+					 			dp.getList(DPI.PERMS).remove(args[2]);
 					 			main.s(cs, "none", "Permission &6" + args[2] + " &bremoved!");
 					 		} else {
 					 			main.s(cs, "none", "&cThat player does not have that permission.");
@@ -149,7 +149,7 @@ public class ElyPerms {
 					 		
 					 		List<String> perms = new ArrayList<String>();
 
-					 		for (String s : dp.getListDPI(DPI.PERMS)){
+					 		for (String s : dp.getList(DPI.PERMS)){
 					 			if (s.startsWith(args[2]) || args[2].equals("all")){
 					 				perms.add(s);
 					 			}

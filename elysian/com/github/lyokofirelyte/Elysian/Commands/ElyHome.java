@@ -23,7 +23,7 @@ public class ElyHome {
 	public void noPlaceLikeHome(Player p, String[] args){
 		
 		DivinityPlayer dp = main.api.getDivPlayer(p);
-		List<String> homes = dp.getListDPI(DPI.HOME);
+		List<String> homes = dp.getList(DPI.HOME);
 		
 		if (args.length == 0){
 			if (homes.size() <= 0){
@@ -48,8 +48,8 @@ public class ElyHome {
 	public void onSetHome(Player p, String[] args){
 		
 		DivinityPlayer dp = main.api.getDivPlayer(p);
-		List<String> homes = dp.getListDPI(DPI.HOME);
-		List<String> perms = dp.getListDPI(DPI.PERMS);
+		List<String> homes = dp.getList(DPI.HOME);
+		List<String> perms = dp.getList(DPI.PERMS);
 		String toRemove = "none";
 		int amount = perms.contains("wa.rank.immortal") ? 4 : perms.contains("wa.rank.regional") ? 3 : perms.contains("wa.rank.townsman") ? 2 : 1;
 		
@@ -78,7 +78,7 @@ public class ElyHome {
 	public void onDelHome(Player p, String[] args){
 		
 		DivinityPlayer dp = main.api.getDivPlayer(p);
-		List<String> homes = dp.getListDPI(DPI.HOME);
+		List<String> homes = dp.getList(DPI.HOME);
 		String toRemove = "none";
 		
 		for (String home : homes){

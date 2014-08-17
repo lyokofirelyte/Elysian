@@ -49,7 +49,7 @@ public class ElySpaceship implements Listener {
 							}
 							Location l = b.getLocation();
 							b.teleport(new Location(b.getLocation().getWorld(), l.getX()+Double.parseDouble(args[1]), l.getY()+Double.parseDouble(args[2]), l.getZ()+Double.parseDouble(args[3])));
-							for (String player : dp.getListDPI(DPI.GV5)){
+							for (String player : dp.getList(DPI.GV5)){
 								if (!main.getPlayer(player).isInsideVehicle()){
 									b.setPassenger(main.getPlayer(player));
 									break;
@@ -62,12 +62,12 @@ public class ElySpaceship implements Listener {
 			
 				case "passengers":
 				
-					dp.setDPI(DPI.GV5, new ArrayList<String>());
+					dp.set(DPI.GV5, new ArrayList<String>());
 					
 					for (int i = 1; i < args.length; i++){
 						if (args.length > 1){
 							if (main.isOnline(args[i])){
-								dp.getListDPI(DPI.GV5).add(args[i]);
+								dp.getList(DPI.GV5).add(args[i]);
 								main.s(p, "Passenger list adjusted!");
 							}
 						}
@@ -76,17 +76,17 @@ public class ElySpaceship implements Listener {
 				break;
 			
 				case "toggle":
-					dp.setDPI(DPI.GV1, !dp.getBoolDPI(DPI.GV1));
-					main.s(p, "Place mode " + dp.getDPI(DPI.GV1).replace("true", "active").replace("false", "inactive"));
+					dp.set(DPI.GV1, !dp.getBool(DPI.GV1));
+					main.s(p, "Place mode " + dp.getStr(DPI.GV1).replace("true", "active").replace("false", "inactive"));
 				break;
 				
 				case "clear":
 					
-					Bukkit.getScheduler().cancelTask(main.api.getSystem().getIntDPI(DPI.GV1));
-					dp.setDPI(DPI.GV2, new ArrayList<FallingBlock>());
-					dp.setDPI(DPI.GV3, new ArrayList<String>());
-					dp.setDPI(DPI.GV4, new ArrayList<String>());
-					dp.setDPI(DPI.GV5, new ArrayList<String>());
+					Bukkit.getScheduler().cancelTask(main.api.getSystem().getInt(DPI.GV1));
+					dp.set(DPI.GV2, new ArrayList<FallingBlock>());
+					dp.set(DPI.GV3, new ArrayList<String>());
+					dp.set(DPI.GV4, new ArrayList<String>());
+					dp.set(DPI.GV5, new ArrayList<String>());
 					main.s(p, "Cleared!");
 					
 				break;
@@ -100,18 +100,18 @@ public class ElySpaceship implements Listener {
 				case "activate":
 					
 					List<String> relatives = new ArrayList<String>();
-					dp.setDPI(DPI.GV2, new ArrayList<FallingBlock>());
+					dp.set(DPI.GV2, new ArrayList<FallingBlock>());
 					List<Player> passengers = new ArrayList<Player>();
 					
-					for (String player : dp.getListDPI(DPI.GV5)){
+					for (String player : dp.getList(DPI.GV5)){
 						if (main.isOnline(player)){
 							passengers.add(main.getPlayer(player));
 						} else {
-							dp.getListDPI(DPI.GV5).remove(player);
+							dp.getList(DPI.GV5).remove(player);
 						}
 					}
 					
-					for (String s : dp.getListDPI(DPI.GV3)){
+					for (String s : dp.getList(DPI.GV3)){
 						String[] split = s.split(" ");
 						int x = Integer.parseInt(split[0]);
 						int y = Integer.parseInt(split[1]);
@@ -131,7 +131,7 @@ public class ElySpaceship implements Listener {
 						}
 					}
 					
-					dp.setDPI(DPI.GV4, relatives);
+					dp.set(DPI.GV4, relatives);
 					task(dp, passengers, p);
 					
 				break;
@@ -142,8 +142,8 @@ public class ElySpaceship implements Listener {
 	@SuppressWarnings({ "unchecked", "deprecation" })
 	private void land(DivinityPlayer dp){
 		
-		Bukkit.getScheduler().cancelTask(main.api.getSystem().getIntDPI(DPI.GV1));
-		dp.setDPI(DPI.GV3, new ArrayList<String>());
+		Bukkit.getScheduler().cancelTask(main.api.getSystem().getInt(DPI.GV1));
+		dp.set(DPI.GV3, new ArrayList<String>());
 		
 		for (FallingBlock b : (List<FallingBlock>)dp.getRawInfo(DPI.GV2)){
 			if (!b.isDead()){
@@ -156,13 +156,13 @@ public class ElySpaceship implements Listener {
 				b.remove();
 				l.getBlock().setTypeIdAndData(mat.getId(), type, true);
 				Vector v = l.toVector();
-				dp.getListDPI(DPI.GV3).add(v.getBlockX() + " " + v.getBlockY() + " " + v.getBlockZ() + " " + mat.name().toLowerCase() + " " + type);
+				dp.getList(DPI.GV3).add(v.getBlockX() + " " + v.getBlockY() + " " + v.getBlockZ() + " " + mat.name().toLowerCase() + " " + type);
 			}
 		}
 	}
 	
 	private void task(final DivinityPlayer dp, final List<Player> passengers, final Player p){
-		main.api.getSystem().setDPI(DPI.GV1, Bukkit.getScheduler().scheduleSyncRepeatingTask(main, new Runnable(){ @SuppressWarnings({ "unchecked", "deprecation" })
+		main.api.getSystem().set(DPI.GV1, Bukkit.getScheduler().scheduleSyncRepeatingTask(main, new Runnable(){ @SuppressWarnings({ "unchecked", "deprecation" })
 		public void run(){
 
 			List<FallingBlock> newBlocks = new ArrayList<FallingBlock>();
@@ -175,7 +175,7 @@ public class ElySpaceship implements Listener {
 				}
 			}
 			
-			dp.setDPI(DPI.GV2, newBlocks);
+			dp.set(DPI.GV2, newBlocks);
 			
 			int x = 0;
 			
@@ -197,7 +197,7 @@ public class ElySpaceship implements Listener {
 		
 		if (e.getPlayer().getItemInHand().getType().equals(Material.STICK)){
 			DivinityPlayer dp = main.api.getDivPlayer(e.getPlayer());
-			if (dp.getListDPI(DPI.GV5).size() > 0){
+			if (dp.getList(DPI.GV5).size() > 0){
 				if (e.getAction() == Action.RIGHT_CLICK_AIR){
 					for (FallingBlock b : ((List<FallingBlock>)dp.getRawInfo(DPI.GV2))){
 						b.setVelocity(e.getPlayer().getLocation().getDirection().multiply(2));
@@ -210,7 +210,7 @@ public class ElySpaceship implements Listener {
 			}
 		} else if (e.getPlayer().getItemInHand().getType().equals(Material.DIAMOND_SWORD) && e.getAction() == Action.RIGHT_CLICK_AIR){
 			DivinityPlayer dp = main.api.getDivPlayer(e.getPlayer());
-			if (dp.getListDPI(DPI.GV5).size() > 0){
+			if (dp.getList(DPI.GV5).size() > 0){
 				land(dp);
 			}
 		}
@@ -222,12 +222,12 @@ public class ElySpaceship implements Listener {
 		
 		DivinityPlayer dp = main.api.getDivPlayer(e.getPlayer());
 		
-		if (dp.getBoolDPI(DPI.GV1)){
+		if (dp.getBool(DPI.GV1)){
 			Vector v = e.getBlock().getLocation().toVector();
 			Block b = e.getBlock();
-			if (dp.getListDPI(DPI.GV3).contains(v.getBlockX() + " " + v.getBlockY() + " " + v.getBlockZ() + " " + b.getType().name().toLowerCase() + " " + b.getData())){
+			if (dp.getList(DPI.GV3).contains(v.getBlockX() + " " + v.getBlockY() + " " + v.getBlockZ() + " " + b.getType().name().toLowerCase() + " " + b.getData())){
 				try {
-					dp.getListDPI(DPI.GV3).remove(v.getBlockX() + " " + v.getBlockY() + " " + v.getBlockZ() + " " + b.getType().name().toLowerCase() + " " + b.getData());
+					dp.getList(DPI.GV3).remove(v.getBlockX() + " " + v.getBlockY() + " " + v.getBlockZ() + " " + b.getType().name().toLowerCase() + " " + b.getData());
 				} catch (Exception ee){}
 			}
 		}
@@ -239,11 +239,11 @@ public class ElySpaceship implements Listener {
 		
 		DivinityPlayer dp = main.api.getDivPlayer(e.getPlayer());
 		
-		if (dp.getBoolDPI(DPI.GV1)){
+		if (dp.getBool(DPI.GV1)){
 			Vector v = e.getBlock().getLocation().toVector();
 			Block b = e.getBlock();
-			if (!dp.getListDPI(DPI.GV3).contains(v.getBlockX() + " " + v.getBlockY() + " " + v.getBlockZ() + " " + b.getType().name().toLowerCase() + " " + b.getData())){
-				dp.getListDPI(DPI.GV3).add(v.getBlockX() + " " + v.getBlockY() + " " + v.getBlockZ() + " " + b.getType().name().toLowerCase() + " " + b.getData());
+			if (!dp.getList(DPI.GV3).contains(v.getBlockX() + " " + v.getBlockY() + " " + v.getBlockZ() + " " + b.getType().name().toLowerCase() + " " + b.getData())){
+				dp.getList(DPI.GV3).add(v.getBlockX() + " " + v.getBlockY() + " " + v.getBlockZ() + " " + b.getType().name().toLowerCase() + " " + b.getData());
 			}
 		}
 	}

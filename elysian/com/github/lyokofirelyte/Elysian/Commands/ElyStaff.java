@@ -75,13 +75,13 @@ public class ElyStaff implements Listener {
 		 if (main.doesPartialPlayerExist(args[0])){
 			 
 			 dp = main.matchDivPlayer(args[0]);
-			 Vector v = dp.getLocDPI(DPI.LOGOUT_LOCATION).toVector();
-			 String lastLoc = "&6" + dp.getLocDPI(DPI.LOGOUT_LOCATION).getWorld().getName() + " &7@ &6" + v.getBlockX() + "&7, &6" + v.getBlockY() + "&7, &6" + v.getBlockZ();
-			 String lastLogin = "&6" + dp.getDPI(DPI.LAST_LOGIN);
-			 String lastLogout = "&6" + dp.getDPI(DPI.LAST_LOGOUT);
+			 Vector v = dp.getLoc(DPI.LOGOUT_LOCATION).toVector();
+			 String lastLoc = "&6" + dp.getLoc(DPI.LOGOUT_LOCATION).getWorld().getName() + " &7@ &6" + v.getBlockX() + "&7, &6" + v.getBlockY() + "&7, &6" + v.getBlockZ();
+			 String lastLogin = "&6" + dp.getStr(DPI.LAST_LOGIN);
+			 String lastLogout = "&6" + dp.getStr(DPI.LAST_LOGOUT);
 			 String status = main.isOnline(args[0]) ? "&aonline" : "&4offline";
 			 
-			 main.s(cs, "&3Traffic Stats: " + dp.getDPI(DPI.DISPLAY_NAME) + " &3(" + status + "&3)");
+			 main.s(cs, "&3Traffic Stats: " + dp.getStr(DPI.DISPLAY_NAME) + " &3(" + status + "&3)");
 			 main.s(cs, "Logout Location: " + lastLoc);
 			 main.s(cs, "Last Login: " + lastLogin);
 			 main.s(cs, "Last Logout: " + lastLogout);
@@ -96,7 +96,7 @@ public class ElyStaff implements Listener {
 	 public void onBack(Player p, String[] args){
 		 
 		 DivinityPlayer dp = main.api.getDivPlayer(p);
-		 List<String> locs = dp.getListDPI(DPI.PREVIOUS_LOCATIONS);
+		 List<String> locs = dp.getList(DPI.PREVIOUS_LOCATIONS);
 		 String[] l = new String[]{};
 		 
 		 if (locs.size() > 0){
@@ -176,7 +176,7 @@ public class ElyStaff implements Listener {
 			 
 		 } else if (main.api.divManager.getAllianceMap().containsKey(args[0])){
 			 
-			 String[] coords = main.api.getDivAlliance(args[0]).getDAI(DAI.CENTER).split(" ");
+			 String[] coords = main.api.getDivAlliance(args[0]).getStr(DAI.CENTER).split(" ");
 			 
 			 if (args.length > 1 && main.doesPartialPlayerExist(args[1])){
 				 main.api.event(new DivinityTeleportEvent(main.getPlayer(args[0]), "world", coords[0], coords[1], coords[2]));
@@ -227,7 +227,7 @@ public class ElyStaff implements Listener {
 		 if (main.doesPartialPlayerExist(args[0])){
 			 if (main.isOnline(args[0])){
 				 DivinityPlayer who = main.matchDivPlayer(args[0]);
-				 who.setDPI(DPI.TP_INVITE, sender.getName() + " " + who.name());
+				 who.set(DPI.TP_INVITE, sender.getName() + " " + who.name());
 				 main.s(main.getPlayer(args[0]), sender.getDisplayName() + " &b&ohas requested to TP to you.");
 				 main.s(main.getPlayer(args[0]), "&oAccept it with &6/tpaccept&b. Decline with &6/tpdeny&b.");
 				 main.s(sender, "Sent!");
@@ -245,7 +245,7 @@ public class ElyStaff implements Listener {
 		 if (main.doesPartialPlayerExist(args[0])){
 			 if (main.isOnline(args[0])){
 				 DivinityPlayer who = main.matchDivPlayer(args[0]);
-				 who.setDPI(DPI.TP_INVITE, who.name() + " " + sender.getName());
+				 who.set(DPI.TP_INVITE, who.name() + " " + sender.getName());
 				 main.s(main.getPlayer(args[0]), sender.getDisplayName() + " &b&ohas requested for you to TP to them.");
 				 main.s(main.getPlayer(args[0]), "&oAccept it with &6/tpaccept&b. Decline with &6/tpdeny&b.");
 				 main.s(sender, "Sent!");
@@ -262,15 +262,15 @@ public class ElyStaff implements Listener {
 		 
 		 DivinityPlayer dp = main.api.getDivPlayer(sender);
 		 
-		 if (!dp.getDPI(DPI.TP_INVITE).equals("none")){
+		 if (!dp.getStr(DPI.TP_INVITE).equals("none")){
 			 
-			 String[] req = dp.getDPI(DPI.TP_INVITE).split(" ");
+			 String[] req = dp.getStr(DPI.TP_INVITE).split(" ");
 			 
 			 if (main.isOnline(req[0]) && main.isOnline(req[1])){
 				 
 				 if (cmd.equalsIgnoreCase("tpaccept")){
 					 
-					 if (!dp.getDPI(DPI.TP_INVITE).equals("none")){
+					 if (!dp.getStr(DPI.TP_INVITE).equals("none")){
 						 main.api.event(new DivinityTeleportEvent(main.getPlayer(req[0]), main.getPlayer(req[1]).getLocation()));
 						 main.s(main.getPlayer(req[1]), "Accepted.");
 					 }
@@ -288,15 +288,15 @@ public class ElyStaff implements Listener {
 			 main.s(sender, "&c&oYou have no requests.");
 		 }
 		 
-		 dp.setDPI(DPI.TP_INVITE, "none");
+		 dp.set(DPI.TP_INVITE, "none");
 	 }
 	 
 	 @DivCommand(perm = "wa.rank.citizen", aliases = {"tpblock"}, desc = "TP Block Command", help = "/tpblock", player = true)
 	 public void onTPBlock(Player sender, String[] args){
 		 
 		 DivinityPlayer dp = main.api.getDivPlayer(sender);
-		 dp.setDPI(DPI.TP_BLOCK, !dp.getBoolDPI(DPI.TP_BLOCK));
-		 main.s(sender, "&oTeleport block " + (dp.getBoolDPI(DPI.TP_BLOCK) + "").replace("true", "&aactive.").replace("false", "&cdisabled."));
+		 dp.set(DPI.TP_BLOCK, !dp.getBool(DPI.TP_BLOCK));
+		 main.s(sender, "&oTeleport block " + (dp.getBool(DPI.TP_BLOCK) + "").replace("true", "&aactive.").replace("false", "&cdisabled."));
 	 }
 	 
 	 @DivCommand(aliases = {"staff"}, desc = "Staff List Command", help = "/staff", player = false)
@@ -308,15 +308,15 @@ public class ElyStaff implements Listener {
 		 String admins = "";
 		 
 		 for (DivinityPlayer dp : main.api.divManager.getAllUsers()){
-			 List<String> perms = dp.getListDPI(DPI.PERMS);
+			 List<String> perms = dp.getList(DPI.PERMS);
 			 if (perms.contains("wa.staff.admin")){
-				 admins = admins + " " + dp.getDPI(DPI.DISPLAY_NAME);
+				 admins = admins + " " + dp.getStr(DPI.DISPLAY_NAME);
 			 } else if (perms.contains("wa.staff.mod2")){
-				 mod2s = mod2s + " " + dp.getDPI(DPI.DISPLAY_NAME);
+				 mod2s = mod2s + " " + dp.getStr(DPI.DISPLAY_NAME);
 			 } else if (perms.contains("wa.staff.mod")){
-				 mods = mods + " " + dp.getDPI(DPI.DISPLAY_NAME);
+				 mods = mods + " " + dp.getStr(DPI.DISPLAY_NAME);
 			 } else if (perms.contains("wa.staff.intern")){
-				 interns = interns + " " + dp.getDPI(DPI.DISPLAY_NAME);
+				 interns = interns + " " + dp.getStr(DPI.DISPLAY_NAME);
 			 }
 		 }
 		 
@@ -585,12 +585,12 @@ public class ElyStaff implements Listener {
 		DivinityPlayer dp = main.api.getDivPlayer(p);
 
 		if (args.length == 0){
-			dp.setDPI(DPI.BACKUP_INVENTORY, p.getInventory().getContents());
+			dp.set(DPI.BACKUP_INVENTORY, p.getInventory().getContents());
 			p.getInventory().clear();
 			main.s(p, "&oInventory inceneration activated. Use /ci u to undo.");
-		} else if (dp.getStackDPI(DPI.BACKUP_INVENTORY).length > 0){
-			p.getInventory().setContents(dp.getStackDPI(DPI.BACKUP_INVENTORY));
-			dp.setDPI(DPI.BACKUP_INVENTORY, new ItemStack(){});
+		} else if (dp.getStack(DPI.BACKUP_INVENTORY).length > 0){
+			p.getInventory().setContents(dp.getStack(DPI.BACKUP_INVENTORY));
+			dp.set(DPI.BACKUP_INVENTORY, new ItemStack(){});
 			main.s(p, "&oInventory restoration completed");
 		} else {
 			main.s(p, "&c&oNo backup inventory found.");

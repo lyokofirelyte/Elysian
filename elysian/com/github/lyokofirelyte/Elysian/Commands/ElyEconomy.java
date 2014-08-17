@@ -9,7 +9,6 @@ import java.util.Map;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
-import com.github.lyokofirelyte.Divinity.DivinityUtils;
 import com.github.lyokofirelyte.Divinity.Commands.DivCommand;
 import com.github.lyokofirelyte.Divinity.Storage.DPI;
 import com.github.lyokofirelyte.Divinity.Storage.DivinityPlayer;
@@ -33,13 +32,13 @@ public class ElyEconomy {
 		 
 		 if (main.doesPartialPlayerExist(args[0])){
 			 
-			 if (main.api.divUtils.isInteger(args[1]) && dp.getIntDPI(DPI.BALANCE) > (bal = Integer.parseInt(args[1]))){
+			 if (main.api.divUtils.isInteger(args[1]) && dp.getInt(DPI.BALANCE) > (bal = Integer.parseInt(args[1]))){
 				 
 				 who = main.matchDivPlayer(args[0]);
-				 who.setDPI(DPI.BALANCE, who.getIntDPI(DPI.BALANCE)+bal);
-				 dp.setDPI(DPI.BALANCE, dp.getIntDPI(DPI.BALANCE)-bal);
+				 who.set(DPI.BALANCE, who.getInt(DPI.BALANCE)+bal);
+				 dp.set(DPI.BALANCE, dp.getInt(DPI.BALANCE)-bal);
 				 
-				 main.s(p, "none", "You sent &6" + bal + " &bto " + who.getDPI(DPI.DISPLAY_NAME) + "&b.");
+				 main.s(p, "none", "You sent &6" + bal + " &bto " + who.getStr(DPI.DISPLAY_NAME) + "&b.");
 				 
 				 if (Bukkit.getPlayer(who.uuid()) != null){
 		 			main.s(Bukkit.getPlayer(who.uuid()), "none", "You were paid &6" + bal + " &bby " + p.getDisplayName() + "&b.");
@@ -91,22 +90,22 @@ public class ElyEconomy {
 			 						
 						 			if (args[0].toLowerCase().equals("take")){
 						 				
-						 				who.setDPI(DPI.BALANCE, who.getIntDPI(DPI.BALANCE)-bal);
+						 				who.set(DPI.BALANCE, who.getInt(DPI.BALANCE)-bal);
 						 				
-						 				if (who.getIntDPI(DPI.BALANCE) < 0){
-						 					who.setDPI(DPI.BALANCE, 0);
+						 				if (who.getInt(DPI.BALANCE) < 0){
+						 					who.set(DPI.BALANCE, 0);
 						 				}
 						 				
 						 			} else if (args[0].toLowerCase().equals("give")){
-						 				who.setDPI(DPI.BALANCE, who.getIntDPI(DPI.BALANCE)+bal);
+						 				who.set(DPI.BALANCE, who.getInt(DPI.BALANCE)+bal);
 						 			} else {
-						 				who.setDPI(DPI.BALANCE, bal);
+						 				who.set(DPI.BALANCE, bal);
 						 			}
 						 			
-						 			main.s(p, "none", "Set the balance of &6" + who.getDPI(DPI.DISPLAY_NAME) + " &bto &6" + who.getDPI(DPI.BALANCE) + "&b.");
+						 			main.s(p, "none", "Set the balance of &6" + who.getStr(DPI.DISPLAY_NAME) + " &bto &6" + who.getStr(DPI.BALANCE) + "&b.");
 						 			
 						 			if (Bukkit.getPlayer(who.uuid()) != null){
-						 				main.s(Bukkit.getPlayer(who.uuid()), "none", "Your balance was set to &6" + who.getDPI(DPI.BALANCE) + " &bby " + p.getDisplayName() + "&b.");
+						 				main.s(Bukkit.getPlayer(who.uuid()), "none", "Your balance was set to &6" + who.getStr(DPI.BALANCE) + " &bby " + p.getDisplayName() + "&b.");
 						 			}
 						 			
 			 					} else {
@@ -131,10 +130,10 @@ public class ElyEconomy {
 		 int serverTotal = 0;
 		 
 		 for (DivinityPlayer p : main.api.divManager.getAllUsers()){
-			 if (p.getIntDPI(DPI.BALANCE) > 2000){
-				 balances.add(p.getIntDPI(DPI.BALANCE));
-				 players.put(p.getIntDPI(DPI.BALANCE), p);
-				 serverTotal = serverTotal + p.getIntDPI(DPI.BALANCE);
+			 if (p.getInt(DPI.BALANCE) > 2000){
+				 balances.add(p.getInt(DPI.BALANCE));
+				 players.put(p.getInt(DPI.BALANCE), p);
+				 serverTotal = serverTotal + p.getInt(DPI.BALANCE);
 			 }
 		 }
 		 
@@ -145,7 +144,7 @@ public class ElyEconomy {
 		 main.s(sendTo, "none", "&6Server Total: &b" + serverTotal);
 		 
 		 for (int i = 0; i < 10; i++){
-			 main.s(sendTo, players.get(balances.get(i)).getDPI(DPI.DISPLAY_NAME) + "&f: &6" + balances.get(i));
+			 main.s(sendTo, players.get(balances.get(i)).getStr(DPI.DISPLAY_NAME) + "&f: &6" + balances.get(i));
 		 }
 	 }
 }

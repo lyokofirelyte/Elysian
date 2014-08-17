@@ -27,17 +27,17 @@ public class ElyJoinQuit implements Listener {
 		
 		Player pl = e.getPlayer();
 		DivinityPlayer p = main.api.getDivPlayer(pl);
-		p.setDPI(DPI.AFK_TIME_INIT, 0);
+		p.set(DPI.AFK_TIME_INIT, 0);
 		
-		if (main.api.getSystem().getListDPI(DPI.AFK_PLAYERS).contains(pl.getName())){
-			main.api.getSystem().getListDPI(DPI.AFK_PLAYERS).remove(pl.getName());
+		if (main.api.getSystem().getList(DPI.AFK_PLAYERS).contains(pl.getName())){
+			main.api.getSystem().getList(DPI.AFK_PLAYERS).remove(pl.getName());
 		}
 		
-		p.setDPI(DPI.LAST_LOGIN, main.api.divUtils.getTimeFull());
-		pl.setPlayerListName(main.AS(p.getDPI(DPI.DISPLAY_NAME)));
-		pl.setDisplayName(p.getDPI(DPI.DISPLAY_NAME));
+		p.set(DPI.LAST_LOGIN, main.api.divUtils.getTimeFull());
+		pl.setPlayerListName(main.AS(p.getStr(DPI.DISPLAY_NAME)));
+		pl.setDisplayName(p.getStr(DPI.DISPLAY_NAME));
 		
-		DivinityUtils.customBC("&2+ " + pl.getDisplayName() + " &e&o(" + p.getDPI(DPI.JOIN_MESSAGE) + "&e&o)");
+		DivinityUtils.customBC("&2+ " + pl.getDisplayName() + " &e&o(" + p.getStr(DPI.JOIN_MESSAGE) + "&e&o)");
 		main.mail.checkMail(e.getPlayer());
 	}
 	
@@ -48,18 +48,18 @@ public class ElyJoinQuit implements Listener {
 		
 		Player pl = e.getPlayer();
 		DivinityPlayer p = main.api.getDivPlayer(e.getPlayer());
-		p.setDPI(DPI.LAST_LOGOUT, main.api.divUtils.getTimeFull());
-		p.setDPI(DPI.LOGOUT_LOCATION, pl.getLocation());
-		p.setDPI(DPI.DISPLAY_NAME,  pl.getDisplayName());
-		p.setDPI(DPI.SPECTATING, false);
+		p.set(DPI.LAST_LOGOUT, main.api.divUtils.getTimeFull());
+		p.set(DPI.LOGOUT_LOCATION, pl.getLocation());
+		p.set(DPI.DISPLAY_NAME,  pl.getDisplayName());
+		p.set(DPI.SPECTATING, false);
 		
-		if (!p.getDPI(DPI.SPECTATE_TARGET).equals("none")){
-			main.matchDivPlayer(p.getDPI(DPI.SPECTATE_TARGET)).setDPI(DPI.SPECTATE_TARGET, "none");
-			main.matchDivPlayer(p.getDPI(DPI.SPECTATE_TARGET)).setDPI(DPI.SPECTATING, false);
-			p.setDPI(DPI.SPECTATE_TARGET, "none");
+		if (!p.getStr(DPI.SPECTATE_TARGET).equals("none")){
+			main.matchDivPlayer(p.getStr(DPI.SPECTATE_TARGET)).set(DPI.SPECTATE_TARGET, "none");
+			main.matchDivPlayer(p.getStr(DPI.SPECTATE_TARGET)).set(DPI.SPECTATING, false);
+			p.set(DPI.SPECTATE_TARGET, "none");
 		}
 		
-		DivinityUtils.customBC("&4- " + pl.getDisplayName() + " &e&o(" + p.getDPI(DPI.QUIT_MESSAGE) + "&e&o)");
+		DivinityUtils.customBC("&4- " + pl.getDisplayName() + " &e&o(" + p.getStr(DPI.QUIT_MESSAGE) + "&e&o)");
 	}
 	
 	@EventHandler

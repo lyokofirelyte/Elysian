@@ -63,12 +63,12 @@ public class ElyMobs implements Listener {
 				
 				Player damager = (Player)e.getDamager();
 				
-				if (!main.api.getDivPlayer(damager).getDPI(DPI.DUEL_PARTNER).equals(p.getName())){
+				if (!main.api.getDivPlayer(damager).getStr(DPI.DUEL_PARTNER).equals(p.getName())){
 					e.setCancelled(true);
 				}
 				
 			} else {
-				main.api.getDivPlayer((Player)e.getEntity()).setDPI(DPI.IN_COMBAT, true);
+				main.api.getDivPlayer((Player)e.getEntity()).set(DPI.IN_COMBAT, true);
 			}
 		}
 	}
@@ -99,7 +99,7 @@ public class ElyMobs implements Listener {
 				DivinityPlayer killer = main.api.getDivPlayer((Player)e.getEntity().getKiller());
 				DivinityPlayer deadDP = main.api.getDivPlayer((Player)e.getEntity());
 				
-				List<String> wins = killer.getListDPI(DPI.DUEL_WINS);
+				List<String> wins = killer.getList(DPI.DUEL_WINS);
 				
 				for (String win : wins){
 					if (win.split(" ")[0].equals(dead.getName())){
@@ -119,17 +119,17 @@ public class ElyMobs implements Listener {
 				main.s(main.getPlayer(killer.name()), "Well done! You've defeated " + dead.getDisplayName() + "&b.");
 				main.s(dead, "&c&oBetter luck next time...");
 				
-				killer.setDPI(DPI.DUEL_PARTNER, "none");
-				deadDP.setDPI(DPI.DUEL_PARTNER, "killed");
-				deadDP.setDPI(DPI.BACKUP_INVENTORY, dead.getInventory().getContents());
-				deadDP.setDPI(DPI.DEATH_ARMOR, dead.getInventory().getArmorContents());
+				killer.set(DPI.DUEL_PARTNER, "none");
+				deadDP.set(DPI.DUEL_PARTNER, "killed");
+				deadDP.set(DPI.BACKUP_INVENTORY, dead.getInventory().getContents());
+				deadDP.set(DPI.DEATH_ARMOR, dead.getInventory().getArmorContents());
 				
-				if (killer.getBoolDPI(DPI.IS_DUEL_SAFE)){
+				if (killer.getBool(DPI.IS_DUEL_SAFE)){
 					e.setDroppedExp(0);
 					e.getDrops().clear();
 				}
 				
-				DivinityUtils.bc(dead.getDisplayName() + " &e&owas brutally murdered in a duel with " + killer.getDPI(DPI.DISPLAY_NAME));
+				DivinityUtils.bc(dead.getDisplayName() + " &e&owas brutally murdered in a duel with " + killer.getStr(DPI.DISPLAY_NAME));
 			}
 		}
 	}
@@ -147,32 +147,32 @@ public class ElyMobs implements Listener {
 		Player p = e.getEntity();
 		DivinityPlayer dp = main.api.getDivPlayer(p);
 		
-		dp.getListDPI(DPI.PREVIOUS_LOCATIONS).add(p.getWorld().getName() + " " + v.getBlockX() + " " + v.getBlockY() + " " + v.getBlockZ());
+		dp.getList(DPI.PREVIOUS_LOCATIONS).add(p.getWorld().getName() + " " + v.getBlockX() + " " + v.getBlockY() + " " + v.getBlockZ());
 
 		if (e.getEntity().getLastDamageCause() != null){
-			DivinityUtils.bc(dp.getDPI(DPI.DISPLAY_NAME) + " &e&odied due to &6&o" + p.getLastDamageCause().getCause().name().toLowerCase());
+			DivinityUtils.bc(dp.getStr(DPI.DISPLAY_NAME) + " &e&odied due to &6&o" + p.getLastDamageCause().getCause().name().toLowerCase());
 		} else {
-			DivinityUtils.bc(dp.getDPI(DPI.DISPLAY_NAME) + " &e&odied due to unknown causes.");
+			DivinityUtils.bc(dp.getStr(DPI.DISPLAY_NAME) + " &e&odied due to unknown causes.");
 		}
 		
-		String[] deathLoc = dp.getDPI(DPI.DEATH_CHEST_LOC).split(" ");
+		String[] deathLoc = dp.getStr(DPI.DEATH_CHEST_LOC).split(" ");
 		
-		if (!dp.getDPI(DPI.DEATH_CHEST_INV).equals("none")){
-			for (ItemStack i : dp.getStackDPI(DPI.DEATH_CHEST_INV)){
+		if (!dp.getStr(DPI.DEATH_CHEST_INV).equals("none")){
+			for (ItemStack i : dp.getStack(DPI.DEATH_CHEST_INV)){
 				p.getWorld().dropItem(new Location(Bukkit.getWorld(deathLoc[0]), Double.parseDouble(deathLoc[1]), Double.parseDouble(deathLoc[2]), Double.parseDouble(deathLoc[3])), i);
 			}
 			main.s(p, "Your old death chest items were dropped at &6" + deathLoc[1] + " " + deathLoc[2] + " " + deathLoc[3] + "&b.");
 		}
 		
-		dp.setDPI(DPI.DEATH_CHEST_INV, p.getInventory().getContents());
-		dp.setDPI(DPI.DEATH_ARMOR, p.getInventory().getArmorContents());
-		dp.setDPI(DPI.DEATH_CHEST_LOC, p.getWorld().getName() + " " + v.getBlockX() + " " + v.getBlockY() + " " + v.getBlockZ());
+		dp.set(DPI.DEATH_CHEST_INV, p.getInventory().getContents());
+		dp.set(DPI.DEATH_ARMOR, p.getInventory().getArmorContents());
+		dp.set(DPI.DEATH_CHEST_LOC, p.getWorld().getName() + " " + v.getBlockX() + " " + v.getBlockY() + " " + v.getBlockZ());
 		p.getLocation().getBlock().setType(Material.CHEST);
 		e.getDrops().clear();
 		main.s(e.getEntity(), "&7&oYour items are in a chest at your death location.");
 		
-		if (dp.getBoolDPI(DPI.DEATHLOCS_TOGGLE)){
-			main.s(p, "&7&oYou died at: &6&o" + dp.getDPI(DPI.DEATH_CHEST_LOC).replace(" ", "&7, "));
+		if (dp.getBool(DPI.DEATHLOCS_TOGGLE)){
+			main.s(p, "&7&oYou died at: &6&o" + dp.getStr(DPI.DEATH_CHEST_LOC).replace(" ", "&7, "));
 		}
 	}
 	
@@ -181,13 +181,13 @@ public class ElyMobs implements Listener {
 		
 		DivinityPlayer dp = main.api.getDivPlayer(e.getPlayer());
 		
-		if (!dp.getBoolDPI(DPI.EXP_DEPOSIT)){
+		if (!dp.getBool(DPI.EXP_DEPOSIT)){
 			if (e.getPlayer().getWorld().getName().equals("world")){
-				dp.setDPI(DPI.EXP, dp.getIntDPI(DPI.EXP) + new Integer(e.getAmount()));
+				dp.set(DPI.EXP, dp.getInt(DPI.EXP) + new Integer(e.getAmount()));
 				e.setAmount(0);
 			}
 		} else {
-			dp.setDPI(DPI.EXP_DEPOSIT, false);
+			dp.set(DPI.EXP_DEPOSIT, false);
 		}
 	}
 	
@@ -196,11 +196,11 @@ public class ElyMobs implements Listener {
 		
 		DivinityPlayer dp = main.api.getDivPlayer(e.getPlayer());
 		
-		if (dp.getDPI(DPI.DUEL_PARTNER).equals("killed")){
-			dp.setDPI(DPI.DUEL_PARTNER, "none");
-			if (dp.getBoolDPI(DPI.IS_DUEL_SAFE)){
-				e.getPlayer().getInventory().setContents(dp.getStackDPI(DPI.BACKUP_INVENTORY));
-				e.getPlayer().getInventory().setArmorContents(dp.getStackDPI(DPI.DEATH_ARMOR));
+		if (dp.getStr(DPI.DUEL_PARTNER).equals("killed")){
+			dp.set(DPI.DUEL_PARTNER, "none");
+			if (dp.getBool(DPI.IS_DUEL_SAFE)){
+				e.getPlayer().getInventory().setContents(dp.getStack(DPI.BACKUP_INVENTORY));
+				e.getPlayer().getInventory().setArmorContents(dp.getStack(DPI.DEATH_ARMOR));
 				main.s(e.getPlayer(), "This duel was safe. Inventory restored.");
 			}
 		}
@@ -218,13 +218,13 @@ public class ElyMobs implements Listener {
 		
 		DivinityPlayer dp = main.api.getDivPlayer(p);
 		Random rand = new Random();
-		List<String> perms = dp.getListDPI(DPI.PERMS);
+		List<String> perms = dp.getList(DPI.PERMS);
 		
 		int mult = perms.contains("wa.rank.emperor") ? 3 : perms.contains("wa.rank.disctrictman") ? 2 : 1;
 		int randomMoneyAmount = rand.nextInt(120) + 1;
 		int randomNumber = rand.nextInt(4) + 1;
 		
-		dp.setDPI(DPI.MOB_MONEY, dp.getIntDPI(DPI.MOB_MONEY) + (randomNumber == 4 ? randomMoneyAmount*mult : 5));
+		dp.set(DPI.MOB_MONEY, dp.getInt(DPI.MOB_MONEY) + (randomNumber == 4 ? randomMoneyAmount*mult : 5));
 	}
 	
 	@DivCommand(aliases = {"exp", "xp"}, help = "/exp <take> <amount>", desc = "Elysian EXP Storing System", player = true)
@@ -234,17 +234,17 @@ public class ElyMobs implements Listener {
 		int amt = args.length >= 2 && main.api.divUtils.isInteger(args[1]) ? Integer.parseInt(args[1]) : 0;
 		
 		if (args.length == 0){
-			main.s(p, "Stored XP: &6" + dp.getIntDPI(DPI.EXP) + "&b.");
+			main.s(p, "Stored XP: &6" + dp.getInt(DPI.EXP) + "&b.");
 			main.s(p, "&7&o825 = level 30. Only take out what you need, as you can't put it back!");
 		} else if (args.length == 2){
 		
 			if (args[0].equals("take")){
 				
-				if (dp.getIntDPI(DPI.EXP) >= amt){
-					dp.setDPI(DPI.EXP, dp.getIntDPI(DPI.EXP)-amt);
-					dp.setDPI(DPI.EXP_DEPOSIT, true);
+				if (dp.getInt(DPI.EXP) >= amt){
+					dp.set(DPI.EXP, dp.getInt(DPI.EXP)-amt);
+					dp.set(DPI.EXP_DEPOSIT, true);
 					p.giveExp(amt);
-					dp.setDPI(DPI.EXP_DEPOSIT, false);
+					dp.set(DPI.EXP_DEPOSIT, false);
 				} else {
 					main.s(p, "&c&oNot enough stored xp!");
 				}
@@ -265,14 +265,14 @@ public class ElyMobs implements Listener {
 		String safe = args.length == 2 ? "&asafe" : "&cdangerous";
 		
 		if (args.length == 0){
-			if (!dp.getDPI(DPI.DUEL_INVITE).equals("none")){
-				if (main.isOnline(dp.getDPI(DPI.DUEL_INVITE))){
-					dp.setDPI(DPI.DUEL_PARTNER, dp.getDPI(DPI.DUEL_INVITE));
+			if (!dp.getStr(DPI.DUEL_INVITE).equals("none")){
+				if (main.isOnline(dp.getStr(DPI.DUEL_INVITE))){
+					dp.set(DPI.DUEL_PARTNER, dp.getStr(DPI.DUEL_INVITE));
 					main.s(p, "ACCEPTED DUEL! BEGIN!");
-					main.s(main.getPlayer(dp.getDPI(DPI.DUEL_INVITE)), "ACCEPTED DUEL! BEGIN!");
-					main.matchDivPlayer(dp.getDPI(DPI.DUEL_INVITE)).setDPI(DPI.DUEL_PARTNER, p.getName());
-					main.matchDivPlayer(dp.getDPI(DPI.DUEL_INVITE)).setDPI(DPI.DUEL_INVITE, "none");
-					dp.setDPI(DPI.DUEL_INVITE, "none");
+					main.s(main.getPlayer(dp.getStr(DPI.DUEL_INVITE)), "ACCEPTED DUEL! BEGIN!");
+					main.matchDivPlayer(dp.getStr(DPI.DUEL_INVITE)).set(DPI.DUEL_PARTNER, p.getName());
+					main.matchDivPlayer(dp.getStr(DPI.DUEL_INVITE)).set(DPI.DUEL_INVITE, "none");
+					dp.set(DPI.DUEL_INVITE, "none");
 				} else {
 					main.s(p, "&c&oThey've logged off.");
 				}
@@ -281,9 +281,9 @@ public class ElyMobs implements Listener {
 			if (main.isOnline(args[0])){
 				main.s(main.getPlayer(args[0]), "You are invited to a duel from " + p.getDisplayName() + "&b.");
 				main.s(main.getPlayer(args[0]), "This is a " +  safe + " &bduel. Type /duel to accept.");
-				main.matchDivPlayer(args[0]).setDPI(DPI.DUEL_INVITE, p.getName());
-				main.matchDivPlayer(args[0]).setDPI(DPI.IS_DUEL_SAFE, args.length == 2 ? true : false);
-				dp.setDPI(DPI.IS_DUEL_SAFE, args.length == 2 ? true : false);
+				main.matchDivPlayer(args[0]).set(DPI.DUEL_INVITE, p.getName());
+				main.matchDivPlayer(args[0]).set(DPI.IS_DUEL_SAFE, args.length == 2 ? true : false);
+				dp.set(DPI.IS_DUEL_SAFE, args.length == 2 ? true : false);
 				main.s(p, "Sent!");
 			} else {
 				main.s(p, "playerNotFound");
