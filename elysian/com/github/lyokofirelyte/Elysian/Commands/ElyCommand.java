@@ -121,7 +121,7 @@ public class ElyCommand {
 	public void onBio(Player p, String[] args){
 		
 		DivinityPlayer dp = main.api.getDivPlayer(p);
-		dp.setDPI(DPI.PLAYER_DESC, "&7&o" + main.AS(main.api.divUtils.createString(args, 0)));
+		dp.set(DPI.PLAYER_DESC, "&7&o" + main.AS(main.api.divUtils.createString(args, 0)));
 		main.s(p, "Updated!");
 	}
 	
@@ -168,8 +168,8 @@ public class ElyCommand {
 					if (i.s().equalsIgnoreCase(args[1])){
 						try {
 							String dispName = p instanceof Player ? ((Player) p).getDisplayName() : "&6Console";
-							main.matchDivPlayer(args[0]).setDPI(i, main.api.divUtils.createString(args, 2));
-							main.api.event(new DivinityChannelEvent("&6System", "wa.staff.intern", "&c&oOh! &4\u2744", dispName + " &cmodified " + i.s() + " for " + main.matchDivPlayer(args[0]).getDPI(DPI.DISPLAY_NAME) + "&c!", "&c"));
+							main.matchDivPlayer(args[0]).set(i, main.api.divUtils.createString(args, 2));
+							main.api.event(new DivinityChannelEvent("&6System", "wa.staff.intern", "&c&oOh! &4\u2744", dispName + " &cmodified " + i.s() + " for " + main.matchDivPlayer(args[0]).getStr(DPI.DISPLAY_NAME) + "&c!", "&c"));
 						} catch (Exception e){
 							main.s(p, "&c&oModification failed. Try a different value or stat.");
 						}
@@ -180,7 +180,7 @@ public class ElyCommand {
 					if (i.s().equalsIgnoreCase(args[1])){
 						try {
 							String dispName = p instanceof Player ? ((Player) p).getDisplayName() : "&6Console";
-							main.api.getDivAlliance(args[0]).setDAI(i,  main.api.divUtils.createString(args, 2));
+							main.api.getDivAlliance(args[0]).set(i,  main.api.divUtils.createString(args, 2));
 							main.api.event(new DivinityChannelEvent("&6System", "wa.staff.intern", "&c&oOh! &4\u2744", dispName + " &cmodified " + i.s() + " for " + args[0] + "&c!", "&c"));
 						} catch (Exception e){
 							main.s(p, "&c&oModification failed. Try a different value or stat.");
@@ -259,7 +259,7 @@ public class ElyCommand {
 					
 						try {
 							main.api.divManager.load();
-						} catch (IOException e) {
+						} catch (Exception e) {
 							e.printStackTrace();
 						}
 					}

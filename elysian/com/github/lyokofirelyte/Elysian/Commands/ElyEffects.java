@@ -33,10 +33,10 @@ public class ElyEffects {
 			main.s(p, "All basic colors (like red, orange, green, etc)");
 		} else if (args.length >= 2){
 		
-			if (System.currentTimeMillis() >= dp.getLongDPI(DPI.FIREWORK_COOLDOWN)){
+			if (System.currentTimeMillis() >= dp.getLong(DPI.FIREWORK_COOLDOWN)){
 			
 				Player victim = p;
-				dp.setDPI(DPI.FIREWORK_COOLDOWN, System.currentTimeMillis() + (20*1000));
+				dp.set(DPI.FIREWORK_COOLDOWN, System.currentTimeMillis() + (20*1000));
 				
 				if (args.length == 3){
 					if (main.doesPartialPlayerExist(args[2])){
@@ -70,7 +70,7 @@ public class ElyEffects {
 				}
 					
 			} else {
-				main.s(p, "&c&oThis command is still on cooldown! " + ((dp.getLongDPI(DPI.FIREWORK_COOLDOWN) - System.currentTimeMillis())/1000) + " seconds.");
+				main.s(p, "&c&oThis command is still on cooldown! " + ((dp.getLong(DPI.FIREWORK_COOLDOWN) - System.currentTimeMillis())/1000) + " seconds.");
 			}
 		} else {
 			main.s(p, main.help("fw", this));

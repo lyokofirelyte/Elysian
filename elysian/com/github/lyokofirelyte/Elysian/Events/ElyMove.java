@@ -21,15 +21,15 @@ public class ElyMove implements Listener {
 	@EventHandler
 	public void onMove(PlayerMoveEvent e){
 		
-		if (main.api.getDivPlayer(e.getPlayer()).getBoolDPI(DPI.DISABLED) || borderCheck(e.getPlayer(), e.getTo().toVector())){
+		if (main.api.getDivPlayer(e.getPlayer()).getBool(DPI.DISABLED) || borderCheck(e.getPlayer(), e.getTo().toVector())){
 			e.getPlayer().teleport(e.getFrom());
 		}
 		
 		main.afkCheck(e.getPlayer());
 		main.api.event(new ScoreboardUpdateEvent(e.getPlayer(), "move"));
 		
-		if (!main.api.getDivPlayer(e.getPlayer()).getDPI(DPI.SPECTATE_TARGET).equals("none") && !main.api.getDivPlayer(e.getPlayer()).getBoolDPI(DPI.SPECTATING)){
-			main.getPlayer(main.api.getDivPlayer(e.getPlayer()).getDPI(DPI.SPECTATE_TARGET)).teleport(e.getPlayer().getLocation());
+		if (!main.api.getDivPlayer(e.getPlayer()).getStr(DPI.SPECTATE_TARGET).equals("none") && !main.api.getDivPlayer(e.getPlayer()).getBool(DPI.SPECTATING)){
+			main.getPlayer(main.api.getDivPlayer(e.getPlayer()).getStr(DPI.SPECTATE_TARGET)).teleport(e.getPlayer().getLocation());
 		}
 	}
 	

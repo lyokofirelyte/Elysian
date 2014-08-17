@@ -48,7 +48,7 @@ public class ElyMessages implements Listener {
 		
 			case "balance":
 				
-				s(cs, "You currently have &6" + dp.getIntDPI(DPI.BALANCE) + " &bshinies!");
+				s(cs, "You currently have &6" + dp.getInt(DPI.BALANCE) + " &bshinies!");
 			
 			break;
 			
@@ -66,7 +66,7 @@ public class ElyMessages implements Listener {
 			
 			case "muted":
 				
-				s(cs, "&c&oYou are currently muted. Time left: &6" + ((dp.getLongDPI(DPI.MUTE_TIME) - System.currentTimeMillis())/1000)/60 + " minutes.");
+				s(cs, "&c&oYou are currently muted. Time left: &6" + ((dp.getLong(DPI.MUTE_TIME) - System.currentTimeMillis())/1000)/60 + " minutes.");
 				
 			break;
 			
@@ -87,10 +87,10 @@ public class ElyMessages implements Listener {
 	public void s(CommandSender sender, String message){
 		
 		if (sender instanceof Player){
-			if (main.api.getDivPlayer((Player)sender).getBoolDPI(DPI.ELY)){
+			if (main.api.getDivPlayer((Player)sender).getBool(DPI.ELY)){
 				sender.sendMessage(main.AS(h2 + message));
 			} else {
-				main.api.getDivPlayer((Player)sender).setDPI(DPI.ELY, true);
+				main.api.getDivPlayer((Player)sender).set(DPI.ELY, true);
 				sender.sendMessage(main.AS(h + message));
 			}
 		} else {

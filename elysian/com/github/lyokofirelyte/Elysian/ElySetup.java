@@ -7,6 +7,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.event.Listener;
 
 import com.github.lyokofirelyte.Divinity.Divinity;
+import com.github.lyokofirelyte.Divinity.DivinityAPI;
 import com.github.lyokofirelyte.Divinity.Manager.DivInvManager;
 import com.github.lyokofirelyte.Elysian.Commands.ElyAlliance;
 import com.github.lyokofirelyte.Elysian.Commands.ElyCommand;

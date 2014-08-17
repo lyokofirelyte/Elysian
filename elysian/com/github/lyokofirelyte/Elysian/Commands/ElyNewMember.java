@@ -22,7 +22,7 @@ public class ElyNewMember {
 	 public void onNewMember(CommandSender p, String[] args){
 
 		 if (main.doesPartialPlayerExist(args[0])){
-			 main.matchDivPlayer(args[0]).getListDPI(DPI.PERMS).add("wa.member");
+			 main.matchDivPlayer(args[0]).getList(DPI.PERMS).add("wa.member");
 			 main.s(p, "Added permissions!");
 			 
 			 if (main.isOnline(args[0])){

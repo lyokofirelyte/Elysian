@@ -41,11 +41,11 @@ public class ElyChannel implements Listener {
 		for (Player player : Bukkit.getOnlinePlayers()){
 			DivinityPlayer to = main.api.getDivPlayer(player);
 			if (!toggle.equals(DPI.ELY)){
-				if (to.getListDPI(DPI.PERMS).contains(perm) && to.getBoolDPI(toggle)){
+				if (to.getList(DPI.PERMS).contains(perm) && to.getBool(toggle)){
 					player.sendMessage(main.AS(header + " " + sender + "&f: " + color + message));
 				}
 			} else {
-				if (to.getListDPI(DPI.PERMS).contains(perm)){
+				if (to.getList(DPI.PERMS).contains(perm)){
 					player.sendMessage(main.AS(header + " " + sender + "&f: " + color + message));
 				}
 			}

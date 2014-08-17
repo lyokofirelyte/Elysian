@@ -58,8 +58,8 @@ public class ElyMail {
 		  			clearing = main.api.getSystem();
 		  		  }
 		  		  
-		  		  if (clearing.getListDPI(DPI.MAIL).size() > 0){
-		  			  clearing.setDPI(DPI.MAIL, new ArrayList<String>());
+		  		  if (clearing.getList(DPI.MAIL).size() > 0){
+		  			  clearing.set(DPI.MAIL, new ArrayList<String>());
 		  			  main.s(p, "none", "Cleared!");
 		  		  } else {
 		  			  main.s(p, "none", "&c&oYou have no mail.");
@@ -97,8 +97,8 @@ public class ElyMail {
 						  
 						  if (p instanceof Player){
 							  DivinityPlayer dp = main.api.getDivPlayer((Player)p);
-							  if (!dp.getDPI(DPI.ALLIANCE_NAME).equals("none")){
-								  perm = "wa.alliance." + dp.getDPI(DPI.ALLIANCE_NAME);
+							  if (!dp.getStr(DPI.ALLIANCE_NAME).equals("none")){
+								  perm = "wa.alliance." + dp.getStr(DPI.ALLIANCE_NAME);
 							  } else {
 								  main.s(p, "none", "&c&oYou are not in an alliance.");
 								  send = false;
@@ -122,11 +122,11 @@ public class ElyMail {
 						  
 						  if (main.doesPartialPlayerExist(args[1])){
 							  send = false;
-							  main.matchDivPlayer(args[1]).getListDPI(DPI.MAIL).add("personal" + "%SPLIT%" + p.getName() + "%SPLIT%" + msg);
+							  main.matchDivPlayer(args[1]).getList(DPI.MAIL).add("personal" + "%SPLIT%" + p.getName() + "%SPLIT%" + msg);
 							  if (Bukkit.getPlayer(main.matchDivPlayer(args[1]).uuid()) != null){
 								  main.s(Bukkit.getPlayer(main.matchDivPlayer(args[1]).uuid()), "none", "You've recieved a mail! /mail read");
-								  main.s(p, "Mail sent!");
 							  }
+							  main.s(p, "Mail sent!");
 						  } else {
 							  main.s(p, "playerNotFound");
 							  send = false;
@@ -138,8 +138,8 @@ public class ElyMail {
 				  
 				  if (send){
 					  for (DivinityPlayer dp : main.api.divManager.getAllUsers()){
-						  if (dp.getListDPI(DPI.PERMS).contains(perm)){
-							  dp.getListDPI(DPI.MAIL).add(perm + "%SPLIT%" + p.getName() + "%SPLIT%" + msg);
+						  if (dp.getList(DPI.PERMS).contains(perm)){
+							  dp.getList(DPI.MAIL).add(perm + "%SPLIT%" + p.getName() + "%SPLIT%" + msg);
 							  if (Bukkit.getPlayer(dp.uuid()) != null){
 								  main.s(Bukkit.getPlayer(dp.uuid()), "none", "You've recieved a mail! /mail read");
 							  }
@@ -162,11 +162,11 @@ public class ElyMail {
  			  reading = main.api.getSystem();
  		  }
  		  
- 		  if (reading.getListDPI(DPI.MAIL).size() > 0){
+ 		  if (reading.getList(DPI.MAIL).size() > 0){
  			  
-	  		  main.s(p, "none", "Reading mail &6(" + reading.getListDPI(DPI.MAIL).size() + ")");
+	  		  main.s(p, "none", "Reading mail &6(" + reading.getList(DPI.MAIL).size() + ")");
 	  		  
- 			  for (String s : reading.getListDPI(DPI.MAIL)){
+ 			  for (String s : reading.getList(DPI.MAIL)){
  				  
  				  String[] split = s.split("%SPLIT%");
  				  

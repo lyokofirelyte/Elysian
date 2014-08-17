@@ -40,9 +40,9 @@ public class ElyToggle {
 			 		try {
 			 			
 			 			if (args.length == 1){
-			 				dp.setDPI(DPI.valueOf(args[0].toUpperCase() + "_TOGGLE"), !dp.getBoolDPI(DPI.valueOf(args[0].toUpperCase() + "_TOGGLE")));
+			 				dp.set(DPI.valueOf(args[0].toUpperCase() + "_TOGGLE"), !dp.getBool(DPI.valueOf(args[0].toUpperCase() + "_TOGGLE")));
 			 			} else {
-			 				dp.setDPI(DPI.valueOf(args[0].toUpperCase()), main.api.divUtils.createString(args, 1));
+			 				dp.set(DPI.valueOf(args[0].toUpperCase()), main.api.divUtils.createString(args, 1));
 			 			}
 			 			
 			 			main.s(p, "none", "&o" + args[0] + " updated");
@@ -68,8 +68,8 @@ public class ElyToggle {
 			cc(dp, "deathLocs") + "deathLocs (show location of your death)",
 			cc(dp, "particles") + "particles (teleport particles)",
 			cc(dp, "chat_filter") + "chat_filter (toggle swear word filtering)",
-			"&6join_message (" + dp.getDPI(DPI.JOIN_MESSAGE) + ")",
-			"&6quit_message (" + dp.getDPI(DPI.QUIT_MESSAGE) + ")",
+			"&6join_message (" + dp.getStr(DPI.JOIN_MESSAGE) + ")",
+			"&6quit_message (" + dp.getStr(DPI.QUIT_MESSAGE) + ")",
 			cc(dp, "alliance_color") + "alliance_color <color> (alliance chat color)",
 			cc(dp, "global_color") + "global_color <color> (global chat color)",
 			cc(dp, "pm_color") + "pm_color <color> (private chat color)",
@@ -99,9 +99,9 @@ public class ElyToggle {
 		 String bool = "false";
 		 
 		 if (type.equals("alliance_color") || type.equals("global_color") || type.equals("pm_color")){
-			 bool = dp.getDPI(DPI.valueOf(type.toUpperCase()));
+			 bool = dp.getStr(DPI.valueOf(type.toUpperCase()));
 		 } else {
-			 bool = dp.getDPI(DPI.valueOf(type.toUpperCase() + "_TOGGLE"));
+			 bool = dp.getStr(DPI.valueOf(type.toUpperCase() + "_TOGGLE"));
 		 }
 		 
 		 if (bool.equals("true")){

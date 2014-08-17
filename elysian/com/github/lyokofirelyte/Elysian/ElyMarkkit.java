@@ -55,6 +55,12 @@ public class ElyMarkkit implements Listener {
 			e.setLine(0, main.AS("&4INVALID!"));
 			e.setLine(1, main.AS("&cWE DIDN'T"));
 			e.setLine(2, main.AS("&cLISTEN! D:"));
+		} else {
+			for (int x = 0; x < 4; x++){
+				if (e.getLine(x) != null){
+					e.setLine(x, main.AS(e.getLine(x)));
+				}
+			}
 		}
 	}
 		
@@ -191,7 +197,7 @@ public class ElyMarkkit implements Listener {
 				}
 					
 				DivinityPlayer dp = main.api.getDivPlayer(p);
-				dp.setDPI(DPI.BALANCE, dp.getIntDPI(DPI.BALANCE) + totalPrice.get(e.getWhoClicked().getName()));
+				dp.set(DPI.BALANCE, dp.getInt(DPI.BALANCE) + totalPrice.get(e.getWhoClicked().getName()));
 				main.s((Player)e.getWhoClicked(), totalPrice.get(e.getWhoClicked().getName()) + " was added to your account!");
 				totalPrice.put(e.getWhoClicked().getName(), 0);
 				main.markkitYaml.set("Items." + name + ".inStock", main.markkitYaml.getInt("Items." + name + ".inStock") + itemCount);
@@ -239,17 +245,17 @@ public class ElyMarkkit implements Listener {
 							}
 							if(i == 44){
 								dp = main.api.getDivPlayer(p);
-								if (dp.getIntDPI(DPI.BALANCE) >= totalPrice.get(e.getWhoClicked().getName())){
+								if (dp.getInt(DPI.BALANCE) >= totalPrice.get(e.getWhoClicked().getName())){
 									if(main.markkitYaml.getBoolean("Items." + name + ".isSellDoubled")){
-										if(dp.getIntDPI(DPI.BALANCE) >= totalPrice.get(e.getWhoClicked().getName())*2){
-											dp.setDPI(DPI.BALANCE, dp.getIntDPI(DPI.BALANCE) - totalPrice.get(e.getWhoClicked().getName())*2);
+										if(dp.getInt(DPI.BALANCE) >= totalPrice.get(e.getWhoClicked().getName())*2){
+											dp.set(DPI.BALANCE, dp.getInt(DPI.BALANCE) - totalPrice.get(e.getWhoClicked().getName())*2);
 											main.s((Player)e.getWhoClicked(), totalPrice.get(e.getWhoClicked().getName())*2 + " was taken from your account!");
 										}else{
 											main.s((Player)e.getWhoClicked(), "You do not have enough money");
 										}
 
 									}else{
-										dp.setDPI(DPI.BALANCE, dp.getIntDPI(DPI.BALANCE) - totalPrice.get(e.getWhoClicked().getName()));
+										dp.set(DPI.BALANCE, dp.getInt(DPI.BALANCE) - totalPrice.get(e.getWhoClicked().getName()));
 										main.s((Player)e.getWhoClicked(), totalPrice.get(e.getWhoClicked().getName()) + " was taken from your account!");
 									}
 									totalPrice.put(e.getWhoClicked().getName(), 0);

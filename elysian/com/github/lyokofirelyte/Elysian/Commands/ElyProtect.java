@@ -39,6 +39,7 @@ import org.bukkit.util.Vector;
 import com.github.lyokofirelyte.Divinity.Commands.DivCommand;
 import com.github.lyokofirelyte.Divinity.Events.DivinityTeleportEvent;
 import com.github.lyokofirelyte.Divinity.Storage.DPI;
+import com.github.lyokofirelyte.Divinity.Storage.DRF;
 import com.github.lyokofirelyte.Divinity.Storage.DRI;
 import com.github.lyokofirelyte.Divinity.Storage.DivinityPlayer;
 import com.github.lyokofirelyte.Divinity.Storage.DivinityRegion;
@@ -85,7 +86,7 @@ public class ElyProtect implements Listener {
 		
 		String result = isInAnyRegion(e.getBlock().getLocation());
 		
-		if (hasFlag(result, DRI.BLOCK_BREAK)){
+		if (hasFlag(result, DRF.BLOCK_BREAK)){
 			if (!hasRegionPerms(e.getPlayer(), result)){
 				e.setCancelled(true);
 				main.s(e.getPlayer(), "&c&oYou are not authorized to build at &6" + result + "&c&o.");
@@ -98,7 +99,7 @@ public class ElyProtect implements Listener {
 		
 		String result = isInAnyRegion(e.getBlock().getLocation());
 		
-		if (hasFlag(result, DRI.BLOCK_PLACE)){
+		if (hasFlag(result, DRF.BLOCK_PLACE)){
 			if (!hasRegionPerms(e.getPlayer(), result)){
 				e.setCancelled(true);
 				main.s(e.getPlayer(), "&c&oYou are not authorized to place at &6" + result + "&c&o.");
@@ -111,7 +112,7 @@ public class ElyProtect implements Listener {
 		
 		String result = isInAnyRegion(e.getPlayer().getLocation());
 		
-		if (hasFlag(result, DRI.INTERACT)){
+		if (hasFlag(result, DRF.INTERACT)){
 			if (!hasRegionPerms(e.getPlayer(), result)){
 				e.setCancelled(true);
 			}
@@ -126,12 +127,12 @@ public class ElyProtect implements Listener {
 			Player p = (Player)e.getEntity();
 			String result = isInAnyRegion(p.getLocation());
 			
-			if (hasFlag(result, DRI.TAKE_DAMAGE)){
+			if (hasFlag(result, DRF.TAKE_DAMAGE)){
 				e.setCancelled(true);
 			}
 			
 		} else if (e.getEntity() instanceof ItemFrame || e.getEntity() instanceof Painting){
-			if (hasFlag(isInAnyRegion(e.getEntity().getLocation()), DRI.TAKE_DAMAGE)){
+			if (hasFlag(isInAnyRegion(e.getEntity().getLocation()), DRF.TAKE_DAMAGE)){
 				e.setCancelled(true);
 			}
 		}
@@ -145,7 +146,7 @@ public class ElyProtect implements Listener {
 			Player p = (Player)e.getEntity();
 			String result = isInAnyRegion(p.getLocation());
 			
-			if (hasFlag(result, DRI.TAKE_DAMAGE)){
+			if (hasFlag(result, DRF.TAKE_DAMAGE)){
 				e.setCancelled(true);
 			}
 		}
@@ -161,7 +162,7 @@ public class ElyProtect implements Listener {
 		
 		String result = isInAnyRegion(e.getPlayer().getLocation());
 		
-		if (hasFlag(result, DRI.USE_COMMANDS)){
+		if (hasFlag(result, DRF.USE_COMMANDS)){
 			if (!hasRegionPerms(e.getPlayer(), result)){
 				e.setCancelled(true);
 				main.s(e.getPlayer(), "&c&oYou are not authorized to use commands at &6" + result + "&c&o.");
@@ -175,7 +176,7 @@ public class ElyProtect implements Listener {
 			
 			switch (args[0]){
 			
-				case "/plot":
+				case "/plot": case "/plotme":
 					
 					if (args.length > 1){
 						
@@ -217,7 +218,7 @@ public class ElyProtect implements Listener {
 		
 		String result = isInAnyRegion(e.getPlayer().getLocation());
 		
-		if (hasFlag(result, DRI.TP_OUT)){
+		if (hasFlag(result, DRF.TP_OUT)){
 			if (!hasRegionPerms(e.getPlayer(), result)){
 				e.setCancelled(true);
 				main.s(e.getPlayer(), "&c&oYou are not authorized to TP out of &6" + result + "&c&o.");
@@ -226,7 +227,7 @@ public class ElyProtect implements Listener {
 		
 		String resultTwo = isInAnyRegion(e.getTo());
 		
-		if (hasFlag(resultTwo, DRI.TP_IN)){
+		if (hasFlag(resultTwo, DRF.TP_IN)){
 			if (!hasRegionPerms(e.getPlayer(), resultTwo)){
 				e.setCancelled(true);
 				main.s(e.getPlayer(), "&c&oYou are not authorized to TP into &6" + resultTwo + "&c&o.");
@@ -239,7 +240,7 @@ public class ElyProtect implements Listener {
 		
 		String result = isInAnyRegion(e.getPlayer().getLocation());
 		
-		if (hasFlag(result, DRI.CHAT)){
+		if (hasFlag(result, DRF.CHAT)){
 			if (!hasRegionPerms(e.getPlayer(), result)){
 				e.setCancelled(true);
 				main.s(e.getPlayer(), "&c&oYou are not authorized to chat at &6" + result + "&c&o.");
@@ -250,7 +251,7 @@ public class ElyProtect implements Listener {
 	@EventHandler
 	public void onEntityExplode(EntityExplodeEvent e) {
 
-		if (hasFlag(isInAnyRegion(e.getEntity().getLocation()), DRI.TNT_EXPLODE)){
+		if (hasFlag(isInAnyRegion(e.getEntity().getLocation()), DRF.TNT_EXPLODE)){
 			e.setCancelled(true);
 		}
 	}
@@ -258,7 +259,7 @@ public class ElyProtect implements Listener {
 	@EventHandler
 	public void onMobSpawn(CreatureSpawnEvent e){
 		
-		if (hasFlag(isInAnyRegion(e.getEntity().getLocation()), DRI.MOB_SPAWN)){
+		if (hasFlag(isInAnyRegion(e.getEntity().getLocation()), DRF.MOB_SPAWN)){
 			e.setCancelled(true);
 		}
 	}
@@ -266,7 +267,7 @@ public class ElyProtect implements Listener {
 	@EventHandler
 	public void onIgnite(BlockIgniteEvent e){
 		
-		if (hasFlag(isInAnyRegion(e.getBlock().getLocation()), DRI.FIRE_SPREAD)){
+		if (hasFlag(isInAnyRegion(e.getBlock().getLocation()), DRF.FIRE_SPREAD)){
 			e.setCancelled(true);
 		}
 	}
@@ -274,7 +275,7 @@ public class ElyProtect implements Listener {
 	@EventHandler
 	public void onGravity(EntityChangeBlockEvent e){
 		
-		if (hasFlag(isInAnyRegion(e.getBlock().getLocation()), DRI.GRAVITY)){
+		if (hasFlag(isInAnyRegion(e.getBlock().getLocation()), DRF.GRAVITY)){
 			e.setCancelled(true);
 		}
 	}
@@ -285,11 +286,11 @@ public class ElyProtect implements Listener {
 		Material mat = e.getToBlock().getType();
 		
 		if (mat.equals(Material.WATER)){
-			if (hasFlag(isInAnyRegion(e.getToBlock().getLocation()), DRI.WATER_FLOW)){
+			if (hasFlag(isInAnyRegion(e.getToBlock().getLocation()), DRF.WATER_FLOW)){
 				e.setCancelled(true);
 			}
 		} else if (mat.equals(Material.LAVA)){
-			if (hasFlag(isInAnyRegion(e.getToBlock().getLocation()), DRI.LAVA_FLOW)){
+			if (hasFlag(isInAnyRegion(e.getToBlock().getLocation()), DRF.LAVA_FLOW)){
 				e.setCancelled(true);
 			}
 		}
@@ -301,11 +302,11 @@ public class ElyProtect implements Listener {
 		Material mat = e.getBlock().getType();
 		
 		if (mat.equals(Material.LEAVES) || mat.equals(Material.LEAVES_2)){
-			if (hasFlag(isInAnyRegion(e.getBlock().getLocation()), DRI.LEAF_DECAY)){
+			if (hasFlag(isInAnyRegion(e.getBlock().getLocation()), DRF.LEAF_DECAY)){
 				e.setCancelled(true);
 			}
 		} else if (mat.equals(Material.SNOW_BLOCK) || mat.equals(Material.SNOW)){
-			if (hasFlag(isInAnyRegion(e.getBlock().getLocation()), DRI.MELT)){
+			if (hasFlag(isInAnyRegion(e.getBlock().getLocation()), DRF.MELT)){
 				e.setCancelled(true);
 			}
 		}
@@ -370,7 +371,7 @@ public class ElyProtect implements Listener {
 			
 			case "visual":
 				
-				if (!main.api.getDivPlayer(p).getBoolDPI(DPI.VISUAL)){
+				if (!main.api.getDivPlayer(p).getBool(DPI.VISUAL)){
 					
 					DivinityRegion rg = main.api.getDivRegion(args[1]);
 					
@@ -386,7 +387,7 @@ public class ElyProtect implements Listener {
 					String[] maxBlock = rg.getMaxBlock().split(" ");
 					int counter = 0;
 					
-					main.api.getDivPlayer(p).setDPI(DPI.VISUAL, true);
+					main.api.getDivPlayer(p).set(DPI.VISUAL, true);
 					
 					for (int i = 0; i <= rg.getWidth(); i++){
 						locs.add(new Location(Bukkit.getWorld(rg.getWorld()), d(minBlock[0]) + i, p.getLocation().getY(), d(minBlock[2])));
@@ -426,7 +427,7 @@ public class ElyProtect implements Listener {
 							l.getBlock().setType(Material.AIR);
 						}
 						
-						main.api.getDivPlayer(p).setDPI(DPI.VISUAL, false);
+						main.api.getDivPlayer(p).set(DPI.VISUAL, false);
 						main.s(p, "Visualization terminated.");
 						
 					}}, 400L);
@@ -446,18 +447,18 @@ public class ElyProtect implements Listener {
 					Vector max = sel.getMaximumPoint().toVector();
 					Vector min = sel.getMinimumPoint().toVector();
 						
-					region.setWorld(p.getWorld().getName());
-					region.setMaxBlock(max.getBlockX() + " " + max.getBlockY() + " " + max.getBlockZ());
-					region.setMinBlock(min.getBlockX() + " " + min.getBlockY() + " " + min.getBlockZ());
-					region.setArea(sel.getArea());
-					region.setLength(sel.getLength());
-					region.setHeight(sel.getHeight());
-					region.setWidth(sel.getWidth());
+					region.set(DRI.WORLD, p.getWorld().getName());
+					region.set(DRI.MAX_BLOCK, max.getBlockX() + " " + max.getBlockY() + " " + max.getBlockZ());
+					region.set(DRI.MIN_BLOCK, min.getBlockX() + " " + min.getBlockY() + " " + min.getBlockZ());
+					region.set(DRI.AREA, sel.getArea());
+					region.set(DRI.LENGTH, sel.getLength());
+					region.set(DRI.HEIGHT, sel.getHeight());
+					region.set(DRI.WIDTH, sel.getWidth());
 					
 					if (isInAnyRegion(p.getLocation()).equals("none")){
-						region.setPriority(0);
+						region.set(DRI.PRIORITY, 0);
 					} else {
-						region.setPriority(main.api.getDivRegion(isInAnyRegion(p.getLocation())).getPriority() + 1);
+						region.set(DRI.PRIORITY, main.api.getDivRegion(isInAnyRegion(p.getLocation())).getPriority() + 1);
 					}
 						
 					main.s(p, "Redefine successful.");
@@ -487,7 +488,7 @@ public class ElyProtect implements Listener {
 			
 			case "disable":
 
-				main.api.getDivRegion(args[1]).setDisabled(!main.api.getDivRegion(args[1]).isDisabled());
+				main.api.getDivRegion(args[1]).set(DRI.DISABLED, !main.api.getDivRegion(args[1]).isDisabled());
 				main.s(p, args[1] + " updated.");
 				
 			break;
@@ -505,18 +506,18 @@ public class ElyProtect implements Listener {
 							Vector max = sel.getMaximumPoint().toVector();
 							Vector min = sel.getMinimumPoint().toVector();
 								
-							region.setWorld(p.getWorld().getName());
-							region.setMaxBlock(max.getBlockX() + " " + max.getBlockY() + " " + max.getBlockZ());
-							region.setMinBlock(min.getBlockX() + " " + min.getBlockY() + " " + min.getBlockZ());
-							region.setArea(sel.getArea());
-							region.setLength(sel.getLength());
-							region.setHeight(sel.getHeight());
-							region.setWidth(sel.getWidth());
+							region.set(DRI.WORLD, p.getWorld().getName());
+							region.set(DRI.MAX_BLOCK, max.getBlockX() + " " + max.getBlockY() + " " + max.getBlockZ());
+							region.set(DRI.MIN_BLOCK, min.getBlockX() + " " + min.getBlockY() + " " + min.getBlockZ());
+							region.set(DRI.AREA, sel.getArea());
+							region.set(DRI.LENGTH, sel.getLength());
+							region.set(DRI.HEIGHT, sel.getHeight());
+							region.set(DRI.WIDTH, sel.getWidth());
 								
 							if (isInAnyRegion(p.getLocation()).equals("none")){
-								region.setPriority(0);
+								region.set(DRI.PRIORITY, 0);
 							} else {
-								region.setPriority(main.api.getDivRegion(isInAnyRegion(p.getLocation())).getPriority() + 1);
+								region.set(DRI.PRIORITY, main.api.getDivRegion(isInAnyRegion(p.getLocation())).getPriority() + 1);
 							}
 								
 							main.s(p, "Creation successful.");
@@ -548,10 +549,10 @@ public class ElyProtect implements Listener {
 							rg = main.api.getDivRegion(args[2]);
 							
 							if (args[1].equals("add")){
-								rg.addPerm(args[3]);
+								rg.getList(DRI.PERMS).add(args[3]);
 								main.s(p, "Added &6" + args[3]);
 							} else {
-								rg.remPerm(args[3]);
+								rg.getList(DRI.PERMS).remove(args[3]);
 								main.s(p, "Removed &6" + args[3]);
 							}
 							
@@ -594,8 +595,8 @@ public class ElyProtect implements Listener {
 			case "view":
 
 				rg = main.api.getDivRegion(args[1]);
-				Map<DRI, Boolean> flagz = rg.getFlags();
-				List<DRI> keys = new ArrayList<DRI>(flagz.keySet());
+				Map<DRF, Boolean> flagz = rg.getFlags();
+				List<DRF> keys = new ArrayList<DRF>(flagz.keySet());
 				List<String> perms = rg.getPerms();
 				String flagMessage = flagz.size() > 0 ? "&6" + keys.get(0).s().toLowerCase() + "&f: &7" + flagz.get(keys.get(0)).toString().replace("true", "&cdeny").replace("false", "&aallow") : "&c&oNo flags listed.";
 				String permMessage = perms.size() > 0 ? "&6" + perms.get(0) : "&c&oNo perms listed.";
@@ -623,7 +624,7 @@ public class ElyProtect implements Listener {
 				rg = main.api.getDivRegion(args[1]);
 				
 				if (main.api.divUtils.isInteger(args[2])){
-					rg.setPriority(i(args[2]));
+					rg.set(DRI.PRIORITY, i(args[2]));
 					main.s(p, "Priority changed for &6" + args[1] + " &bto &6" + args[2] + "&b.");
 				} else {
 					main.s(p, "&c&oMust be a number!");
@@ -645,7 +646,7 @@ public class ElyProtect implements Listener {
 			
 			case "viewflags":
 				
-				List<DRI> flags = Arrays.asList(DRI.values());
+				List<DRF> flags = Arrays.asList(DRF.values());
 				msg = flags.size() > 0 ? "&6" + flags.get(0).s().toLowerCase() : "&c&oNo flags avalible.";
 				
 				for (int i = 1; i < flags.size(); i++){
@@ -666,7 +667,7 @@ public class ElyProtect implements Listener {
 							
 							if (args[3].equals("allow") || args[3].equals("deny")){
 								boolean flag = args[3].equals("allow") ? false : true;
-								main.api.getDivRegion(args[1]).addFlag(DRI.valueOf(args[2].toUpperCase()), flag);
+								main.api.getDivRegion(args[1]).getFlags().put(DRF.valueOf(args[2].toUpperCase()), flag);
 								main.s(p, "Flag &6" + args[2] + " &bfor &6" + args[1] + " &bchanged to &6" + args[3]);
 							} else {
 								main.s(p, "&c&oallow or deny value.");
@@ -766,7 +767,7 @@ public class ElyProtect implements Listener {
 			}
 			
 			for (String perm : main.api.getDivRegion(region).getPerms()){
-				if (dp.getListDPI(DPI.PERMS).contains(perm)){
+				if (dp.getList(DPI.PERMS).contains(perm)){
 					return true;
 				}
 			}
@@ -775,7 +776,7 @@ public class ElyProtect implements Listener {
 		return false;
 	}
 	
-	public boolean hasFlag(String region, DRI flag){
+	public boolean hasFlag(String region, DRF flag){
 		if (main.doesRegionExist(region)){
 			return main.api.getDivRegion(region).getFlags().containsKey(flag) ? main.api.getDivRegion(region).getFlag(flag) : false;
 		}

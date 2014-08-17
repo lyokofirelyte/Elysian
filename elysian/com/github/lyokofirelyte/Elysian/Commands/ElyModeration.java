@@ -39,13 +39,13 @@ public class ElyModeration {
 			 
 			 if (who != null){
 				 
-				 if (who.getBoolDPI(effectType)){
-					 who.setDPI(effectType, false);
-					 DivinityUtils.bc(muter + " &4&ohas released the " + type + " from " + who.getDPI(DPI.DISPLAY_NAME) + "&4.");
+				 if (who.getBool(effectType)){
+					 who.set(effectType, false);
+					 DivinityUtils.bc(muter + " &4&ohas released the " + type + " from " + who.getStr(DPI.DISPLAY_NAME) + "&4.");
 				 } else {
-					 who.setDPI(effectDelay, System.currentTimeMillis() + time);
-					 who.setDPI(effectType, true);
-					 DivinityUtils.bc(muter + " &4&ohas placed a " + type + " on " + who.getDPI(DPI.DISPLAY_NAME) + " &4&ofor &6&o" + (time/1000)/60 + " &4&ominutes.");
+					 who.set(effectDelay, System.currentTimeMillis() + time);
+					 who.set(effectType, true);
+					 DivinityUtils.bc(muter + " &4&ohas placed a " + type + " on " + who.getStr(DPI.DISPLAY_NAME) + " &4&ofor &6&o" + (time/1000)/60 + " &4&ominutes.");
 				 }
 				 
 			 } else {
@@ -59,7 +59,7 @@ public class ElyModeration {
 		 for (String s : args){
 			 message = message + " " + s;
 		 }
-		 DivinityUtils.bc(kicker + " &4&ohas kicked " + who.getDPI(DPI.DISPLAY_NAME) + " &e&o(&6&o" + message.replace(args[0], "").trim() + "&e&o)");
+		 DivinityUtils.bc(kicker + " &4&ohas kicked " + who.getStr(DPI.DISPLAY_NAME) + " &e&o(&6&o" + message.replace(args[0], "").trim() + "&e&o)");
 		 Bukkit.getPlayer(who.uuid()).kickPlayer(main.AS("&e&o(&6&o" + message.replace(args[0], "").trim() + "&e&o)"));
 	 }
 	 
@@ -70,7 +70,7 @@ public class ElyModeration {
 		 
 		 if (main.doesPartialPlayerExist(args[0]) && main.isOnline(args[0])){
 			 main.getPlayer(args[0]).setHealth(0);
-			 DivinityUtils.bc(display + " &4has REKT " + main.matchDivPlayer(args[0]).getDPI(DPI.DISPLAY_NAME));
+			 DivinityUtils.bc(display + " &4has REKT " + main.matchDivPlayer(args[0]).getStr(DPI.DISPLAY_NAME));
 		 } else {
 			 main.s(cs, "playerNotFound");
 		 }

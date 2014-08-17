@@ -21,17 +21,17 @@ public class ElyAnnouncer implements Runnable {
 	public void run(){
 		
 		DivinityPlayer dp = main.api.getSystem();
-		List<String> messages = dp.getListDPI(DPI.ANNOUNCER);
-		int index = dp.getIntDPI(DPI.ANNOUNCER_INDEX);
+		List<String> messages = dp.getList(DPI.ANNOUNCER);
+		int index = dp.getInt(DPI.ANNOUNCER_INDEX);
 		
 		if (messages.size() > index){
-			DivinityUtils.bc(dp.getListDPI(DPI.ANNOUNCER).get(index));
-			dp.setDPI(DPI.ANNOUNCER_INDEX, index + 1);
+			DivinityUtils.bc(dp.getList(DPI.ANNOUNCER).get(index));
+			dp.set(DPI.ANNOUNCER_INDEX, index + 1);
 		} else if (messages.size() > 0){
 			DivinityUtils.bc(messages.get(0));
-			dp.setDPI(DPI.ANNOUNCER_INDEX, 1);
+			dp.set(DPI.ANNOUNCER_INDEX, 1);
 		} else {
-			dp.setDPI(DPI.ANNOUNCER_INDEX, 0);
+			dp.set(DPI.ANNOUNCER_INDEX, 0);
 		}
 	}
 	
@@ -42,7 +42,7 @@ public class ElyAnnouncer implements Runnable {
 	@DivCommand(aliases= {"announcer"}, perm = "wa.staff.mod2", help = "/announcer <add, remove, view> <message>", player = false, min = 1)
 	public void onAnnounceCommand(CommandSender cs, String[] args){
 		
-		List<String> messages = main.api.getSystem().getListDPI(DPI.ANNOUNCER);
+		List<String> messages = main.api.getSystem().getList(DPI.ANNOUNCER);
 		String msg = args.length > 1 ? new String(args[1]) : "";
 		
 		for (int x = 2; x < args.length; x++){

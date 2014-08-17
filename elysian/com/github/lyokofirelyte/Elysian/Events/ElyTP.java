@@ -33,11 +33,11 @@ public class ElyTP implements Listener {
 		}
 		
 		DivinityPlayer dp = main.api.getDivPlayer(e.getPlayer());
-		List<String> prevLocs = dp.getListDPI(DPI.PREVIOUS_LOCATIONS);
+		List<String> prevLocs = dp.getList(DPI.PREVIOUS_LOCATIONS);
 		Vector tv = e.getTo().toVector();
 		Player p = e.getPlayer();
 		
-		if (dp.getBoolDPI(DPI.IN_COMBAT) && !main.silentPerms(p, "wa.rank.citizen")){
+		if (dp.getBool(DPI.IN_COMBAT) && !main.silentPerms(p, "wa.rank.citizen")){
 			main.s(p, "&c&oYou can't escape during combat until you reach Citizen!");
 			p.getWorld().playEffect(p.getLocation(), Effect.MOBSPAWNER_FLAMES, 2);
 			return;
@@ -45,7 +45,7 @@ public class ElyTP implements Listener {
 		
 		if (!main.silentPerms(p, "wa.staff.mod2")){
 			for (Player player : Bukkit.getOnlinePlayers()){
-				if (main.api.getDivPlayer(player).getBoolDPI(DPI.TP_BLOCK)){
+				if (main.api.getDivPlayer(player).getBool(DPI.TP_BLOCK)){
 					Vector vv = player.getLocation().toVector();
 					for (int x = 0; x < 7; x++){
 						if (vv.getBlockX() == tv.getBlockX()+x || vv.getX() == tv.getBlockX()-x){
