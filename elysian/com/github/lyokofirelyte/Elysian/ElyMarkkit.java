@@ -464,7 +464,8 @@ public class ElyMarkkit implements Listener {
 						itemMeta.setLore(Arrays.asList(ChatColor.GREEN + "Buy", (Integer.parseInt(main.markkitYaml.getString("Items." + name + ".8.buyprice"))*2) + "", ChatColor.RED + "Sell", main.markkitYaml.getString("Items." + name + ".8.sellprice")));
 					}else{
 						itemMeta.setLore(Arrays.asList(ChatColor.GREEN + "Buy", main.markkitYaml.getString("Items." + name + ".8.buyprice"), ChatColor.RED + "Sell", main.markkitYaml.getString("Items." + name + ".8.sellprice")));
-					}								item.setItemMeta(itemMeta);
+					}	
+					item.setItemMeta(itemMeta);
 					inv.setItem(31, item);
 				}
 			}

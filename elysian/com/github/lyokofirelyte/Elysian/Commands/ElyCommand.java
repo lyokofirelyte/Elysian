@@ -13,6 +13,7 @@ import org.bukkit.entity.Player;
 import com.github.lyokofirelyte.Divinity.DivinityUtils;
 import com.github.lyokofirelyte.Divinity.Commands.DivCommand;
 import com.github.lyokofirelyte.Divinity.Events.DivinityChannelEvent;
+import com.github.lyokofirelyte.Divinity.JSON.JSONChatClickEventType;
 import com.github.lyokofirelyte.Divinity.JSON.JSONChatExtra;
 import com.github.lyokofirelyte.Divinity.JSON.JSONChatHoverEventType;
 import com.github.lyokofirelyte.Divinity.JSON.JSONChatMessage;
@@ -123,6 +124,23 @@ public class ElyCommand {
 		DivinityPlayer dp = main.api.getDivPlayer(p);
 		dp.set(DPI.PLAYER_DESC, "&7&o" + main.AS(main.api.divUtils.createString(args, 0)));
 		main.s(p, "Updated!");
+	}
+	
+	@DivCommand(aliases = {"calendar"}, desc = "View our calendar!", help = "/calendar", player = true, min = 0)
+	public void onCalendar(Player p, String[] args){
+
+		DivinityPlayer player = main.api.getSystem();
+		if(args.length == 1){
+			if(main.silentPerms(p, "wa.staff.admin")){
+				player.set(DPI.CALENDAR_LINK, args[0]);
+			}
+		}
+		
+		 JSONChatMessage msg = new JSONChatMessage("", null, null);
+		 JSONChatExtra extra = new JSONChatExtra(main.AS("&aClick here to for our calendar!"), null, null);
+		 extra.setClickEvent(JSONChatClickEventType.OPEN_URL, player.getStr(DPI.CALENDAR_LINK));
+		 msg.addExtra(extra);
+		 msg.sendToAllPlayers(); 
 	}
 	
 	@DivCommand(perm = "wa.staff.admin", aliases = {"sudo"}, desc = "Force someone to run a command", help = "/sudo <player> <command>", player = false, min = 2)
