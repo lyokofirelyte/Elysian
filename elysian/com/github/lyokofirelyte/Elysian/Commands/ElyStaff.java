@@ -98,6 +98,23 @@ public class ElyStaff implements Listener {
 		 }
 	 }
 	 
+	 @DivCommand(perm = "wa.rank.intern", aliases = {"abandonship"}, desc = "ABANDON SHIP!", help = "/abandonship", player = true, min = 0)
+	 public void onAbandon(CommandSender cs, String[] args){
+		 main.api.schedule(this, "abandonship", 10L, "abandonship");
+		 main.api.schedule(this, "abandonship", 20L, "abandonship");
+		 main.api.schedule(this, "kick", 30L, "kick", (Player)cs);
+	 }
+	 
+	 public void abandonship(){
+		 for(Player p : Bukkit.getOnlinePlayers()){
+			main.s(p, "&4Abandon Ship!");
+		 }
+	 }
+	 
+	 public void kick(Player p){
+		 p.kickPlayer("§4Abandoned Ship!");
+	 }
+	 
 	 @DivCommand(perm = "wa.staff.admin", aliases = {"placesign"}, desc = "Place a market sign down", help = "/placesign <down/side>", player = true, min = 1)
 	 public void onPlaceDown(CommandSender cs, String[] args){
 		 Player p = (Player)cs;
@@ -110,7 +127,6 @@ public class ElyStaff implements Listener {
 			 s.setLine(0, "§dWC §5Markkit");
 			 ConfigurationSection configSection = main.markkitYaml.getConfigurationSection("Items");
 			 for (String path : configSection.getKeys(false)){
-				 System.out.println(Integer.parseInt(main.markkitYaml.getString("Items." + path + ".ID")) == p.getItemInHand().getTypeId());
 
 				 if((Integer.parseInt(main.markkitYaml.getString("Items." + path + ".ID")) == p.getItemInHand().getTypeId()) && (Integer.parseInt(main.markkitYaml.getString("Items." + path + ".Damage")) == p.getItemInHand().getDurability())){
 					 s.setLine(1, "§f" + path);
@@ -134,7 +150,6 @@ public class ElyStaff implements Listener {
 			 s.setLine(0, "§dWC §5Markkit");
 			 ConfigurationSection configSection = main.markkitYaml.getConfigurationSection("Items");
 			 for (String path : configSection.getKeys(false)){
-				 System.out.println(Integer.parseInt(main.markkitYaml.getString("Items." + path + ".ID")) == p.getItemInHand().getTypeId());
 
 				 if((Integer.parseInt(main.markkitYaml.getString("Items." + path + ".ID")) == p.getItemInHand().getTypeId()) && (Integer.parseInt(main.markkitYaml.getString("Items." + path + ".Damage")) == p.getItemInHand().getDurability())){
 					 s.setLine(1, "§f" + path);
