@@ -130,7 +130,7 @@ public class ElyCommand {
 	
 	@DivCommand(aliases = {"calendar"}, desc = "View our calendar!", help = "/calendar", player = true, min = 0)
 	public void onCalendar(Player p, String[] args){
-		
+
 		DivinitySystem player = main.api.getSystem();
 		if(args.length == 1){
 			if(main.silentPerms(p, "wa.staff.admin")){

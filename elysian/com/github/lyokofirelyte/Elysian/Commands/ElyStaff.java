@@ -52,23 +52,6 @@ public class ElyStaff implements Listener {
 		 }
 	 }
 	 
-	 @DivCommand(perm = "wa.rank.intern", aliases = {"abandonship"}, desc = "ABANDON SHIP!", help = "/abandonship", player = true, min = 0)
-	 public void onAbandon(CommandSender cs, String[] args){
-		 main.api.schedule(this, "abandonship", 10L, "abandonship");
-		 main.api.schedule(this, "abandonship", 20L, "abandonship");
-		 main.api.schedule(this, "kick", 30L, "kick", (Player)cs);
-	 }
-	 
-	 public void abandonship(){
-		 for(Player p : Bukkit.getOnlinePlayers()){
-	 		main.s(p, "&4Abandon Ship!");
-		 }
-	 }
-	 
-	 public void kick(Player p){
-		 p.kickPlayer("§4Abandoned Ship!");
-	 }
-	 
 	 @DivCommand(perm = "wa.staff.mod2", aliases = {"clear"}, desc = "Clear items on floor (and monsters)", help = "/clear <radius>", player = true, min = 1)
 	 public void onClear(Player p, String[] args){
 		 
@@ -140,6 +123,23 @@ public class ElyStaff implements Listener {
 		 } else {
 			 main.s(cs, "playerNotFound");
 		 }
+	 }
+	 
+	 @DivCommand(perm = "wa.rank.intern", aliases = {"abandonship"}, desc = "ABANDON SHIP!", help = "/abandonship", player = true, min = 0)
+	 public void onAbandon(CommandSender cs, String[] args){
+		 main.api.schedule(this, "abandonship", 10L, "abandonship");
+		 main.api.schedule(this, "abandonship", 20L, "abandonship");
+		 main.api.schedule(this, "kick", 30L, "kick", (Player)cs);
+	 }
+	 
+	 public void abandonship(){
+		 for(Player p : Bukkit.getOnlinePlayers()){
+			main.s(p, "&4Abandon Ship!");
+		 }
+	 }
+	 
+	 public void kick(Player p){
+		 p.kickPlayer("§4Abandoned Ship!");
 	 }
 	 
 	 @DivCommand(perm = "wa.staff.intern", aliases = {"speed"}, desc = "Speed Command", help = "/speed <1-10>", player = true, min = 1, max = 1)
