@@ -7,8 +7,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 
 import com.github.lyokofirelyte.Divinity.DivinityUtils;
 import com.github.lyokofirelyte.Divinity.Commands.DivCommand;
@@ -159,6 +161,16 @@ public class ElyCommand {
 	@DivCommand(perm = "wa.staff.admin", aliases = {"bc", "broadcast"}, desc = "Broadcasts a message", help = "/broadcast", player = false, min = 1)
 	public void onBroadcast(CommandSender cs, String[] args){
 		DivinityUtils.bc(main.api.divUtils.createString(args, 0));
+	}
+	
+	@DivCommand(perm = "wa.rank.villager", aliases = {"hat"}, desc = "Wear a hat!", help = "/hat", player = true)
+	public void onHat(Player p, String[] args){
+		if (p.getItemInHand() != null && (p.getInventory().getHelmet() == null || p.getInventory().getHelmet().getType().equals(Material.AIR))){
+			p.getInventory().setHelmet(p.getItemInHand());
+			p.setItemInHand(new ItemStack(Material.AIR));
+		} else {
+			main.s(p, "&c&oHand must have something in it and helmet be open.");
+		}
 	}
 	
 	@DivCommand(perm = "wa.staff.admin", aliases = {"modify"}, desc = "Divinity Modification Command", help = "/modify list, /modify <player/alliance> <stat> <value>", player = false, min = 1)
