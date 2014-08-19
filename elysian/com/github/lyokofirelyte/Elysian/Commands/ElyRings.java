@@ -26,7 +26,10 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
 
 import com.github.lyokofirelyte.Divinity.Commands.DivCommand;
+import com.github.lyokofirelyte.Divinity.Manager.DivinityManager;
+import com.github.lyokofirelyte.Divinity.Storage.DRS;
 import com.github.lyokofirelyte.Divinity.Storage.DivinityRing;
+import com.github.lyokofirelyte.Divinity.Storage.DivinityStorage;
 import com.github.lyokofirelyte.Elysian.Elysian;
 import com.github.lyokofirelyte.Elysian.Gui.GuiRings;
 
@@ -53,9 +56,10 @@ public class ElyRings implements Listener {
 					Location l = p.getLocation().getBlock().getLocation();
 					Vector v = l.toVector();
 					
-					ring.setCenter(l.getWorld().getName() + " " + v.getBlockX() + " " + (v.getBlockY()-1) + " " + v.getBlockZ() + " " + l.getYaw() + " " + l.getPitch());
-					ring.setRingMaterial(i.getType().getId(), i.getData().getData());
-					ring.setDest("none");
+					ring.set(DRS.CENTER, l.getWorld().getName() + " " + v.getBlockX() + " " + (v.getBlockY()-1) + " " + v.getBlockZ() + " " + l.getYaw() + " " + l.getPitch());
+					ring.set(DRS.MAT_ID, i.getType().getId());
+					ring.set(DRS.BYTE_ID, i.getData().getData());
+					ring.set(DRS.DEST, "none");
 					
 					main.s(p, "Added!");
 					
@@ -68,7 +72,7 @@ public class ElyRings implements Listener {
 			case "remove":
 				
 				if (main.doesRingExist(args[1])){
-					main.api.divManager.getRingMap().remove(args[1]);
+					main.api.divManager.getMap(DivinityManager.ringsDir).remove(args[1]);
 					new File("./plugins/Divinity/rings/" + args[1].toLowerCase() + ".yml").delete();
 					main.s(p, "&c&oDeleted!");
 				} else {
@@ -244,7 +248,8 @@ public class ElyRings implements Listener {
 			Vector v = e.getClickedBlock().getLocation().toVector();
 			String[] clickedLoc = (e.getClickedBlock().getWorld().getName() + " " + v.getBlockX() + " " + v.getBlockY() + " " + v.getBlockZ()).split(" ");
 			
-			for (DivinityRing ring : main.api.divManager.getRingMap().values()){
+			for (DivinityStorage r : main.api.divManager.getMap(DivinityManager.ringsDir).values()){
+				DivinityRing ring = (DivinityRing) r;
 				if (ring.getCenter()[0].equals(clickedLoc[0]) && ring.getCenter()[1].equals(clickedLoc[1]) && ring.getCenter()[2].equals(clickedLoc[2]) && ring.getCenter()[3].equals(clickedLoc[3])){
 					if (!ring.isInOperation()){
 						main.s(e.getPlayer(), "Select!");

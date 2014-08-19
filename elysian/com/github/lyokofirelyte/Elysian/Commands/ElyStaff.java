@@ -9,7 +9,10 @@ import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.block.Block;
+import org.bukkit.block.Sign;
 import org.bukkit.command.CommandSender;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
@@ -25,6 +28,7 @@ import com.github.lyokofirelyte.Divinity.DivinityUtils;
 import com.github.lyokofirelyte.Divinity.Commands.DivCommand;
 import com.github.lyokofirelyte.Divinity.Events.DivinityChannelEvent;
 import com.github.lyokofirelyte.Divinity.Events.DivinityTeleportEvent;
+import com.github.lyokofirelyte.Divinity.Manager.DivinityManager;
 import com.github.lyokofirelyte.Divinity.Storage.DAI;
 import com.github.lyokofirelyte.Divinity.Storage.DPI;
 import com.github.lyokofirelyte.Divinity.Storage.DivinityPlayer;
@@ -48,6 +52,23 @@ public class ElyStaff implements Listener {
 		 }
 	 }
 	 
+	 @DivCommand(perm = "wa.rank.intern", aliases = {"abandonship"}, desc = "ABANDON SHIP!", help = "/abandonship", player = true, min = 0)
+	 public void onAbandon(CommandSender cs, String[] args){
+		 main.api.schedule(this, "abandonship", 10L, "abandonship");
+		 main.api.schedule(this, "abandonship", 20L, "abandonship");
+		 main.api.schedule(this, "kick", 30L, "kick", (Player)cs);
+	 }
+	 
+	 public void abandonship(){
+		 for(Player p : Bukkit.getOnlinePlayers()){
+	 		main.s(p, "&4Abandon Ship!");
+		 }
+	 }
+	 
+	 public void kick(Player p){
+		 p.kickPlayer("§4Abandoned Ship!");
+	 }
+	 
 	 @DivCommand(perm = "wa.staff.mod2", aliases = {"clear"}, desc = "Clear items on floor (and monsters)", help = "/clear <radius>", player = true, min = 1)
 	 public void onClear(Player p, String[] args){
 		 
@@ -67,6 +88,32 @@ public class ElyStaff implements Listener {
 			 
 		 } else {
 			 main.s(p, "&c&oThat's not a number, or it's too big.");
+		 }
+	 }
+	 
+	 @DivCommand(perm = "wa.staff.admin", aliases = {"placesign"}, desc = "Place a market sign down", help = "/placesign <down/side>", player = true, min = 1)
+	 public void onPlaceDown(Player p, String[] args){
+		 
+		 Block newSign = p.getWorld().getBlockAt(new Location(p.getWorld(), p.getLocation().getBlockX(), p.getLocation().getBlockY(), p.getLocation().getBlockZ()));
+		 newSign.setType(Material.WALL_SIGN);
+			 
+		 Sign s = (Sign) newSign.getState();
+		 s.setLine(0, "§dWC §5Markkit");
+			 
+		 ConfigurationSection configSection = main.markkitYaml.getConfigurationSection("Items");
+			 
+		 for (String path : configSection.getKeys(false)){
+				 
+			 if((Integer.parseInt(main.markkitYaml.getString("Items." + path + ".ID")) == p.getItemInHand().getTypeId()) && (Integer.parseInt(main.markkitYaml.getString("Items." + path + ".Damage")) == p.getItemInHand().getDurability())){
+				 s.setLine(1, "§f" + path);
+			 } else {
+				 s.setLine(1, "§fNot Found");
+			 }
+			 
+			 org.bukkit.material.Sign sign =  new org.bukkit.material.Sign(args[0].equals("side") ? Material.WALL_SIGN : Material.SIGN_POST);
+			 sign.setFacingDirection(DivinityUtils.getPlayerDirection(p).getOppositeFace());
+			 s.setData(sign);
+			 s.update();
 		 }
 	 }
 	 
@@ -247,11 +294,11 @@ public class ElyStaff implements Listener {
 		 
 		 for (Player player : Bukkit.getOnlinePlayers()){
 			 if (player.canSee(p)){
-				 player.showPlayer(p);
-				 hidden = "&a&ovisible";
-			 } else {
 				 player.hidePlayer(p);
 				 hidden = "&c&oinvisible";
+			 } else {
+				 player.showPlayer(p);
+				 hidden = "&a&ovisible";
 			 }
 		 }
 		 
@@ -294,7 +341,7 @@ public class ElyStaff implements Listener {
 				 main.s(p, "playerNotFound");
 			 }
 			 
-		 } else if (main.api.divManager.getAllianceMap().containsKey(args[0])){
+		 } else if (main.api.divManager.getMap(DivinityManager.allianceDir).containsKey(args[0])){
 			 
 			 String[] coords = main.api.getDivAlliance(args[0]).getStr(DAI.CENTER).split(" ");
 			 
@@ -311,9 +358,8 @@ public class ElyStaff implements Listener {
 				 if (args.length == 4 && main.doesPartialPlayerExist(args[3])){
 					 main.api.event(new DivinityTeleportEvent(main.getPlayer(args[3]), ((Player)p).getWorld().getName(), args[0], args[1], args[2]));
 				 } else {
-					 main.api.event(new DivinityTeleportEvent((Player)p, "world", args[0], args[1], args[2]));
+					 main.api.event(new DivinityTeleportEvent((Player)p, ((Player)p).getWorld().getName(), args[0], args[1], args[2]));
 				 }
-
 			 }
 			 
 	     } else {
@@ -705,7 +751,9 @@ public class ElyStaff implements Listener {
 		DivinityPlayer dp = main.api.getDivPlayer(p);
 
 		if (args.length == 0){
-			dp.set(DPI.BACKUP_INVENTORY, p.getInventory().getContents());
+			if (p.getWorld().equals("world")){
+				dp.set(DPI.BACKUP_INVENTORY, p.getInventory().getContents());
+			}
 			p.getInventory().clear();
 			main.s(p, "&oInventory inceneration activated. Use /ci u to undo.");
 		} else if (dp.getStack(DPI.BACKUP_INVENTORY).length > 0){

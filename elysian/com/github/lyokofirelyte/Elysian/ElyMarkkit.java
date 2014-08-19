@@ -293,10 +293,23 @@ public class ElyMarkkit implements Listener {
 				//the item you have to click
 				case 4: case 13: case 22: case 31: case 40: case 49:
 					ItemStack clicked = e.getInventory().getItem(e.getRawSlot());
-					
+					int count = 0;
+					for (Integer i : buyCart){
+						if(e.getInventory().getItem(i) != null){
+							count = count + e.getInventory().getItem(i).getAmount();
+						}
+					}
 					for (Integer i : buyCart){
 						if (e.getInventory().getItem(i) == null){
-							e.getInventory().setItem(i, clicked);
+							if(main.markkitYaml.getBoolean("Items." + name + ".isSellDoubled") == true){
+								e.getInventory().setItem(i, clicked);
+							}else{
+								if(main.markkitYaml.getInt("Items." + name + ".inStock") > count + e.getCurrentItem().getAmount() - 1){
+									e.getInventory().setItem(i, clicked);
+								}else{
+									main.s(p, "There is no more playerstock!, please buy this and re-open to buy moar.");
+								}
+							}
 							p.updateInventory();
 							break;
 						}
@@ -451,7 +464,8 @@ public class ElyMarkkit implements Listener {
 						itemMeta.setLore(Arrays.asList(ChatColor.GREEN + "Buy", (Integer.parseInt(main.markkitYaml.getString("Items." + name + ".8.buyprice"))*2) + "", ChatColor.RED + "Sell", main.markkitYaml.getString("Items." + name + ".8.sellprice")));
 					}else{
 						itemMeta.setLore(Arrays.asList(ChatColor.GREEN + "Buy", main.markkitYaml.getString("Items." + name + ".8.buyprice"), ChatColor.RED + "Sell", main.markkitYaml.getString("Items." + name + ".8.sellprice")));
-					}								item.setItemMeta(itemMeta);
+					}	
+					item.setItemMeta(itemMeta);
 					inv.setItem(31, item);
 				}
 			}

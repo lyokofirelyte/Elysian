@@ -7,7 +7,7 @@ import org.bukkit.command.CommandSender;
 import com.github.lyokofirelyte.Divinity.DivinityUtils;
 import com.github.lyokofirelyte.Divinity.Commands.DivCommand;
 import com.github.lyokofirelyte.Divinity.Storage.DPI;
-import com.github.lyokofirelyte.Divinity.Storage.DivinityPlayer;
+import com.github.lyokofirelyte.Divinity.Storage.DivinitySystem;
 
 public class ElyAnnouncer implements Runnable {
 	
@@ -20,7 +20,7 @@ public class ElyAnnouncer implements Runnable {
 	@Override
 	public void run(){
 		
-		DivinityPlayer dp = main.api.getSystem();
+		DivinitySystem dp = main.api.getSystem();
 		List<String> messages = dp.getList(DPI.ANNOUNCER);
 		int index = dp.getInt(DPI.ANNOUNCER_INDEX);
 		

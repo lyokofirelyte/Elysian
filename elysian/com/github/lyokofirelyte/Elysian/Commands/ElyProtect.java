@@ -9,8 +9,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
-import net.minecraft.server.v1_7_R3.EntityItemFrame;
-
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -31,18 +29,19 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
-import org.bukkit.event.player.PlayerAchievementAwardedEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.util.Vector;
 
 import com.github.lyokofirelyte.Divinity.Commands.DivCommand;
 import com.github.lyokofirelyte.Divinity.Events.DivinityTeleportEvent;
+import com.github.lyokofirelyte.Divinity.Manager.DivinityManager;
 import com.github.lyokofirelyte.Divinity.Storage.DPI;
 import com.github.lyokofirelyte.Divinity.Storage.DRF;
 import com.github.lyokofirelyte.Divinity.Storage.DRI;
 import com.github.lyokofirelyte.Divinity.Storage.DivinityPlayer;
 import com.github.lyokofirelyte.Divinity.Storage.DivinityRegion;
+import com.github.lyokofirelyte.Divinity.Storage.DivinityStorage;
 import com.github.lyokofirelyte.Elysian.Elysian;
 import com.sk89q.worldedit.bukkit.selections.CuboidSelection;
 import com.sk89q.worldedit.bukkit.selections.Selection;
@@ -355,7 +354,7 @@ public class ElyProtect implements Listener {
 			
 			case "list":
 				
-				List<String> regions = new ArrayList<String>(main.api.divManager.getRegionMap().keySet());
+				List<String> regions = new ArrayList<String>(main.api.divManager.getMap(DivinityManager.regionsDir).keySet());
 				String rgColor = regions.size() > 0 && !main.api.getDivRegion(regions.get(0)).isDisabled() ? "&a" : "&c";
 				String msg = regions.size() > 0 ? rgColor + regions.get(0) : "&c&oNo regions are defined.";
 				
@@ -479,7 +478,7 @@ public class ElyProtect implements Listener {
 			
 			case "remove":
 
-				main.api.divManager.getRegionMap().remove(args[1].toLowerCase());
+				main.api.divManager.getMap(DivinityManager.regionsDir).remove(args[1].toLowerCase());
 				File file = new File("./plugins/Divinity/regions/" + args[1].toLowerCase() + ".yml");
 				file.delete();
 				main.s(p, "Deleted &6" + args[1] + "&b.");
@@ -699,9 +698,9 @@ public class ElyProtect implements Listener {
 		
 		Map<Integer, DivinityRegion> foundRegions = new HashMap<Integer, DivinityRegion>();
 		
-		for (DivinityRegion rg : main.api.divManager.getRegionMap().values()){
+		for (DivinityStorage rg : main.api.divManager.getMap(DivinityManager.regionsDir).values()){
 			if (isInRegion(l, rg.name())){
-				foundRegions.put(rg.getPriority(), rg);
+				foundRegions.put(((DivinityRegion)rg).getPriority(), (DivinityRegion)rg);
 			}
 		}
 		

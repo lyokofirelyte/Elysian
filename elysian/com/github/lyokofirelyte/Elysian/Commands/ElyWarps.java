@@ -63,7 +63,7 @@ public class ElyWarps {
 		}
 	}
 	
-	@DivCommand(perm = "wa.staff.mod2", name = "SW", aliases = {"setwarp", "remwarp"}, desc = "Elysian Set/Rem Warp Command", help = "/setwarp <name>, /remwarp <name>", player = true, min = 1)
+	@DivCommand(perm = "wa.staff.mod2", name = "SW", aliases = {"setwarp", "remwarp", "delwarp"}, desc = "Elysian Set/Rem Warp Command", help = "/setwarp <name>, /remwarp <name>", player = true, min = 1)
 	public void onSetWarp(Player p, String[] args, String cmd){
 		
 		if (cmd.equals("setwarp")){

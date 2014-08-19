@@ -1,13 +1,9 @@
 package com.github.lyokofirelyte.Elysian;
 
-import java.io.File;
-
 import org.bukkit.Bukkit;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.event.Listener;
 
 import com.github.lyokofirelyte.Divinity.Divinity;
-import com.github.lyokofirelyte.Divinity.DivinityAPI;
 import com.github.lyokofirelyte.Divinity.Manager.DivInvManager;
 import com.github.lyokofirelyte.Elysian.Commands.ElyAlliance;
 import com.github.lyokofirelyte.Elysian.Commands.ElyCommand;
@@ -48,7 +44,6 @@ public class ElySetup {
 	public void start(){
 		main.api = (Divinity) Bukkit.getPluginManager().getPlugin("Divinity");
 		main.we = (WorldEditPlugin) Bukkit.getPluginManager().getPlugin("WorldEdit");
-		main.markkitYaml = YamlConfiguration.loadConfiguration(new File("./plugins/Divinity/markkit.yml"));
 		main.logger = new ElyLogger(main);
 		main.watcher = new ElyWatch(main);
 		main.staff = new ElyStaff(main);

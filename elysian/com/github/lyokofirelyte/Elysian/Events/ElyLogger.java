@@ -36,6 +36,7 @@ import com.github.lyokofirelyte.Divinity.Commands.DivCommand;
 import com.github.lyokofirelyte.Divinity.Events.DivinityChannelEvent;
 import com.github.lyokofirelyte.Divinity.Storage.DPI;
 import com.github.lyokofirelyte.Divinity.Storage.DivinityPlayer;
+import com.github.lyokofirelyte.Divinity.Storage.DivinitySystem;
 import com.github.lyokofirelyte.Elysian.Elysian;
 
 public class ElyLogger implements Listener, Runnable {
@@ -202,7 +203,24 @@ public class ElyLogger implements Listener, Runnable {
 					}
 				}
 				
-				e.getPlayer().getInventory().setArmorContents(dp.getStack(DPI.DEATH_ARMOR));
+				int i = 0;
+				
+				for (ItemStack item : e.getPlayer().getInventory().getArmorContents()){
+					if (item != null && !item.getType().equals(Material.AIR)){
+						i++;
+					}
+				}
+				
+				if (i == 0){
+					e.getPlayer().getInventory().setArmorContents(dp.getStack(DPI.DEATH_ARMOR));
+				} else {
+					for (ItemStack item : dp.getStack(DPI.DEATH_ARMOR)){
+						if (item != null && !item.getType().equals(Material.AIR)){
+							e.getPlayer().getWorld().dropItem(l, item);
+						}
+					}
+				}
+				
 				e.getPlayer().updateInventory();
 				e.getClickedBlock().setType(Material.AIR);
 				
@@ -382,7 +400,7 @@ public class ElyLogger implements Listener, Runnable {
 	public void onLogCommand(final Player p, final String[] args){
 		
 		DivinityPlayer dp = main.api.getDivPlayer(p);
-		DivinityPlayer system = main.api.getSystem();
+		DivinitySystem system = main.api.getSystem();
 		
 		if (system.getBool(DPI.ROLLBACK_IN_PROGRESS)){
 			main.s(p, "&c&oRollback in progress - command blocked to prevent file corruption.");
@@ -548,7 +566,7 @@ public class ElyLogger implements Listener, Runnable {
 								}
 
 								final List<Location> finalLocs = new ArrayList<Location>();
-								final DivinityPlayer system = main.api.getSystem();
+								final DivinitySystem system = main.api.getSystem();
 								system.set(DPI.EXP, 0);
 								
 								for (Location l : newBlocks.keySet()){

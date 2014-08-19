@@ -13,6 +13,7 @@ import org.bukkit.scoreboard.ScoreboardManager;
 import com.github.lyokofirelyte.Divinity.Events.ScoreboardUpdateEvent;
 import com.github.lyokofirelyte.Divinity.Storage.DPI;
 import com.github.lyokofirelyte.Divinity.Storage.DivinityPlayer;
+import com.github.lyokofirelyte.Divinity.Storage.DivinitySystem;
 import com.github.lyokofirelyte.Elysian.Elysian;
 
 public class ElyScoreBoard implements Listener {
@@ -28,7 +29,7 @@ public class ElyScoreBoard implements Listener {
 		
 		Player p = e.getPlayer();
 		DivinityPlayer dp = main.api.getDivPlayer(p);
-		DivinityPlayer system = main.api.getSystem();
+		DivinitySystem system = main.api.getSystem();
 		boolean a = false;
 		
 		if (e.isCancelled() || (!dp.getBool(DPI.SCOREBOARD_TOGGLE) && !e.getReason().equals("required"))){

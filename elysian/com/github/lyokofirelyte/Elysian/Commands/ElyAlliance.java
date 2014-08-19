@@ -15,6 +15,7 @@ import org.bukkit.util.Vector;
 import com.github.lyokofirelyte.Divinity.DivinityUtils;
 import com.github.lyokofirelyte.Divinity.Commands.DivCommand;
 import com.github.lyokofirelyte.Divinity.Events.DivinityChannelEvent;
+import com.github.lyokofirelyte.Divinity.Manager.DivinityManager;
 import com.github.lyokofirelyte.Divinity.Storage.DAI;
 import com.github.lyokofirelyte.Divinity.Storage.DPI;
 import com.github.lyokofirelyte.Divinity.Storage.DivinityAlliance;
@@ -226,7 +227,7 @@ public class ElyAlliance {
 		 					}
 		 				}
 		 				
-		 				main.api.divManager.getAllianceMap().remove(args[1].toLowerCase());
+		 				main.api.divManager.getMap(DivinityManager.allianceDir).remove(args[1].toLowerCase());
 		 				new File("./plugins/Divinity/alliances/" + args[1].toLowerCase() + ".yml").delete();
 		 				
 		 			} else {
@@ -444,7 +445,7 @@ public class ElyAlliance {
 
 	 private void removeFromAlliance(DivinityPlayer player, String alliance){
 		 
-		 if (main.api.divManager.getAllianceMap().containsKey(alliance)){
+		 if (main.api.divManager.getMap(DivinityManager.allianceDir).containsKey(alliance)){
 			 main.api.getDivAlliance(alliance).getList(DAI.MEMBERS).remove(player.uuid().toString());
 		 }
 		 
@@ -468,6 +469,6 @@ public class ElyAlliance {
 	 }
 	 
 	 private boolean doesAllianceExist(String alliance){
-		 return main.api.divManager.getAllianceMap().containsKey(alliance.toLowerCase());
+		 return main.api.divManager.getMap(DivinityManager.allianceDir).containsKey(alliance.toLowerCase());
 	 }
 }

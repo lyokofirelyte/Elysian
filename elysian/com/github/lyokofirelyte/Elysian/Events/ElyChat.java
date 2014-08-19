@@ -27,6 +27,7 @@ import com.github.lyokofirelyte.Divinity.JSON.JSONChatHoverEventType;
 import com.github.lyokofirelyte.Divinity.JSON.JSONChatMessage;
 import com.github.lyokofirelyte.Divinity.Storage.DPI;
 import com.github.lyokofirelyte.Divinity.Storage.DivinityPlayer;
+import com.github.lyokofirelyte.Divinity.Storage.DivinitySystem;
 import com.github.lyokofirelyte.Elysian.Elysian;
 
 public class ElyChat implements Listener {
@@ -55,7 +56,7 @@ public class ElyChat implements Listener {
 	@DivCommand(name = "PM", aliases = {"tell", "pm", "msg", "message", "t", "r"}, desc = "Private Message Command", help = "/tell <player> <message>", min = 2, player = false)
 	public void onPrivateMessage(CommandSender cs, String[] args, String cmd){
 
-		DivinityPlayer dp = cs instanceof Player ? main.api.getDivPlayer((Player)cs) : main.api.getSystem();
+		DivinityPlayer dp = cs instanceof Player ? main.getDivPlayer((Player)cs) : (DivinityPlayer)main.api.getSystem();
 		String sendTo = !cmd.equals("r") ? args[0] : dp.getStr(DPI.PREVIOUS_PM);;
 		String message = !cmd.equals("r") ? args[1] : args[0];
 		int start = !cmd.equals("r") ? 2 : 1;
@@ -92,7 +93,7 @@ public class ElyChat implements Listener {
 	@DivCommand(perm = "wa.staff.mod2", aliases = {"filter"}, desc = "Chat & Command Filter Command", help = "/filter <word> <replacement>. If it already has a filter it will be removed.", player = false, min = 2)
 	public void onFilter(CommandSender cs, String[] args){
 		
-		DivinityPlayer system = main.api.getSystem();
+		DivinitySystem system = main.api.getSystem();
 		List<String> toRemove = new ArrayList<String>();
 		String dispName = cs instanceof Player ? ((Player)cs).getDisplayName() : "&6Console";
 		

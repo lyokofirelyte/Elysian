@@ -1,12 +1,12 @@
 package com.github.lyokofirelyte.Elysian.Gui;
 
 import org.bukkit.Material;
-import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
 
 import com.github.lyokofirelyte.Divinity.DivGui;
-import com.github.lyokofirelyte.Divinity.Storage.DivinityRing;
+import com.github.lyokofirelyte.Divinity.Manager.DivinityManager;
+import com.github.lyokofirelyte.Divinity.Storage.DivinityStorage;
 import com.github.lyokofirelyte.Elysian.Elysian;
 
 import static com.github.lyokofirelyte.Divinity.Manager.DivInvManager.createItem;
@@ -20,7 +20,7 @@ public class GuiRings extends DivGui {
 	
 	public GuiRings(Elysian main, Vector v, String name){
 		
-		super(9, "&3Rings Destination");
+		super(18, "&3Rings Destination");
 		this.main = main;
 		this.v = v;
 		this.name = name;
@@ -29,9 +29,9 @@ public class GuiRings extends DivGui {
 	@Override
 	public void create(){
 		
-		for (String ring : main.api.divManager.getRingMap().keySet()){
-			if (!ring.equals(name)){
-				addButton(i, createItem("&e" + ring, new String[] { "&6&oTeleport here..."}, Material.GLOWSTONE));
+		for (DivinityStorage ring : main.api.divManager.getMap(DivinityManager.ringsDir).values()){
+			if (!ring.name().equals(name)){
+				addButton(i, createItem("&e" + ring.name(), new String[] { "&6&oTeleport here..."}, Material.GLOWSTONE));
 				i++;
 			}
 		}

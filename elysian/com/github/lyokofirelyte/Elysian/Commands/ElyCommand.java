@@ -13,12 +13,15 @@ import org.bukkit.entity.Player;
 import com.github.lyokofirelyte.Divinity.DivinityUtils;
 import com.github.lyokofirelyte.Divinity.Commands.DivCommand;
 import com.github.lyokofirelyte.Divinity.Events.DivinityChannelEvent;
+import com.github.lyokofirelyte.Divinity.JSON.JSONChatClickEventType;
 import com.github.lyokofirelyte.Divinity.JSON.JSONChatExtra;
 import com.github.lyokofirelyte.Divinity.JSON.JSONChatHoverEventType;
 import com.github.lyokofirelyte.Divinity.JSON.JSONChatMessage;
+import com.github.lyokofirelyte.Divinity.Manager.DivinityManager;
 import com.github.lyokofirelyte.Divinity.Storage.DAI;
 import com.github.lyokofirelyte.Divinity.Storage.DPI;
 import com.github.lyokofirelyte.Divinity.Storage.DivinityPlayer;
+import com.github.lyokofirelyte.Divinity.Storage.DivinitySystem;
 import com.github.lyokofirelyte.Elysian.Elysian;
 import com.github.lyokofirelyte.Elysian.Gui.GuiRoot;
 
@@ -35,7 +38,7 @@ public class ElyCommand {
 		"&b. . . . .&f(  &3D  i  v  i  n  i  t  y &f  )&b. . . . .",
 		"",
 		"&7&oAn API by Hugs, for Elysian & Connecting Plugins",	
-		"&6&o/ely help"
+		"&6&oRegistered Modules: "
 	};
 	
 	String[] elyLogo = new String[]{
@@ -125,6 +128,23 @@ public class ElyCommand {
 		main.s(p, "Updated!");
 	}
 	
+	@DivCommand(aliases = {"calendar"}, desc = "View our calendar!", help = "/calendar", player = true, min = 0)
+	public void onCalendar(Player p, String[] args){
+		
+		DivinitySystem player = main.api.getSystem();
+		if(args.length == 1){
+			if(main.silentPerms(p, "wa.staff.admin")){
+				player.set(DPI.CALENDAR_LINK, args[0]);
+			}
+		}
+		
+		 JSONChatMessage msg = new JSONChatMessage("", null, null);
+		 JSONChatExtra extra = new JSONChatExtra(main.AS("&aClick here to for our calendar!"), null, null);
+		 extra.setClickEvent(JSONChatClickEventType.OPEN_URL, player.getStr(DPI.CALENDAR_LINK));
+		 msg.addExtra(extra);
+		 msg.sendToAllPlayers(); 
+	}
+	
 	@DivCommand(perm = "wa.staff.admin", aliases = {"sudo"}, desc = "Force someone to run a command", help = "/sudo <player> <command>", player = false, min = 2)
 	public void onSudo(CommandSender cs, String[] args){
 		
@@ -138,11 +158,7 @@ public class ElyCommand {
 	
 	@DivCommand(perm = "wa.staff.admin", aliases = {"bc", "broadcast"}, desc = "Broadcasts a message", help = "/broadcast", player = false, min = 1)
 	public void onBroadcast(CommandSender cs, String[] args){
-		StringBuilder text = new StringBuilder();
-		for(String s : args){
-			text.append(s + " ");
-		}
-		DivinityUtils.bc(text.toString());
+		DivinityUtils.bc(main.api.divUtils.createString(args, 0));
 	}
 	
 	@DivCommand(perm = "wa.staff.admin", aliases = {"modify"}, desc = "Divinity Modification Command", help = "/modify list, /modify <player/alliance> <stat> <value>", player = false, min = 1)
@@ -175,7 +191,7 @@ public class ElyCommand {
 						}
 					}
 				}
-			} else if (main.api.divManager.getAllianceMap().containsKey(args[0])){
+			} else if (main.api.divManager.getMap(DivinityManager.allianceDir).containsKey(args[0])){
 				for (DAI i : DAI.values()){
 					if (i.s().equalsIgnoreCase(args[1])){
 						try {
@@ -198,9 +214,20 @@ public class ElyCommand {
 	
 	@DivCommand(aliases = {"div", "divinity"}, desc = "Divinity Main Command", help = "/ely help", player = false)
 	public void onDivinity(CommandSender p, String[] args){
+		
+		String[] m1 = main.api.getAllModules().size() > 0 ? main.api.getAllModules().get(0).getClass().getName().split("\\.") : new String[]{"none"};
+		String moduleList = "&6" + m1[m1.length-1];
+		
+		for (int x = 1; x < main.api.getAllModules().size(); x++){
+			String[] m2 = main.api.getAllModules().get(x).getClass().getName().split("\\.");
+			moduleList = moduleList + "&7, &6" + m2[m2.length-1];
+		}
+		
 		for (String s : divLogo){
 			p.sendMessage(main.AS(s));
 		}
+		
+		p.sendMessage(main.AS(moduleList));
 	}
 	
 	@DivCommand(aliases = {"ely", "elysian"}, desc = "Elysian Main Command", help = "/ely help", player = false)
@@ -246,6 +273,7 @@ public class ElyCommand {
 					if (main.perms(p, "wa.staff.admin")){
 						try {
 							main.api.divManager.save();
+							main.onUnRegister();
 						} catch (IOException e) {
 							e.printStackTrace();
 						}
@@ -259,6 +287,7 @@ public class ElyCommand {
 					
 						try {
 							main.api.divManager.load();
+							main.onRegister();
 						} catch (Exception e) {
 							e.printStackTrace();
 						}

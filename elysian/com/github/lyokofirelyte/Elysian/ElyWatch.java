@@ -11,6 +11,7 @@ import com.github.lyokofirelyte.Divinity.DivinityUtils;
 import com.github.lyokofirelyte.Divinity.Events.ScoreboardUpdateEvent;
 import com.github.lyokofirelyte.Divinity.Storage.DPI;
 import com.github.lyokofirelyte.Divinity.Storage.DivinityPlayer;
+import com.github.lyokofirelyte.Divinity.Storage.DivinitySystem;
 
 public class ElyWatch implements Runnable {
 	
@@ -32,7 +33,7 @@ public class ElyWatch implements Runnable {
 
 	@Override
 	public void run(){
-		DivinityPlayer system = main.api.getSystem();
+		DivinitySystem system = main.api.getSystem();
 		for (Player p : Bukkit.getOnlinePlayers()){
 			DivinityPlayer dp = main.api.getDivPlayer(p);
 			dp.set(DPI.IN_COMBAT, false);
@@ -94,7 +95,7 @@ public class ElyWatch implements Runnable {
 		}
 	}
 	
-	private void afkCheck(Player p, DivinityPlayer dp, DivinityPlayer system){
+	private void afkCheck(Player p, DivinityPlayer dp, DivinitySystem system){
 		
 		if (dp.getLong(DPI.AFK_TIME_INIT) <= 0){
 			dp.set(DPI.AFK_TIME_INIT, System.currentTimeMillis());
@@ -144,7 +145,7 @@ public class ElyWatch implements Runnable {
 		
 		if (dp.getInt(DPI.MOB_MONEY) > 0){
 			dp.set(DPI.BALANCE, dp.getInt(DPI.BALANCE) + dp.getInt(DPI.MOB_MONEY));
-			main.s(p, dp.getInt(DPI.MOB_MONEY) + " &oshinies earned.");
+			main.s(p, dp.getInt(DPI.MOB_MONEY) + " &oshinies earned from various mobs.");
 			dp.set(DPI.MOB_MONEY, 0);
 		}
 	}

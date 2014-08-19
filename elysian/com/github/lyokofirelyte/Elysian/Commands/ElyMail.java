@@ -55,7 +55,7 @@ public class ElyMail {
 		  		  if (p instanceof Player){
 		  			clearing = main.api.getDivPlayer((Player)p);
 		  		  } else {
-		  			clearing = main.api.getSystem();
+		  			clearing = (DivinityPlayer) main.api.getSystem();
 		  		  }
 		  		  
 		  		  if (clearing.getList(DPI.MAIL).size() > 0){
@@ -159,7 +159,7 @@ public class ElyMail {
  		  if (p instanceof Player){
  			  reading = main.api.getDivPlayer((Player)p);
  		  } else {
- 			  reading = main.api.getSystem();
+ 			  reading = (DivinityPlayer) main.api.getSystem();
  		  }
  		  
  		  if (reading.getList(DPI.MAIL).size() > 0){

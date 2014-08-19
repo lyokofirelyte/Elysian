@@ -54,6 +54,7 @@ public class ElyMobs implements Listener {
 			String[] mult = percent >= 80 ? s("&a", "5") : percent >= 60 ? s("&a", "4") : percent >= 40 ? s("&e", "3") : percent >= 20 ? s("&c", "2") : s("&4", "1");
 			entity.setCustomName(main.AS(mult[0] + StringUtils.repeat("\u2744", Integer.parseInt(mult[1]))));
 			entity.setCustomNameVisible(true);
+			main.api.schedule(this, "checkHealth", 200L, "mobNameCheck", entity);
 			
 		} else if (e.getEntity() instanceof Player){
 			
@@ -70,6 +71,12 @@ public class ElyMobs implements Listener {
 			} else {
 				main.api.getDivPlayer((Player)e.getEntity()).set(DPI.IN_COMBAT, true);
 			}
+		}
+	}
+	
+	public void checkHeath(LivingEntity e){
+		if (!e.isDead()){
+			e.setCustomNameVisible(false);
 		}
 	}
 
@@ -159,11 +166,14 @@ public class ElyMobs implements Listener {
 		
 		if (!dp.getStr(DPI.DEATH_CHEST_INV).equals("none")){
 			for (ItemStack i : dp.getStack(DPI.DEATH_CHEST_INV)){
-				p.getWorld().dropItem(new Location(Bukkit.getWorld(deathLoc[0]), Double.parseDouble(deathLoc[1]), Double.parseDouble(deathLoc[2]), Double.parseDouble(deathLoc[3])), i);
+				if (i != null && !i.getType().equals(Material.AIR)){
+					p.getWorld().dropItem(new Location(Bukkit.getWorld(deathLoc[0]), Double.parseDouble(deathLoc[1]), Double.parseDouble(deathLoc[2]), Double.parseDouble(deathLoc[3])), i);
+				}
 			}
 			main.s(p, "Your old death chest items were dropped at &6" + deathLoc[1] + " " + deathLoc[2] + " " + deathLoc[3] + "&b.");
 		}
 		
+		dp.set(DPI.IN_COMBAT, false);
 		dp.set(DPI.DEATH_CHEST_INV, p.getInventory().getContents());
 		dp.set(DPI.DEATH_ARMOR, p.getInventory().getArmorContents());
 		dp.set(DPI.DEATH_CHEST_LOC, p.getWorld().getName() + " " + v.getBlockX() + " " + v.getBlockY() + " " + v.getBlockZ());

@@ -1,7 +1,5 @@
 package com.github.lyokofirelyte.Elysian;
 
-import java.io.File;
-import java.io.IOException;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.List;
@@ -20,11 +18,13 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import com.github.lyokofirelyte.Divinity.Divinity;
 import com.github.lyokofirelyte.Divinity.DivinityAPI;
+import com.github.lyokofirelyte.Divinity.DivinityModule;
 import com.github.lyokofirelyte.Divinity.DivinityUtils;
 import com.github.lyokofirelyte.Divinity.Commands.DivCommand;
 import com.github.lyokofirelyte.Divinity.Events.DivinityPluginMessageEvent;
 import com.github.lyokofirelyte.Divinity.Events.ScoreboardUpdateEvent;
 import com.github.lyokofirelyte.Divinity.Manager.DivInvManager;
+import com.github.lyokofirelyte.Divinity.Manager.DivinityManager;
 import com.github.lyokofirelyte.Divinity.Storage.DAI;
 import com.github.lyokofirelyte.Divinity.Storage.DPI;
 import com.github.lyokofirelyte.Divinity.Storage.DivinityAlliance;
@@ -32,6 +32,7 @@ import com.github.lyokofirelyte.Divinity.Storage.DivinityPlayer;
 import com.github.lyokofirelyte.Divinity.Storage.DivinityRegion;
 import com.github.lyokofirelyte.Divinity.Storage.DivinityRing;
 import com.github.lyokofirelyte.Divinity.Storage.DivinitySkillPlayer;
+import com.github.lyokofirelyte.Divinity.Storage.DivinitySystem;
 import com.github.lyokofirelyte.Elysian.Commands.ElyEffects;
 import com.github.lyokofirelyte.Elysian.Commands.ElyMail;
 import com.github.lyokofirelyte.Elysian.Commands.ElyPerms;
@@ -45,7 +46,7 @@ import com.github.lyokofirelyte.Elysian.Events.ElyMobs;
 import com.github.lyokofirelyte.Elysian.Events.ElyTP;
 import com.sk89q.worldedit.bukkit.WorldEditPlugin;
 
-public class Elysian extends DivinityAPI {
+public class Elysian extends DivinityAPI implements DivinityModule {
 	
 	public YamlConfiguration markkitYaml;
 	
@@ -65,6 +66,7 @@ public class Elysian extends DivinityAPI {
 	public ElyMobs mobs;
 	public ElyProtect pro;
 	public ElyRings rings;
+	public ElySetup setup;
 	
 	public DivInvManager invManager;
 	
@@ -73,23 +75,28 @@ public class Elysian extends DivinityAPI {
 
 	@Override
 	public void onEnable(){
-		new ElySetup(this).start();
+		setup = new ElySetup(this);
+		setup.start();
+		register(this);
 	}
 	
 	@Override
 	public void onDisable(){
 		Bukkit.getScheduler().cancelTasks(this);
-		try {
-			markkitYaml.save(new File("./plugins/Divinity/markkit.yml"));
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
 	}
 
 	@Override
 	public Divinity getApi(){
 		return api;
 	}
+	
+	@Override
+	public void onRegister(){
+		markkitYaml = api.getSystem().getMarkkit();
+	}
+	
+	@Override
+	public void onUnRegister(){}
 	
 	public void cancelTask(ElyTask task){
 		if (tasks.containsKey(task)){
@@ -99,40 +106,35 @@ public class Elysian extends DivinityAPI {
 	}
 	
 	public DivinitySkillPlayer matchSkillPlayer(String player){
-		return (DivinitySkillPlayer) api.divManager.searchForPlayer(player).get(true);
+		return (DivinitySkillPlayer) api.divManager.searchForPlayer(player);
 	}
 
 	public DivinityAlliance getDivAlliance(String alliance){
-		return api.divManager.getAlliance(alliance);
+		return api.getDivAlliance(alliance);
 	}
 	
 	public DivinityRegion getDivRegion(String region){
-		return api.divManager.getRegion(region);
+		return api.getDivRegion(region);
 	}
 	
 	public DivinityRing getDivRing(String ring){
-		return api.divManager.getDivinityRing(ring);
+		return api.getDivRing(ring);
 	}
 	
 	public DivinityPlayer matchDivPlayer(UUID uuid){
-		for (DivinityPlayer dp : api.divManager.getAllUsers()){
-			if (dp.uuid().equals(uuid)){
-				return dp;
-			}
-		}
-		return null;
+		return api.divManager.searchForPlayer(uuid.toString());
 	}
 	
 	public DivinityPlayer matchDivPlayer(String player){
-		return api.divManager.searchForPlayer(player).get(true);
+		return api.divManager.searchForPlayer(player);
 	}
 	
 	public DivinityPlayer getDivPlayer(Player player){
-		return api.divManager.getDivinityPlayer(player);
+		return api.getDivPlayer(player);
 	}
 
 	public DivinityPlayer getDivPlayer(UUID player){
-		return api.divManager.getDivinityPlayer(player);
+		return api.getDivPlayer(player);
 	}
 	
 	public Player getPlayer(String p){
@@ -167,15 +169,15 @@ public class Elysian extends DivinityAPI {
 	}
 	
 	public boolean doesRegionExist(String region){
-		return api.divManager.getRegionMap().containsKey(region);
+		return api.divManager.getMap(DivinityManager.regionsDir).containsKey(region);
 	}
 
 	public boolean doesPartialPlayerExist(String player){
-		return api.divManager.searchForPlayer(player).containsKey(true);
+		return api.divManager.searchForPlayer(player) != null;
 	}
 	
 	public boolean doesRingExist(String ring){
-		return api.divManager.getRingMap().containsKey(ring);
+		return api.divManager.getMap(DivinityManager.ringsDir).containsKey(ring);
 	}
 	
 	public boolean perms(CommandSender cs, String perm){
@@ -232,7 +234,7 @@ public class Elysian extends DivinityAPI {
 	
 	public void afkCheck(Player p){
 
-		DivinityPlayer system = api.getSystem();
+		DivinitySystem system = api.getSystem();
 		getDivPlayer(p).set(DPI.AFK_TIME_INIT, 0);
 		
 		if (system.getList(DPI.AFK_PLAYERS).contains(p.getName())){
