@@ -31,7 +31,6 @@ import com.github.lyokofirelyte.Divinity.Storage.DivinityAlliance;
 import com.github.lyokofirelyte.Divinity.Storage.DivinityPlayer;
 import com.github.lyokofirelyte.Divinity.Storage.DivinityRegion;
 import com.github.lyokofirelyte.Divinity.Storage.DivinityRing;
-import com.github.lyokofirelyte.Divinity.Storage.DivinitySkillPlayer;
 import com.github.lyokofirelyte.Divinity.Storage.DivinitySystem;
 import com.github.lyokofirelyte.Elysian.Commands.ElyEffects;
 import com.github.lyokofirelyte.Elysian.Commands.ElyMail;
@@ -44,6 +43,7 @@ import com.github.lyokofirelyte.Elysian.Events.ElyChat;
 import com.github.lyokofirelyte.Elysian.Events.ElyLogger;
 import com.github.lyokofirelyte.Elysian.Events.ElyMobs;
 import com.github.lyokofirelyte.Elysian.Events.ElyTP;
+import com.github.lyokofirelyte.Elysian.MMO.ElyMMO;
 import com.sk89q.worldedit.bukkit.WorldEditPlugin;
 
 public class Elysian extends DivinityAPI implements DivinityModule {
@@ -67,6 +67,7 @@ public class Elysian extends DivinityAPI implements DivinityModule {
 	public ElyProtect pro;
 	public ElyRings rings;
 	public ElySetup setup;
+	public ElyMMO mmo;
 	
 	public DivInvManager invManager;
 	
@@ -105,10 +106,6 @@ public class Elysian extends DivinityAPI implements DivinityModule {
 		}
 	}
 	
-	public DivinitySkillPlayer matchSkillPlayer(String player){
-		return (DivinitySkillPlayer) api.divManager.searchForPlayer(player);
-	}
-
 	public DivinityAlliance getDivAlliance(String alliance){
 		return api.getDivAlliance(alliance);
 	}

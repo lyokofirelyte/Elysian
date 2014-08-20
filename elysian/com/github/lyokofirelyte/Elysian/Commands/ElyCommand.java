@@ -1,6 +1,7 @@
 package com.github.lyokofirelyte.Elysian.Commands;
 
 import java.io.IOException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -12,6 +13,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
+import com.github.lyokofirelyte.Divinity.Divinity;
 import com.github.lyokofirelyte.Divinity.DivinityUtils;
 import com.github.lyokofirelyte.Divinity.Commands.DivCommand;
 import com.github.lyokofirelyte.Divinity.Events.DivinityChannelEvent;
@@ -53,64 +55,20 @@ public class ElyCommand {
 	Map<String, String[]> help = new HashMap<String, String[]>();
 	
 	private void fillMap(){
-		help.put("/announcer", s("Mod2+", "Adjust the auto-announcer"));
-		help.put("/a", s("Member+", "Alliance root command"));
-		help.put("/bal", s("Member, Admin+", "Economy commands"));
-		help.put("/pay", s("Member+", "Pay someone!"));
-		help.put("/mail", s("Member+", "Mail system"));
-		help.put("/mute", s("Mod+", "Silence someone"));
-		help.put("/kick", s("Mod+", "Remove someone from the server"));
-		help.put("/perms", s("Admin+", "Adjust permissions for players"));
-		help.put("/staff", s("Member+", "View current staff - auto-updates"));
-		help.put("/back", s("Mod2+", "Return to your previous location"));
-		help.put("/gm", s("Mod2+", "Gamemode switcher"));
-		help.put("/fly", s("Mod2+", "Toggle flight abilities"));
-		help.put("/tp", s("Mod2+", "Teleport to a player or destination"));
-		help.put("/tpa", s("Statesman+", "Request a TP to someone"));
-		help.put("/tpahere", s("Emperor+", "Request that someone TP to you"));
-		help.put("/tpaccept", s("Member+", "Accept a teleport request"));
-		help.put("/tpdeny", s("Member+", "Deny a teleport request"));
-		help.put("/tpall", s("Admin+", "Teleport everyone to your location"));
-		help.put("/tpblock", s("Citizen+", "Prevent anyone from TPing within 5 blocks of you"));
-		help.put("/home", s("Member+", "Return to a saved location"));
-		help.put("/o", s("Intern+", "Staff chat"));
-		help.put("/toggle", s("Member+", "Toggle menu"));
-		help.put("/sm", s("Mod2+", "Spawn mob command"));
-		help.put("/more", s("Mod2+", "Set the amount of items in your hand to 64"));
-		help.put("/i", s("Mod2+", "Get a stack of an item by name or ID"));
-		help.put("/nick", s("Member+", "Rename yourself for display purposes"));
-		help.put("/skull", s("Mod2+", "Give yourself someone's skill head"));
-		help.put("/top", s("Mod2+", "Teleport to the top-most block"));
-		help.put("/ci", s("Townsman+", "Clear your inventory"));
-		help.put("/tell, /pm, /t, /msg", s("Member+", "Private message someone"));
-		help.put("/r", s("Member+", "Respond to your latest PM"));
-		help.put("/log", s("Intern+", "Logger/rollback tool"));
-		help.put("/chest", s("Member+", "Chest protection command"));
-		help.put("/modify", s("Admin+", "Directly modify any stat for people or alliances\n&4&oDO NOT ABUSE!"));
-		help.put("/disable", s("Mod+", "Prevent someone from executing commands and moving"));
-		help.put("/firework", s("Statesman+", "Some fireworks will appear!"));
-		help.put("/flare", s("National+", "A burst of fireworks will appear!"));
-		help.put("/bio", s("Member+", "Modify your hover-over description"));
-		help.put("/kill", s("Mod2+", "Kill someone instantly\n&7&o*moderation purposes only"));
-		help.put("/filter", s("Mod2+", "Modify chat and command filters"));
-		help.put("/qc", s("Member+", "Quick chat command for sharing stats"));
-		help.put("/exp", s("Member+", "Store and take XP from your XP storage unit"));
-		help.put("/warp", s("Mod2+", "Warp to a location"));
-		help.put("/setwarp", s("Mod2+", "Add a location at your current position"));
-		help.put("/remwarp", s("Mod2+", "Remove a warp"));
-		help.put("/spawn, /s", s("Member+", "Teleport to spawn"));
-		help.put("/sudo", s("Admin+", "Force someone to do something"));
-		help.put("/suicide", s("Dweller+", "Goodbye, world!"));
-		help.put("/protect", s("Mod2+", "Elysian region protection command"));
-		help.put("/rings", s("Member+", "Elysian transport system"));
-		help.put("/heal", s("Mod+", "Heals you to full health"));
-		help.put("/feed", s("National+", "Fills your food bar to max"));
-		help.put("/root", s("Member+", "Main Menu"));
-		help.put("/vanish", s("Mod+", "Renders you invisible to all players"));
-		help.put("/creative", s("Member+", "Teleport into or out of the creative world"));
-		help.put("/spectate", s("Mod2+", "View someone in first person"));
-		help.put("/seen", s("Dweller+", "View traffic stats for a player"));
-		help.put("/newmember <player>", s("Intern+", "Gives a player member permissions"));
+		for (Object o : Divinity.commandMap.values()){
+			for (Method m : o.getClass().getMethods()){
+				if (m.getAnnotation(DivCommand.class) != null){
+					DivCommand anno = m.getAnnotation(DivCommand.class);
+					String name = anno.aliases()[0];
+					for (int i = 1; i < anno.aliases().length; i++){
+						name = anno.aliases().length > i ? name + "&7, " + anno.aliases()[i] : name;
+					}
+					String[] perm = anno.perm().split("\\.");
+					String p = perm[perm.length-1];
+					help.put("/" + name, s(p.substring(0, 1).toUpperCase() + p.substring(1) + "+", anno.desc() + "\n" + anno.help()));
+				}
+			}
+		}
 	}
 	
 	private String[] s(String arg, String arg1){
@@ -242,7 +200,7 @@ public class ElyCommand {
 		p.sendMessage(main.AS(moduleList));
 	}
 	
-	@DivCommand(aliases = {"ely", "elysian"}, desc = "Elysian Main Command", help = "/ely help", player = false)
+	@DivCommand(aliases = {"ely", "elysian", "?"}, desc = "Elysian Main Command", help = "/ely help", player = false)
 	public void onElysian(CommandSender p, String[] args){
 		
 		if (args.length == 0){

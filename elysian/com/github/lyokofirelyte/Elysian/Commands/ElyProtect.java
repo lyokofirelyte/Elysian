@@ -43,6 +43,7 @@ import com.github.lyokofirelyte.Divinity.Storage.DivinityPlayer;
 import com.github.lyokofirelyte.Divinity.Storage.DivinityRegion;
 import com.github.lyokofirelyte.Divinity.Storage.DivinityStorage;
 import com.github.lyokofirelyte.Elysian.Elysian;
+import com.github.lyokofirelyte.Elysian.MMO.MMO;
 import com.sk89q.worldedit.bukkit.selections.CuboidSelection;
 import com.sk89q.worldedit.bukkit.selections.Selection;
 import com.sk89q.worldedit.regions.RegionSelector;
@@ -145,7 +146,7 @@ public class ElyProtect implements Listener {
 			Player p = (Player)e.getEntity();
 			String result = isInAnyRegion(p.getLocation());
 			
-			if (hasFlag(result, DRF.TAKE_DAMAGE)){
+			if (hasFlag(result, DRF.TAKE_DAMAGE) || main.api.getDivPlayer(p).getBool(MMO.IS_TREE_FELLING)){
 				e.setCancelled(true);
 			}
 		}
@@ -666,7 +667,7 @@ public class ElyProtect implements Listener {
 							
 							if (args[3].equals("allow") || args[3].equals("deny")){
 								boolean flag = args[3].equals("allow") ? false : true;
-								main.api.getDivRegion(args[1]).getFlags().put(DRF.valueOf(args[2].toUpperCase()), flag);
+								main.api.getDivRegion(args[1]).set(DRF.valueOf(args[2].toUpperCase()), flag);
 								main.s(p, "Flag &6" + args[2] + " &bfor &6" + args[1] + " &bchanged to &6" + args[3]);
 							} else {
 								main.s(p, "&c&oallow or deny value.");
@@ -772,12 +773,12 @@ public class ElyProtect implements Listener {
 			}
 		}
 		
-		return false;
+		return true;
 	}
 	
 	public boolean hasFlag(String region, DRF flag){
 		if (main.doesRegionExist(region)){
-			return main.api.getDivRegion(region).getFlags().containsKey(flag) ? main.api.getDivRegion(region).getFlag(flag) : false;
+			return main.api.getDivRegion(region).getRawInfo(flag) != null ? main.api.getDivRegion(region).getFlag(flag) : false;
 		}
 		return false;
 	}

@@ -31,6 +31,8 @@ import com.github.lyokofirelyte.Elysian.Events.ElyMobs;
 import com.github.lyokofirelyte.Elysian.Events.ElyMove;
 import com.github.lyokofirelyte.Elysian.Events.ElyScoreBoard;
 import com.github.lyokofirelyte.Elysian.Events.ElyTP;
+import com.github.lyokofirelyte.Elysian.MMO.ElyMMO;
+import com.github.lyokofirelyte.Elysian.MMO.Abilities.TreeFeller;
 import com.sk89q.worldedit.bukkit.WorldEditPlugin;
 
 public class ElySetup {
@@ -45,6 +47,7 @@ public class ElySetup {
 		main.api = (Divinity) Bukkit.getPluginManager().getPlugin("Divinity");
 		main.we = (WorldEditPlugin) Bukkit.getPluginManager().getPlugin("WorldEdit");
 		main.logger = new ElyLogger(main);
+		main.mmo = new ElyMMO(main);
 		main.watcher = new ElyWatch(main);
 		main.staff = new ElyStaff(main);
 		main.announcer = new ElyAnnouncer(main);
@@ -58,6 +61,7 @@ public class ElySetup {
 		main.pro = new ElyProtect(main);
 		main.rings = new ElyRings(main);
 		main.invManager = new DivInvManager(main.api);
+		main.mmo.treeFeller = new TreeFeller(main);
 		listener();
 		commands();
 		tasks();
@@ -85,7 +89,8 @@ public class ElySetup {
 			main.ss,
 			main.pro,
 			main.rings,
-			main.invManager
+			main.invManager,
+			main.mmo.treeFeller
 		);
 	}
 	
