@@ -20,6 +20,7 @@ import com.github.lyokofirelyte.Divinity.Storage.DAI;
 import com.github.lyokofirelyte.Divinity.Storage.DPI;
 import com.github.lyokofirelyte.Divinity.Storage.DivinityAlliance;
 import com.github.lyokofirelyte.Divinity.Storage.DivinityPlayer;
+import com.github.lyokofirelyte.Divinity.Storage.DivinityStorage;
 import com.github.lyokofirelyte.Elysian.Elysian;
 
 public class ElyAlliance {
@@ -221,9 +222,9 @@ public class ElyAlliance {
 		 				main.s(p, "Alliance funds transferred to you.");
 		 				dp.set(DPI.BALANCE, dp.getInt(DPI.BALANCE) + alliance.getInt(DAI.BALANCE));
 		 				
-		 				for (DivinityPlayer gone : main.api.divManager.getAllUsers()){
+		 				for (DivinityStorage gone : main.api.divManager.getAllUsers()){
 		 					if (gone.getStr(DPI.ALLIANCE_NAME).equalsIgnoreCase(args[1])){
-		 						removeFromAlliance(gone, gone.getStr(DPI.ALLIANCE_NAME));
+		 						removeFromAlliance((DivinityPlayer)gone, gone.getStr(DPI.ALLIANCE_NAME));
 		 					}
 		 				}
 		 				
@@ -307,7 +308,7 @@ public class ElyAlliance {
 		 		List<String> alliances = new ArrayList<String>();
 		 		String msg = "&6";
 		 		
-		 		for (DivinityPlayer player : main.api.divManager.getAllUsers()){
+		 		for (DivinityStorage player : main.api.divManager.getAllUsers()){
 		 			if (player.getBool(DPI.ALLIANCE_LEADER)){
 		 				alliances.add(main.coloredAllianceName(player.getStr(DPI.ALLIANCE_NAME)));
 		 			}

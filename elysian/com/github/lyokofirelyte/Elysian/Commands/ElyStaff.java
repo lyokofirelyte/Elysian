@@ -32,6 +32,7 @@ import com.github.lyokofirelyte.Divinity.Manager.DivinityManager;
 import com.github.lyokofirelyte.Divinity.Storage.DAI;
 import com.github.lyokofirelyte.Divinity.Storage.DPI;
 import com.github.lyokofirelyte.Divinity.Storage.DivinityPlayer;
+import com.github.lyokofirelyte.Divinity.Storage.DivinityStorage;
 import com.github.lyokofirelyte.Elysian.Elysian;
 
 public class ElyStaff implements Listener {
@@ -473,7 +474,7 @@ public class ElyStaff implements Listener {
 		 String mod2s = "";
 		 String admins = "";
 		 
-		 for (DivinityPlayer dp : main.api.divManager.getAllUsers()){
+		 for (DivinityStorage dp : main.api.divManager.getAllUsers()){
 			 List<String> perms = dp.getList(DPI.PERMS);
 			 if (perms.contains("wa.staff.admin")){
 				 admins = admins + " " + dp.getStr(DPI.DISPLAY_NAME);

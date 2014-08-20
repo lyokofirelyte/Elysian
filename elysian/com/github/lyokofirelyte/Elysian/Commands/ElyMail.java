@@ -9,6 +9,7 @@ import org.bukkit.entity.Player;
 import com.github.lyokofirelyte.Divinity.Commands.DivCommand;
 import com.github.lyokofirelyte.Divinity.Storage.DPI;
 import com.github.lyokofirelyte.Divinity.Storage.DivinityPlayer;
+import com.github.lyokofirelyte.Divinity.Storage.DivinityStorage;
 import com.github.lyokofirelyte.Elysian.Elysian;
 
 public class ElyMail {
@@ -137,7 +138,7 @@ public class ElyMail {
 				  }
 				  
 				  if (send){
-					  for (DivinityPlayer dp : main.api.divManager.getAllUsers()){
+					  for (DivinityStorage dp : main.api.divManager.getAllUsers()){
 						  if (dp.getList(DPI.PERMS).contains(perm)){
 							  dp.getList(DPI.MAIL).add(perm + "%SPLIT%" + p.getName() + "%SPLIT%" + msg);
 							  if (Bukkit.getPlayer(dp.uuid()) != null){

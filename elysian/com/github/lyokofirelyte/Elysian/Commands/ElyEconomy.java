@@ -12,6 +12,7 @@ import org.bukkit.entity.Player;
 import com.github.lyokofirelyte.Divinity.Commands.DivCommand;
 import com.github.lyokofirelyte.Divinity.Storage.DPI;
 import com.github.lyokofirelyte.Divinity.Storage.DivinityPlayer;
+import com.github.lyokofirelyte.Divinity.Storage.DivinityStorage;
 import com.github.lyokofirelyte.Elysian.Elysian;
 
 
@@ -129,10 +130,10 @@ public class ElyEconomy {
 		 Map<Integer, DivinityPlayer> players = new HashMap<Integer, DivinityPlayer>();
 		 int serverTotal = 0;
 		 
-		 for (DivinityPlayer p : main.api.divManager.getAllUsers()){
+		 for (DivinityStorage p : main.api.divManager.getAllUsers()){
 			 if (p.getInt(DPI.BALANCE) > 2000){
 				 balances.add(p.getInt(DPI.BALANCE));
-				 players.put(p.getInt(DPI.BALANCE), p);
+				 players.put(p.getInt(DPI.BALANCE), (DivinityPlayer)p);
 				 serverTotal = serverTotal + p.getInt(DPI.BALANCE);
 			 }
 		 }

@@ -36,6 +36,7 @@ import com.github.lyokofirelyte.Divinity.Commands.DivCommand;
 import com.github.lyokofirelyte.Divinity.Events.DivinityChannelEvent;
 import com.github.lyokofirelyte.Divinity.Storage.DPI;
 import com.github.lyokofirelyte.Divinity.Storage.DivinityPlayer;
+import com.github.lyokofirelyte.Divinity.Storage.DivinityStorage;
 import com.github.lyokofirelyte.Divinity.Storage.DivinitySystem;
 import com.github.lyokofirelyte.Elysian.Elysian;
 
@@ -149,7 +150,7 @@ public class ElyLogger implements Listener, Runnable {
 					failedNames.add(s);
 				} else if (s.equals("view")){
 					String users = "";
-					for (DivinityPlayer d : main.api.divManager.getAllUsers()){
+					for (DivinityStorage d : main.api.divManager.getAllUsers()){
 						if (d.getList(DPI.OWNED_CHESTS).contains(loc)){
 							users = users + "&3" + d.name() + " ";
 						}
@@ -230,7 +231,7 @@ public class ElyLogger implements Listener, Runnable {
 			} else {
 				
 				if (!dp.getList(DPI.OWNED_CHESTS).contains(loc) && !main.silentPerms(e.getPlayer(), "wa.staff.mod2")){
-					for (DivinityPlayer DP : main.api.divManager.getAllUsers()){
+					for (DivinityStorage DP : main.api.divManager.getAllUsers()){
 						if (DP.getList(DPI.OWNED_CHESTS).contains(loc)){
 							e.setCancelled(true);
 							main.s(e.getPlayer(), "none", "&c&oThat is not your storage unit!");
@@ -326,7 +327,7 @@ public class ElyLogger implements Listener, Runnable {
 			Location l = e.getBlock().getLocation();
 			String loc = l.getWorld().getName() + " " + l.toVector().getBlockX() + " " + l.toVector().getBlockY() + " " + l.toVector().getBlockZ();
 			if (!dp.getList(DPI.OWNED_CHESTS).contains(loc) && !main.silentPerms(e.getPlayer(), "wa.staff.mod2")){
-				for (DivinityPlayer DP : main.api.divManager.getAllUsers()){
+				for (DivinityStorage DP : main.api.divManager.getAllUsers()){
 					if (DP.getList(DPI.OWNED_CHESTS).contains(loc)){
 						e.setCancelled(true);
 						main.s(e.getPlayer(), "none", "&c&oThat is not your storage unit!");
