@@ -231,10 +231,12 @@ public class ElyMobs implements Listener {
 		List<String> perms = dp.getList(DPI.PERMS);
 		
 		int mult = perms.contains("wa.rank.emperor") ? 3 : perms.contains("wa.rank.disctrictman") ? 2 : 1;
-		int randomMoneyAmount = rand.nextInt(120) + 1;
+		int randomMoneyAmount = rand.nextInt(120) + 7;
 		int randomNumber = rand.nextInt(4) + 1;
+		int superRandom = rand.nextInt(1000);
 		
 		dp.set(DPI.MOB_MONEY, dp.getInt(DPI.MOB_MONEY) + (randomNumber == 4 ? randomMoneyAmount*mult : 5));
+		dp.set(DPI.MOB_MONEY, dp.getInt(DPI.MOB_MONEY) + (superRandom == 500 ? 1000 : 0));
 	}
 	
 	@DivCommand(aliases = {"exp", "xp"}, help = "/exp <take> <amount>", desc = "Elysian EXP Storing System", player = true)

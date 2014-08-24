@@ -146,7 +146,7 @@ public class ElyProtect implements Listener {
 			Player p = (Player)e.getEntity();
 			String result = isInAnyRegion(p.getLocation());
 			
-			if (hasFlag(result, DRF.TAKE_DAMAGE) || main.api.getDivPlayer(p).getBool(MMO.IS_TREE_FELLING)){
+			if (hasFlag(result, DRF.TAKE_DAMAGE) || main.api.getDivPlayer(p).getBool(MMO.IS_CHOPPING) || main.api.getDivPlayer(p).getBool(MMO.IS_BLADING)){
 				e.setCancelled(true);
 			}
 		}
@@ -771,6 +771,8 @@ public class ElyProtect implements Listener {
 					return true;
 				}
 			}
+			
+			return false;
 		}
 		
 		return true;
@@ -778,7 +780,7 @@ public class ElyProtect implements Listener {
 	
 	public boolean hasFlag(String region, DRF flag){
 		if (main.doesRegionExist(region)){
-			return main.api.getDivRegion(region).getRawInfo(flag) != null ? main.api.getDivRegion(region).getFlag(flag) : false;
+			return main.api.getDivRegion(region).getRawInfo(flag) != null ? main.api.getDivRegion(region).getBool(flag) : false;
 		}
 		return false;
 	}

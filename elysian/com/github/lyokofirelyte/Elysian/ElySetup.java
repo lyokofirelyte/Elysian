@@ -32,6 +32,8 @@ import com.github.lyokofirelyte.Elysian.Events.ElyMove;
 import com.github.lyokofirelyte.Elysian.Events.ElyScoreBoard;
 import com.github.lyokofirelyte.Elysian.Events.ElyTP;
 import com.github.lyokofirelyte.Elysian.MMO.ElyMMO;
+import com.github.lyokofirelyte.Elysian.MMO.Abilities.SkyBlade;
+import com.github.lyokofirelyte.Elysian.MMO.Abilities.SuperBreaker;
 import com.github.lyokofirelyte.Elysian.MMO.Abilities.TreeFeller;
 import com.sk89q.worldedit.bukkit.WorldEditPlugin;
 
@@ -62,6 +64,8 @@ public class ElySetup {
 		main.rings = new ElyRings(main);
 		main.invManager = new DivInvManager(main.api);
 		main.mmo.treeFeller = new TreeFeller(main);
+		main.mmo.superBreaker = new SuperBreaker(main);
+		main.mmo.skyBlade = new SkyBlade(main);
 		listener();
 		commands();
 		tasks();
@@ -90,7 +94,7 @@ public class ElySetup {
 			main.pro,
 			main.rings,
 			main.invManager,
-			main.mmo.treeFeller
+			main.mmo
 		);
 	}
 	

@@ -8,12 +8,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
-import com.github.lyokofirelyte.Divinity.Divinity;
 import com.github.lyokofirelyte.Divinity.DivinityUtils;
 import com.github.lyokofirelyte.Divinity.Commands.DivCommand;
 import com.github.lyokofirelyte.Divinity.Events.DivinityChannelEvent;
@@ -55,17 +57,17 @@ public class ElyCommand {
 	Map<String, String[]> help = new HashMap<String, String[]>();
 	
 	private void fillMap(){
-		for (Object o : Divinity.commandMap.values()){
+		for (Object o : main.api.commandMap.values()){
 			for (Method m : o.getClass().getMethods()){
 				if (m.getAnnotation(DivCommand.class) != null){
 					DivCommand anno = m.getAnnotation(DivCommand.class);
 					String name = anno.aliases()[0];
 					for (int i = 1; i < anno.aliases().length; i++){
-						name = anno.aliases().length > i ? name + "&7, " + anno.aliases()[i] : name;
+						name = anno.aliases().length > i ? name + "&7, &3" + anno.aliases()[i] : name;
 					}
 					String[] perm = anno.perm().split("\\.");
 					String p = perm[perm.length-1];
-					help.put("/" + name, s(p.substring(0, 1).toUpperCase() + p.substring(1) + "+", anno.desc() + "\n" + anno.help()));
+					help.put("/" + name, s(p.substring(0, 1).toUpperCase() + p.substring(1) + "+", anno.desc() + "\n&6" + anno.help()));
 				}
 			}
 		}
@@ -86,6 +88,23 @@ public class ElyCommand {
 		DivinityPlayer dp = main.api.getDivPlayer(p);
 		dp.set(DPI.PLAYER_DESC, "&7&o" + main.AS(main.api.divUtils.createString(args, 0)));
 		main.s(p, "Updated!");
+	}
+	
+	@DivCommand(aliases = {"enderdragon"}, desc = "Spawn the enderdragon in the end", help = "/enderdragon", player = true)
+	public void onEnderDragon(Player p, String[] args){
+		
+		DivinitySystem system = main.api.getSystem();
+		
+		if (system.getLong(DPI.ENDERDRAGON_CD) <= System.currentTimeMillis()){
+			system.set(DPI.ENDERDRAGON_CD, System.currentTimeMillis() + 7200000L);
+			Location temp = new Location(p.getWorld(), p.getLocation().getX(), p.getLocation().getY(), p.getLocation().getZ(), p.getLocation().getYaw(), p.getLocation().getPitch());
+			p.teleport(new Location(Bukkit.getWorld("world_the_end"), 0, 10, 0));
+			Bukkit.getWorld("world_the_end").spawnEntity(new Location(Bukkit.getWorld("world_the_end"), 0, 10, 0), EntityType.ENDER_DRAGON);
+			p.teleport(temp);
+			DivinityUtils.bc(p.getDisplayName() + " has spawned an enderdragon in the end!");
+		} else {
+			main.s(p, "&c&oActive cooldown. &6" + ((system.getLong(DPI.ENDERDRAGON_CD) - System.currentTimeMillis())/1000)/60 + " &c&ominutes remain.");
+		}
 	}
 	
 	@DivCommand(aliases = {"calendar"}, desc = "View our calendar!", help = "/calendar", player = true, min = 0)
@@ -214,6 +233,8 @@ public class ElyCommand {
 			switch (args[0].toLowerCase()){
 			
 				case "help": case "helpmepleaseidontknowwhatimdoing":
+					
+					fillMap();
 					
 					List<String> sortedHelp = new ArrayList<String>();
 					

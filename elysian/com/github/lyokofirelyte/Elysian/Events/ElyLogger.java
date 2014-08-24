@@ -109,7 +109,7 @@ public class ElyLogger implements Listener, Runnable {
 	@EventHandler
 	public void onInteract(PlayerInteractEvent e){
 		
-		if (e.getAction() == Action.RIGHT_CLICK_BLOCK && e.getClickedBlock() != null && e.getClickedBlock().getType().equals(Material.BED)){
+		if (e.getAction() == Action.RIGHT_CLICK_BLOCK && e.getClickedBlock() != null && (e.getClickedBlock().getType().equals(Material.BED_BLOCK) || e.getClickedBlock().getType().equals(Material.BED))){
 			int sleeping = 0;
 			for (Player p : Bukkit.getOnlinePlayers()){
 				if (p.isSleeping()){

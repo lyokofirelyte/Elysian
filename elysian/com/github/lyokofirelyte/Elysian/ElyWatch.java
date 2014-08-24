@@ -2,16 +2,22 @@ package com.github.lyokofirelyte.Elysian;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
+
 import com.github.lyokofirelyte.Divinity.DivinityUtils;
 import com.github.lyokofirelyte.Divinity.Events.ScoreboardUpdateEvent;
 import com.github.lyokofirelyte.Divinity.Storage.DPI;
 import com.github.lyokofirelyte.Divinity.Storage.DivinityPlayer;
 import com.github.lyokofirelyte.Divinity.Storage.DivinitySystem;
+import com.github.lyokofirelyte.Elysian.MMO.MMO;
 
 public class ElyWatch implements Runnable {
 	
@@ -43,6 +49,7 @@ public class ElyWatch implements Runnable {
 			creativeCheck(p);
 			rankCheck(dp);
 			moneyCheck(p, dp);
+			invCheck(p, dp);
 			main.api.event(new ScoreboardUpdateEvent(p));
 		}
 		system.set(DPI.ROLLBACK_IN_PROGRESS, false);
@@ -147,6 +154,34 @@ public class ElyWatch implements Runnable {
 			dp.set(DPI.BALANCE, dp.getInt(DPI.BALANCE) + dp.getInt(DPI.MOB_MONEY));
 			main.s(p, dp.getInt(DPI.MOB_MONEY) + " &oshinies earned from various mobs.");
 			dp.set(DPI.MOB_MONEY, 0);
+		}
+	}
+	
+	@SuppressWarnings("unchecked")
+	private void invCheck(Player p, DivinityPlayer dp){
+		if ((!dp.getBool(MMO.IS_MINING) && dp.getLong(MMO.SUPER_BREAKER_CD) > System.currentTimeMillis()) || dp.getLong(MMO.SUPER_BREAKER_CD) <= System.currentTimeMillis()){
+			for (ItemStack i : p.getInventory().getContents()){
+				if (i != null && i.hasItemMeta() && i.getItemMeta().hasLore()){
+					if (i.getItemMeta().getLore().contains(main.AS("&3&oSuperbreaker active!"))){
+						ItemMeta im = i.getItemMeta();
+						List<String> lore = im.getLore();
+						lore.remove(main.AS("&3&oSuperbreaker active!"));
+						im.setLore(lore);
+						i.setItemMeta(im);
+						dp.err("&c&oSuperbreaker ended!");
+						for (Enchantment e : i.getItemMeta().getEnchants().keySet()){
+							i.removeEnchantment(e);
+						}
+						if (((Map<Enchantment,Integer>)dp.getRawInfo(MMO.SAVED_ENCHANTS)).size() > 0){
+							for (Enchantment e : ((Map<Enchantment,Integer>)dp.getRawInfo(MMO.SAVED_ENCHANTS)).keySet()){
+								i.addEnchantment(e, ((Map<Enchantment, Integer>)dp.getRawInfo(MMO.SAVED_ENCHANTS)).get(e));
+							}
+						}
+						dp.set(MMO.IS_SUPER_BREAKING, false);
+						dp.set(MMO.IS_MINING, false);
+					}
+				}
+			}
 		}
 	}
 }

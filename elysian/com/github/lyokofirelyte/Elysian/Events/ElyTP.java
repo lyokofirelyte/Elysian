@@ -6,6 +6,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Effect;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -84,6 +85,13 @@ public class ElyTP implements Listener {
 	}
 	
 	private void effects(Player p){
+		for (Entity e : p.getNearbyEntities(10D, 10D, 10D)){
+			if (e instanceof Player){
+				if (!((Player)e).canSee(p)){
+					return;
+				}
+			}
+		}
 		for (Location l : main.api.divUtils.circle(p.getLocation(), 4, 4, true, true, 0)){
 			p.getWorld().playEffect(l, Effect.ENDER_SIGNAL, 0);
 		}

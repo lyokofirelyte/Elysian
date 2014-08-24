@@ -95,7 +95,7 @@ public class ElyStaff implements Listener {
 			 }
 			 
 			 org.bukkit.material.Sign sign =  new org.bukkit.material.Sign(args[0].equals("side") ? Material.WALL_SIGN : Material.SIGN_POST);
-			 sign.setFacingDirection(DivinityUtils.getPlayerDirection(p).getOppositeFace());
+			 sign.setFacingDirection(DivinityUtils.getPlayerDirection(p.getLocation().getYaw()).getOppositeFace());
 			 s.setData(sign);
 			 s.update();
 		 }
@@ -165,24 +165,29 @@ public class ElyStaff implements Listener {
 	 
 	 @DivCommand(perm = "wa.staff.intern", aliases = {"setcast"}, desc = "Set your cast prefix", help = "/setcast <prefix>", player = true, min = 1)
 	 public void onSetCast(CommandSender cs, String[] args){
+		 
 		 Player pl = (Player)cs;
+		 
 		 StringBuilder prefix = new StringBuilder();
+		 
 		 for(String s : args){
 			 prefix.append(s + "_");
 		 }
+		 
 		 DivinityPlayer p = main.api.getDivPlayer(pl);
 		 p.set(DPI.CAST_PREFIX, prefix.toString() + "\u2744");
-		 String t = "\u2744";
 		 main.s(pl, "People will see: " + prefix.toString().replace("_", " ") + "\u2744" + " Message");
 	 }
 	 
 	 @DivCommand(perm = "wa.staff.intern", aliases = {"cast"}, desc = "Send a broadcast message", help = "/cast <message>", player = true, min = 1)
 	 public void onCast(CommandSender cs, String[] args){
+		 
 		 Player pl = (Player)cs;
 		 DivinityPlayer p = main.api.getDivPlayer(pl);
 		 String prefix = p.getStr(DPI.CAST_PREFIX);
 		 
 		 StringBuilder message = new StringBuilder();
+		 
 		 for(String s : args){
 			 message.append(s + " ");
 		 }
@@ -194,16 +199,20 @@ public class ElyStaff implements Listener {
 	 
 	 @DivCommand(perm = "wa.staff.mod2", aliases = {"setmarkkit"}, desc = "Set a market place", help = "/setmarkkit <sellprice> <buyprice> <markkit name>", player = true, min = 3)
 	 public void onSetMarket(CommandSender cs, String[] args){
+		 
 		 Player p = (Player)cs;
-		  if(!main.api.divUtils.isInteger(args[0]) || !main.api.divUtils.isInteger(args[1])){
+		 
+		  if (!main.api.divUtils.isInteger(args[0]) || !main.api.divUtils.isInteger(args[1])){
 			  main.s(cs, "That is not a number!");
 			  return;
 		  }
-		  if(p.getItemInHand() == null || p.getItemInHand().getType() == Material.AIR){
+		  
+		  if (p.getItemInHand() == null || p.getItemInHand().getType() == Material.AIR){
 			  main.s(p, "You can't have nothing in your hand!");
 			  return;
 		  }
-		  if(p.getItemInHand().getAmount() == 64){
+		  
+		  if (p.getItemInHand().getAmount() == 64){
 			  
 	    	  int buyprice = Integer.parseInt(args[0]);
 	    	  int sellprice = Integer.parseInt(args[1]);
@@ -220,27 +229,27 @@ public class ElyStaff implements Listener {
 			  main.markkitYaml.set("Items." + name + ".64.sellprice", sellprice);
 			  
 	    	  if(buyprice/2 >= 1){
-			  main.markkitYaml.set("Items." + name + ".32.buyprice", buyprice/2);
-			  main.markkitYaml.set("Items." + name + ".32.sellprice", sellprice/2);
+	    		  main.markkitYaml.set("Items." + name + ".32.buyprice", buyprice/2);
+	    		  main.markkitYaml.set("Items." + name + ".32.sellprice", sellprice/2);
 	    	  }
 	    	  
 	    	  if(buyprice/4 >= 1){
-			  main.markkitYaml.set("Items." + name + ".16.buyprice", buyprice/4);
-			  main.markkitYaml.set("Items." + name + ".16.sellprice", sellprice/4);
+	    		  main.markkitYaml.set("Items." + name + ".16.buyprice", buyprice/4);
+	    		  main.markkitYaml.set("Items." + name + ".16.sellprice", sellprice/4);
 	    	  }
 	    	  
 	    	  if(buyprice/8 >= 1){
-			  main.markkitYaml.set("Items." + name + ".8.buyprice", buyprice/8);
-			  main.markkitYaml.set("Items." + name + ".8.sellprice", sellprice/8);
+	    		  main.markkitYaml.set("Items." + name + ".8.buyprice", buyprice/8);
+	    		  main.markkitYaml.set("Items." + name + ".8.sellprice", sellprice/8);
 	    	  }
 	    	 	    	  
 	    	  if(buyprice/64 >= 1){
-			  main.markkitYaml.set("Items." + name + ".1.buyprice", buyprice/64);
-			  main.markkitYaml.set("Items." + name + ".1.sellprice", sellprice/64);
+	    		  main.markkitYaml.set("Items." + name + ".1.buyprice", buyprice/64);
+	    		  main.markkitYaml.set("Items." + name + ".1.sellprice", sellprice/64);
 	    	  }
 			  main.s(p, "Added succesfully!");
 
-		  }else if(p.getItemInHand().getAmount() == 1){
+		  } else if(p.getItemInHand().getAmount() == 1){
 			  
 			  int buyprice = Integer.parseInt(args[0]);
 			  int sellprice = Integer.parseInt(args[1]);

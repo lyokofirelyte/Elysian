@@ -1,14 +1,12 @@
 package com.github.lyokofirelyte.Elysian.MMO.Abilities;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.bukkit.Effect;
 import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
@@ -26,54 +24,33 @@ import com.github.lyokofirelyte.Elysian.Elysian;
 import com.github.lyokofirelyte.Elysian.MMO.ElyMMO;
 import com.github.lyokofirelyte.Elysian.MMO.MMO;
 
-public class TreeFeller extends ElyMMO implements Listener {
+public class TreeFeller extends ElyMMO {
 
 	public TreeFeller(Elysian i) {
 		super(i);
 	}
-
-	@EventHandler (priority = EventPriority.MONITOR)
-	public void onInteract(PlayerInteractEvent e){
+	
+	public void r(Player p, DivinityPlayer dp){
+		dp.set(MMO.IS_TREE_FELLING, !dp.getBool(MMO.IS_TREE_FELLING));
+		dp.s("Tree feller " + (dp.getBool(MMO.IS_TREE_FELLING) + "").replace("true", "&aactive! Left click the bottom of a tree to ninja!").replace("false", "&cinactive."));
+	}
+	
+	public void l(Player p, DivinityPlayer dp, Block b){
 		
-		if (e.isCancelled() && e.getAction() != Action.RIGHT_CLICK_AIR){
-			return;
+		String result = main.pro.isInAnyRegion(b.getLocation());
+		
+		if (main.pro.hasFlag(result, DRF.BLOCK_BREAK)){
+			if (!main.pro.hasRegionPerms(p, result)){
+				dp.err("No permissions for this area!");
+				return;
+			}
 		}
 		
-		Player p = e.getPlayer();
-		DivinityPlayer dp = main.api.getDivPlayer(p);
-		
-		switch (e.getAction()){
-		
-			default: break;
-			
-			case RIGHT_CLICK_AIR:
-
-				if (p.getItemInHand() != null && p.getItemInHand().getType().toString().toLowerCase().contains("_axe")){
-					dp.set(MMO.IS_TREE_FELLING, !dp.getBool(MMO.IS_TREE_FELLING));
-					dp.s("Tree feller " + (dp.getBool(MMO.IS_TREE_FELLING) + "").replace("true", "&aactive - left click a tree!").replace("false", "&cinactive."));
-				}
-				
-			break;
-			
-			case LEFT_CLICK_BLOCK:
-				
-				if (e.getClickedBlock().getType().toString().toLowerCase().contains("log") && p.getItemInHand() != null && p.getItemInHand().getType().toString().toLowerCase().contains("_axe") && dp.getBool(MMO.IS_TREE_FELLING)){
-					String result = main.pro.isInAnyRegion(e.getClickedBlock().getLocation());
-					if (main.pro.hasFlag(result, DRF.BLOCK_BREAK)){
-						if (!main.pro.hasRegionPerms(e.getPlayer(), result)){
-							dp.err("No permissions for this area!");
-							return;
-						}
-					}
-					if (dp.getLong(MMO.TREE_FELLER_CD) <= System.currentTimeMillis()){
-						chop(p, dp, e.getClickedBlock().getLocation());
-						dp.set(MMO.TREE_FELLER_CD, System.currentTimeMillis() + (180000 - (dp.getInt(ElySkill.WOODCUTTING)*1000)));
-					} else {
-						dp.err("Tree feller on cooldown! &6" + ((System.currentTimeMillis() - dp.getLong(MMO.TREE_FELLER_CD))/1000)*-1 + " &c&oseconds remain.");
-					}
-				}
-				
-			break;
+		if (dp.getLong(MMO.TREE_FELLER_CD) <= System.currentTimeMillis()){
+			chop(p, dp, b.getLocation());
+			dp.set(MMO.TREE_FELLER_CD, System.currentTimeMillis() + (180000 - (dp.getInt(ElySkill.WOODCUTTING)*1000)));
+		} else {
+			dp.err("Tree feller on cooldown! &6" + ((System.currentTimeMillis() - dp.getLong(MMO.TREE_FELLER_CD))/1000)*-1 + " &c&oseconds remain.");
 		}
 	}
 	
@@ -87,18 +64,18 @@ public class TreeFeller extends ElyMMO implements Listener {
 		
 		for (int i = l.getBlockY(); i < 256; i++){
 			Location testLoc = new Location(l.getWorld(), l.getX(), i, l.getZ());
-			if (!testLoc.getBlock().getType().toString().toLowerCase().contains("log") && !testLoc.getBlock().getType().toString().toLowerCase().contains("leaves")){
+			if (!isType(testLoc, "log") && !isType(testLoc, "leaves")){
 				top = top == 0 ? i : top;
-				if (!testLoc.getBlock().getType().equals(Material.AIR)){
+				if (!isType(testLoc, "air")){
 					skyOpen = false;
 					break;
 				}
-			} else if (testLoc.getBlock().getType().toString().toLowerCase().contains("log") || testLoc.getBlock().getType().toString().toLowerCase().contains("leaves")){
+			} else if (isType(testLoc, "log") || isType(testLoc, "log")){
 				List<Block> b = new ArrayList<Block>();
 				b.add(testLoc.getBlock());
 				blocks.put(i, b);
 				for (Location radiusLoc : main.api.divUtils.circle(testLoc, 7, 1, false, false, 0)){
-					if (radiusLoc.getBlock().getType().toString().toLowerCase().contains("log") || radiusLoc.getBlock().getType().toString().toLowerCase().contains("leaves")){
+					if (isType(radiusLoc, "log") || isType(radiusLoc, "leaves")){
 						blocks.get(i).add(radiusLoc.getBlock());
 					}
 				}
@@ -106,6 +83,7 @@ public class TreeFeller extends ElyMMO implements Listener {
 		}
 		
 		p.getWorld().playSound(p.getLocation(), Sound.EXPLODE, 5F, 5F);
+		dp.set(MMO.IS_CHOPPING, true);
 		
 		if (skyOpen){
 			dp.s("The sky is clear! Wooosssh!");
@@ -118,6 +96,7 @@ public class TreeFeller extends ElyMMO implements Listener {
 			dp.s("No room for flight attack! Arming explosives!");
 			for (int i : blocks.keySet()){
 				for (Block b : blocks.get(i)){
+					//main.logger.addToQue(b.getLocation(), "&b" + p.getName(), "&etree-felled &b" + b.getType().name().toLowerCase(), "break", b.getType().name().toLowerCase() + "split" + b.getData(), "AIRsplit0");
 					b.breakNaturally();
 				}
 			}
@@ -132,10 +111,11 @@ public class TreeFeller extends ElyMMO implements Listener {
 	
 	public void checkPlayerSaftey(Player p){
 		try {
+			main.api.getDivPlayer(p).set(MMO.IS_TREE_FELLING, false);
+			main.api.getDivPlayer(p).set(MMO.IS_CHOPPING, false);
 			main.api.cancelTask("treeCheck" + p.getName());
 		} catch (Exception e){}
 	}
-	
 	@SuppressWarnings("deprecation")
 	public void checkPlayer(Player p, int top, int bottom, Map<Integer, List<Block>> blocks){
 		
@@ -143,9 +123,10 @@ public class TreeFeller extends ElyMMO implements Listener {
 
 		if (blocks.containsKey(y-1)){
 			for (Block b : blocks.get(y-1)){
-				if (b.getType().toString().toLowerCase().contains("log")){
+				if (isType(b, "log")){
 					p.playEffect(b.getLocation(), Effect.STEP_SOUND, b.getTypeId());
 				}
+				//main.logger.addToQue(b.getLocation(), "&b" + p.getName(), "&etree-felled &b" + b.getType().name().toLowerCase(), "break", b.getType().name().toLowerCase() + "split" + b.getData(), "AIRsplit0");
 				b.breakNaturally();
 			}
 		}
@@ -154,6 +135,7 @@ public class TreeFeller extends ElyMMO implements Listener {
 			main.api.cancelTask("treeCheck" + p.getName());
 			main.s(p, "You showed that tree!");
 			main.api.getDivPlayer(p).set(MMO.IS_TREE_FELLING, false);
+			main.api.getDivPlayer(p).set(MMO.IS_CHOPPING, false);
 			for (Location l : main.api.divUtils.circle(p.getLocation(), 3, 1, true, false, 0)){
 				l.getWorld().playEffect(l, Effect.ENDER_SIGNAL, 2);
 			}
