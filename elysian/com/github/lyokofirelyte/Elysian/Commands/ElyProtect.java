@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.Random;
 
 import org.bukkit.Bukkit;
+import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.ItemFrame;
@@ -18,6 +19,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockFadeEvent;
 import org.bukkit.event.block.BlockFromToEvent;
@@ -92,6 +94,10 @@ public class ElyProtect implements Listener {
 				main.s(e.getPlayer(), "&c&oYou are not authorized to build at &6" + result + "&c&o.");
 			}
 		}
+		
+		if (e.getPlayer().getGameMode().equals(GameMode.CREATIVE) && e.getPlayer().getItemInHand().getType().equals(Material.BLAZE_ROD)){
+			e.setCancelled(true);
+		}
 	}
 	
 	@EventHandler
@@ -111,10 +117,26 @@ public class ElyProtect implements Listener {
 	public void onInteract(PlayerInteractEvent e){
 		
 		String result = isInAnyRegion(e.getPlayer().getLocation());
+		Player p = e.getPlayer();
+		Location l = e.getClickedBlock() != null ? e.getClickedBlock().getLocation() : e.getPlayer().getLocation();
 		
 		if (hasFlag(result, DRF.INTERACT)){
 			if (!hasRegionPerms(e.getPlayer(), result)){
 				e.setCancelled(true);
+			}
+		}
+		
+		if (e.getPlayer().getGameMode().equals(GameMode.CREATIVE) && p.getItemInHand().getType().equals(Material.BLAZE_ROD)){
+			
+			RegionSelector sel = main.we.getSession(p).getRegionSelector(main.we.wrapPlayer(p).getWorld());
+			com.sk89q.worldedit.Vector v = new com.sk89q.worldedit.Vector(l.getBlockX(), l.getBlockY(), l.getBlockZ());
+			
+			if (e.getAction() == Action.LEFT_CLICK_BLOCK){
+				sel.selectPrimary(v);
+				main.s(p, "Selected first position!");
+			} else if (e.getAction() == Action.RIGHT_CLICK_BLOCK){
+				sel.selectSecondary(v);
+				main.s(p, "Selected second position!");
 			}
 		}
 	}

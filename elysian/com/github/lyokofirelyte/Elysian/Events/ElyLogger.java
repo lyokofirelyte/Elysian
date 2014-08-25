@@ -199,26 +199,10 @@ public class ElyLogger implements Listener, Runnable {
 			if (dp.getStr(DPI.DEATH_CHEST_LOC).equals(loc)){
 				
 				for (ItemStack i : dp.getStack(DPI.DEATH_CHEST_INV)){
-					if (i != null){
+					if (i != null && e.getPlayer().getInventory().firstEmpty() != -1){
 						e.getPlayer().getInventory().addItem(i);
-					}
-				}
-				
-				int i = 0;
-				
-				for (ItemStack item : e.getPlayer().getInventory().getArmorContents()){
-					if (item != null && !item.getType().equals(Material.AIR)){
-						i++;
-					}
-				}
-				
-				if (i == 0){
-					e.getPlayer().getInventory().setArmorContents(dp.getStack(DPI.DEATH_ARMOR));
-				} else {
-					for (ItemStack item : dp.getStack(DPI.DEATH_ARMOR)){
-						if (item != null && !item.getType().equals(Material.AIR)){
-							e.getPlayer().getWorld().dropItem(l, item);
-						}
+					} else if (i != null){
+						e.getPlayer().getWorld().dropItem(l, i);
 					}
 				}
 				

@@ -766,8 +766,16 @@ public class ElyStaff implements Listener {
 			}
 			p.getInventory().clear();
 			main.s(p, "&oInventory inceneration activated. Use /ci u to undo.");
-		} else if (dp.getStack(DPI.BACKUP_INVENTORY).length > 0){
-			p.getInventory().setContents(dp.getStack(DPI.BACKUP_INVENTORY));
+		} else if (dp.getStack(DPI.BACKUP_INVENTORY).size() > 0){
+			for (ItemStack i : dp.getStack(DPI.BACKUP_INVENTORY)){
+				if (i != null){
+					if (p.getInventory().firstEmpty() != -1){
+						p.getInventory().addItem(i);
+					} else {
+						p.getWorld().dropItem(p.getLocation(), i);
+					}
+				}
+			}
 			dp.set(DPI.BACKUP_INVENTORY, new ItemStack(){});
 			main.s(p, "&oInventory restoration completed");
 		} else {

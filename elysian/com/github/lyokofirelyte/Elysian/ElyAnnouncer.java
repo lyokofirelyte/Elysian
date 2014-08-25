@@ -25,7 +25,7 @@ public class ElyAnnouncer implements Runnable {
 		int index = dp.getInt(DPI.ANNOUNCER_INDEX);
 		
 		if (messages.size() > index){
-			DivinityUtils.bc(dp.getList(DPI.ANNOUNCER).get(index));
+			DivinityUtils.bc(messages.get(index));
 			dp.set(DPI.ANNOUNCER_INDEX, index + 1);
 		} else if (messages.size() > 0){
 			DivinityUtils.bc(messages.get(0));

@@ -23,6 +23,7 @@ import com.github.lyokofirelyte.Divinity.DivinityUtils;
 import com.github.lyokofirelyte.Divinity.Commands.DivCommand;
 import com.github.lyokofirelyte.Divinity.Events.DivinityPluginMessageEvent;
 import com.github.lyokofirelyte.Divinity.Events.ScoreboardUpdateEvent;
+import com.github.lyokofirelyte.Divinity.JSON.JSONChatMessage;
 import com.github.lyokofirelyte.Divinity.Manager.DivInvManager;
 import com.github.lyokofirelyte.Divinity.Manager.DivinityManager;
 import com.github.lyokofirelyte.Divinity.Storage.DAI;
@@ -209,17 +210,21 @@ public class Elysian extends DivinityAPI implements DivinityModule {
 		}
 		return false;
 	}
+	
+	public void s(Player s, JSONChatMessage msg){
+		api.event(new DivinityPluginMessageEvent(s, msg));
+	}
 
 	public void s(CommandSender s, String type){
-		Bukkit.getPluginManager().callEvent(new DivinityPluginMessageEvent(s, type));
+		api.event(new DivinityPluginMessageEvent(s, type));
 	}
 	
 	public void s(CommandSender s, String type, String message){
-		Bukkit.getPluginManager().callEvent(new DivinityPluginMessageEvent(s, type, new String[]{message}));
+		api.event(new DivinityPluginMessageEvent(s, type, new String[]{message}));
 	}
 	
 	public void s(CommandSender s, String type, String[] message){
-		Bukkit.getPluginManager().callEvent(new DivinityPluginMessageEvent(s, type, message));
+		api.event(new DivinityPluginMessageEvent(s, type, message));
 	}
 
 	public void fw(World w, Location l, Type type, Color color){
