@@ -41,6 +41,7 @@ public class ElySpectate {
 			dp.set(DPI.SPECTATE_TARGET, args[0]);
 			dp.set(DPI.SPECTATING, true);
 			dp.getList(DPI.PREVIOUS_LOCATIONS).add(p.getWorld().getName() + " " + v.getBlockX() + " " + v.getBlockY() + " " + v.getBlockZ() + " " + p.getLocation().getYaw() + " " + p.getLocation().getPitch());
+			p.teleport(main.getPlayer(args[0]));
 			
 		} else {
 			main.s(p, "&c&oThat player is not online or is spectating someone.");
@@ -53,14 +54,14 @@ public class ElySpectate {
 		List<String> lastLocs = dp.getList(DPI.PREVIOUS_LOCATIONS);
 		String[] lastLoc = lastLocs.get(lastLocs.size()-1).split(" ");
 		
+		main.s(p, "&oYou have stopped spectating " + main.matchDivPlayer(main.api.getDivPlayer(p).getStr(DPI.SPECTATE_TARGET)).getStr(DPI.DISPLAY_NAME) + "&b.");
 		main.api.getDivPlayer(target).set(DPI.SPECTATE_TARGET, "none");
 		
 		dp.set(DPI.SPECTATE_TARGET, "none");
 		dp.set(DPI.SPECTATING, false);
+		p.setFlying(false); p.setAllowFlight(false); 
 		p.teleport(new Location(Bukkit.getWorld(lastLoc[0]), Double.parseDouble(lastLoc[1]), Double.parseDouble(lastLoc[2]), Double.parseDouble(lastLoc[3]), Float.parseFloat(lastLoc[4]), Float.parseFloat(lastLoc[5])));
 		p.showPlayer(target);
 		target.showPlayer(p);
-		
-		main.s(p, "&oYou have stopped spectating " + main.matchDivPlayer(main.api.getDivPlayer(p).getStr(DPI.SPECTATE_TARGET)).getStr(DPI.DISPLAY_NAME) + "&b.");
 	}
 }

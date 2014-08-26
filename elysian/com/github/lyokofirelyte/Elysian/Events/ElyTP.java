@@ -85,15 +85,10 @@ public class ElyTP implements Listener {
 	}
 	
 	private void effects(Player p){
-		for (Entity e : p.getNearbyEntities(10D, 10D, 10D)){
-			if (e instanceof Player){
-				if (!((Player)e).canSee(p)){
-					return;
-				}
+		if (!main.api.getDivPlayer(p).getBool(DPI.VANISHED)){
+			for (Location l : main.api.divUtils.circle(p.getLocation(), 4, 4, true, true, 0)){
+				p.getWorld().playEffect(l, Effect.ENDER_SIGNAL, 0);
 			}
-		}
-		for (Location l : main.api.divUtils.circle(p.getLocation(), 4, 4, true, true, 0)){
-			p.getWorld().playEffect(l, Effect.ENDER_SIGNAL, 0);
 		}
 	}
 }

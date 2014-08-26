@@ -2,6 +2,7 @@ package com.github.lyokofirelyte.Elysian.Commands;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import org.bukkit.Bukkit;
@@ -50,6 +51,30 @@ public class ElyStaff implements Listener {
 			 p.openInventory(main.getPlayer(args[0]).getInventory());
 		 } else {
 			 main.s(p, "playerNotFound");
+		 }
+	 }
+	 
+	 @DivCommand(perm = "wa.staff.admin", aliases = {"sunday"}, desc = "Sunday Balance Increase", help = "/sunday", player = false)
+	 public void onSunday(CommandSender cs, String[] args){
+		 
+		 String who = cs instanceof Player ? ((Player)cs).getDisplayName() : "&6Console";
+		 
+		 for (DivinityStorage dp : main.api.divManager.getAllUsers()){
+			 List<String> groups = new ArrayList<String>(main.perms.memberGroups);
+			 Collections.reverse(groups);
+			 for (String group : groups){
+				 if (dp.getList(DPI.PERMS).contains("wa.rank." + group)){
+					 int amount = dp.getInt(DPI.BALANCE)*Math.round(Float.parseFloat(main.perms.rankNames.get(group).split(" % ")[2]));
+					 dp.set(DPI.BALANCE, dp.getInt(DPI.BALANCE) + amount);
+					 dp.getList(DPI.MAIL).add("personal" + "%SPLIT%" + who + "%SPLIT%" + "Sunday balance updated! You were given " + amount + " this week!");
+					 
+					 if (Bukkit.getPlayer(dp.uuid()) != null){
+						 main.s(Bukkit.getPlayer(dp.uuid()), "none", "You've recieved a mail! /mail read");
+					 }
+					 
+					 break;
+				 }
+			 }
 		 }
 	 }
 	 
@@ -300,19 +325,26 @@ public class ElyStaff implements Listener {
 	 @DivCommand(perm = "wa.staff.mod", aliases = {"v", "vanish"}, desc = "Vanish Command", help = "/v", player = true)
 	 public void onVanish(Player p, String[] args){
 		 
-		 String hidden = "&a&ovisible";
+		 DivinityPlayer dp = main.api.getDivPlayer(p);
+		 String[] hidden = new String[]{"&a&ovisible", "&c&oinvisible"};
 		 
 		 for (Player player : Bukkit.getOnlinePlayers()){
-			 if (player.canSee(p)){
+			 if (dp.getBool(DPI.VANISHED)){
 				 player.hidePlayer(p);
-				 hidden = "&c&oinvisible";
 			 } else {
 				 player.showPlayer(p);
-				 hidden = "&a&ovisible";
 			 }
 		 }
 		 
-		 main.s(p, "You are now " + hidden);
+		 dp.set(DPI.VANISHED, !dp.getBool(DPI.VANISHED));
+		 
+		 if (dp.getBool(DPI.VANISHED)){
+			 p.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, Integer.MAX_VALUE, 1, true));
+		 } else {
+			 p.removePotionEffect(PotionEffectType.INVISIBILITY);
+		 }
+		 
+		 main.s(p, "You are now " + hidden[dp.getBool(DPI.VANISHED) ? 1 : 0]);
 	 }
 	 
 	 @DivCommand(perm = "wa.staff.mod2", aliases = {"heal"}, desc = "Heal Command", help = "/heal", player = true)

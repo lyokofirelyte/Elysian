@@ -29,7 +29,10 @@ public class ElyMove implements Listener {
 		main.api.event(new ScoreboardUpdateEvent(e.getPlayer(), "move"));
 		
 		if (!main.api.getDivPlayer(e.getPlayer()).getStr(DPI.SPECTATE_TARGET).equals("none") && !main.api.getDivPlayer(e.getPlayer()).getBool(DPI.SPECTATING)){
-			main.getPlayer(main.api.getDivPlayer(e.getPlayer()).getStr(DPI.SPECTATE_TARGET)).teleport(e.getPlayer().getLocation());
+			Player you = main.getPlayer(main.api.getDivPlayer(e.getPlayer()).getStr(DPI.SPECTATE_TARGET));
+			you.setAllowFlight(true); you.setFlying(true);
+			Vector themV = e.getPlayer().getLocation().toVector();
+			you.setVelocity(themV.subtract(you.getLocation().toVector()).normalize());
 		}
 	}
 	

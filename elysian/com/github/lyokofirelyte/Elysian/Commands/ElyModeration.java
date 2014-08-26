@@ -32,7 +32,7 @@ public class ElyModeration {
 		 p.setHealth(0);
 	 }
 	 
-	 @DivCommand(name = "Mute", perm = "wa.staff.mod", aliases = {"mute", "kik", "disable"}, desc = "Mute someone!", help = "/mute <player> <duration in minutes, default = 5>", player = false, min = 1, max = 2)
+	 @DivCommand(name = "Mute", perm = "wa.staff.mod", aliases = {"mute", "kik", "disable"}, desc = "Mute someone!", help = "/mute <player> <duration in minutes, default = 5> or /kick <player> <reason>", player = false, min = 1)
 	 public void onMute(CommandSender cs, String[] args, String cmd){
 		 
 		 DivinityPlayer who = main.doesPartialPlayerExist(args[0]) ? main.matchDivPlayer(args[0]) : null;
@@ -85,7 +85,7 @@ public class ElyModeration {
 		 }
 	 }
 	 
-	 @DivCommand(perm = "wa.staff.mod", aliases = {"eban"}, desc = "Elysian Ban Command", help = "/eban <player>", player = true, min = 1)
+	 @DivCommand(perm = "wa.staff.mod2", aliases = {"eban"}, desc = "Elysian Ban Command", help = "/eban <player>", player = true, min = 1)
 	 public void onBan(Player p, String[] args){
 		 
 		 DivinityPlayer dp = main.api.getDivPlayer(p);
@@ -225,7 +225,7 @@ public class ElyModeration {
 			 	
 			 	case "#five_video": case "#five_log": case "#five_video%and%log":
 			 		
-			 		dp.getList(DPI.BAN_QUEUE).add("proof:" + args[1].split("\\_")[1]);
+			 		dp.getList(DPI.BAN_QUEUE).add("proof:" + args[1].split("\\_")[1] + "%proof");
 			 		onBan(p, new String[]{args[0], "#six"});
 			 		
 			 	break;
@@ -258,9 +258,9 @@ public class ElyModeration {
 			 		p.sendMessage("");
 			 		
 			 		if (duration.equals("forever")){
-			 			msg.addExtra(em("&aCONFIRM BAN " + snow, "&c&oCONFIRM BAN!", "/eban " + args[0] + " #confirm " + banned.uuid().toString() + " " + type + " " + reason + " " + proof));
+			 			msg.addExtra(em("&aCONFIRM BAN " + snow, "&c&oCONFIRM BAN!", "/eban " + args[0] + " #confirm " + banned.name() + " " + type + " " + reason + " " + proof));
 			 		} else {
-			 			msg.addExtra(em("&aCONFIRM BAN" + snow, "&c&oCONFIRM BAN!", "/eban " + args[0] + " #confirm " + banned.uuid().toString() + " " + type + " " + reason + " " + proof + " " + duration));
+			 			msg.addExtra(em("&aCONFIRM BAN" + snow, "&c&oCONFIRM BAN!", "/eban " + args[0] + " #confirm " + banned.name() + " " + type + " " + reason + " " + proof + " " + duration));
 			 		}
 			 		
 			 		msg.addExtra(em("&7&oCANCEL ", "&7&oExit the ban module.", "/eban " + args[0] + " #cancel"));
@@ -291,10 +291,21 @@ public class ElyModeration {
 			 		
 			 		bdp.set(DPI.OWNED_CHESTS, new ArrayList<String>());
 			 		
+			 		boolean stopOp = false;
+			 		
+			 		if (!p.isOp()){
+			 			stopOp = true;
+			 			p.setOp(true);
+			 		}
+			 		
 			 		if (!dp.getList(DPI.BAN_QUEUE).contains("type:tban")){
-			 			p.performCommand(args[3] + " " + args[2] + " " + args[4].replace("%", " ") + " - " + args[5].replace("%", " ") + " proof");
+			 			p.performCommand(args[3] + " " + args[2] + " " + args[4].replace("%", " ") + (args[5].equals("none") ? "" : " - " + args[5].replace("%", " ")));
 			 		} else {
 			 			p.performCommand(args[3] + " " + args[2] + " " + args[6] + " h " + args[4].replace("%", " ") + (args[5].equals("none") ? "" : " - " + args[5].replace("%", " ")));
+			 		}
+			 		
+			 		if (stopOp){
+			 			p.setOp(false);
 			 		}
 			 		
 			 		onBan(p, new String[]{args[0], "#cancel"});

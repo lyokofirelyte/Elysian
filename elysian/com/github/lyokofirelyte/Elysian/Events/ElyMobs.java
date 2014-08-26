@@ -166,17 +166,6 @@ public class ElyMobs implements Listener {
 			DivinityUtils.bc(dp.getStr(DPI.DISPLAY_NAME) + " &e&odied due to unknown causes.");
 		}
 		
-		String[] deathLoc = dp.getStr(DPI.DEATH_CHEST_LOC).split(" ");
-		
-		if (!dp.getStr(DPI.DEATH_CHEST_INV).equals("none")){
-			for (ItemStack i : dp.getStack(DPI.DEATH_CHEST_INV)){
-				if (i != null && !i.getType().equals(Material.AIR)){
-					p.getWorld().dropItem(new Location(Bukkit.getWorld(deathLoc[0]), Double.parseDouble(deathLoc[1]), Double.parseDouble(deathLoc[2]), Double.parseDouble(deathLoc[3])), i);
-				}
-			}
-			main.s(p, "Your old death chest items were dropped at &6" + deathLoc[1] + " " + deathLoc[2] + " " + deathLoc[3] + "&b.");
-		}
-		
 		dp.set(DPI.IN_COMBAT, false);
 		
 		for (ItemStack i : p.getInventory().getContents()){
