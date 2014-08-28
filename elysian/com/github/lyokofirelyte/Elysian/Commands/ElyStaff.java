@@ -128,6 +128,30 @@ public class ElyStaff implements Listener {
 		 }
 	 }
 	 
+	 @DivCommand(perm = "wa.staff.admin", aliases = {"sunday"}, desc = "Sunday Balance Increase", help = "/sunday", player = false)
+	 public void onSunday(CommandSender cs, String[] args){
+		 
+		 String who = cs instanceof Player ? ((Player)cs).getDisplayName() : "&6Console";
+		 
+		 for (DivinityStorage dp : main.api.divManager.getAllUsers()){
+			 List<String> groups = new ArrayList<String>(main.perms.memberGroups);
+			 Collections.reverse(groups);
+			 for (String group : groups){
+				 if (dp.getList(DPI.PERMS).contains("wa.rank." + group)){
+					 int amount = dp.getInt(DPI.BALANCE)*Math.round(Float.parseFloat(main.perms.rankNames.get(group).split(" % ")[2]));
+					 dp.set(DPI.BALANCE, dp.getInt(DPI.BALANCE) + amount);
+					 dp.getList(DPI.MAIL).add("personal" + "%SPLIT%" + who + "%SPLIT%" + "Sunday balance updated! You were given " + amount + " this week!");
+					 
+					 if (Bukkit.getPlayer(dp.uuid()) != null){
+						 main.s(Bukkit.getPlayer(dp.uuid()), "none", "You've recieved a mail! /mail read");
+					 }
+					 
+					 break;
+				 }
+			 }
+		 }
+	 }
+	 
 	 @DivCommand(perm = "wa.staff.mod2", aliases = {"clear"}, desc = "Clear items on floor (and monsters)", help = "/clear <radius>", player = true, min = 1)
 	 public void onClear(Player p, String[] args){
 		 
