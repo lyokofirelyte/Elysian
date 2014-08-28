@@ -1,7 +1,6 @@
 package com.github.lyokofirelyte.Elysian.Commands;
 
 import org.bukkit.FireworkEffect.Type;
-import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import com.github.lyokofirelyte.Divinity.DivinityUtils;

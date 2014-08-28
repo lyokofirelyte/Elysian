@@ -95,7 +95,8 @@ public class ElyCommand {
 		
 		DivinitySystem system = main.api.getSystem();
 		
-		if (system.getLong(DPI.ENDERDRAGON_CD) <= System.currentTimeMillis()){
+		if (system.getLong(DPI.ENDERDRAGON_CD) <= System.currentTimeMillis() && !system.getBool(DPI.ENDERDRAGON_DEAD)){
+			system.set(DPI.ENDERDRAGON_DEAD, true);
 			system.set(DPI.ENDERDRAGON_CD, System.currentTimeMillis() + 7200000L);
 			Location temp = new Location(p.getWorld(), p.getLocation().getX(), p.getLocation().getY(), p.getLocation().getZ(), p.getLocation().getYaw(), p.getLocation().getPitch());
 			p.teleport(new Location(Bukkit.getWorld("world_the_end"), 0, 10, 0));

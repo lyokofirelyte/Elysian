@@ -199,26 +199,10 @@ public class ElyLogger implements Listener, Runnable {
 			if (dp.getStr(DPI.DEATH_CHEST_LOC).equals(loc)){
 				
 				for (ItemStack i : dp.getStack(DPI.DEATH_CHEST_INV)){
-					if (i != null){
+					if (i != null && !i.getType().equals(Material.AIR) && e.getPlayer().getInventory().firstEmpty() != -1){
 						e.getPlayer().getInventory().addItem(i);
-					}
-				}
-				
-				int i = 0;
-				
-				for (ItemStack item : e.getPlayer().getInventory().getArmorContents()){
-					if (item != null && !item.getType().equals(Material.AIR)){
-						i++;
-					}
-				}
-				
-				if (i == 0){
-					e.getPlayer().getInventory().setArmorContents(dp.getStack(DPI.DEATH_ARMOR));
-				} else {
-					for (ItemStack item : dp.getStack(DPI.DEATH_ARMOR)){
-						if (item != null && !item.getType().equals(Material.AIR)){
-							e.getPlayer().getWorld().dropItem(l, item);
-						}
+					} else if (i != null && !i.getType().equals(Material.AIR)){
+						e.getPlayer().getWorld().dropItemNaturally(l, i);
 					}
 				}
 				
@@ -340,7 +324,7 @@ public class ElyLogger implements Listener, Runnable {
 			}
 		}
 		
-		if (e.getBlock().getWorld().getName().equals("world")){
+		if (!e.getBlock().getWorld().getName().equals("WACP")){
 			addToQue(e.getBlock().getLocation(), "&b" + e.getPlayer().getName(), "&cdestroyed &b" + matName, "break", matName + "split" + e.getBlock().getData(), "AIRsplit0");
 		}
 	}
@@ -359,11 +343,11 @@ public class ElyLogger implements Listener, Runnable {
 		if (e.getBlock() != null && main.api.getDivPlayer(e.getPlayer()).getBool(DPI.LOGGER) && e.getPlayer().getItemInHand().getType().equals(Material.ENDER_PORTAL_FRAME)){
 			lookup(e.getPlayer(), e.getBlock().getLocation());
 			e.setCancelled(true);
-		} else if (e.getBlock().getWorld().getName().equals("world")){
+		} else if (!e.getBlock().getWorld().getName().equals("WACP")){
 			addToQue(e.getBlock().getLocation(), "&b" + e.getPlayer().getName(), "&aplaced &b" + e.getBlock().getType().toString().toLowerCase(), "place", "AIRsplit0", matName + "split" + e.getBlock().getData());
 		}
 		
-		if (e.getPlayer().getWorld().getName().equals("world") && protectedMats.contains(e.getBlock().getType())){
+		if (!e.getPlayer().getWorld().getName().equals("WACP") && protectedMats.contains(e.getBlock().getType())){
 			main.s(e.getPlayer(), "none", "This storage unit is now protected. Allow friend access with /chest add <player>.");
 			Location l = e.getBlock().getLocation();
 			String loc = l.getWorld().getName() + " " + l.toVector().getBlockX() + " " + l.toVector().getBlockY() + " " + l.toVector().getBlockZ();

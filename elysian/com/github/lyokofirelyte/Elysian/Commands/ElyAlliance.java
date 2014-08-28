@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
-import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -198,10 +197,10 @@ public class ElyAlliance {
 		 				alliance.set(DAI.CENTER, v.getBlockX() + " " + v.getBlockY() + " " + v.getBlockZ());
 		 				alliance.getList(DAI.MEMBERS).add(leader.uuid().toString());
 
-		 				p.performCommand("nick " + ChatColor.stripColor(main.AS(p.getDisplayName())));
+		 				Bukkit.getPlayer(leader.uuid()).performCommand("nick " + ChatColor.stripColor(main.AS(Bukkit.getPlayer(leader.uuid()).getDisplayName())));
 		 				leader.set(DPI.DISPLAY_NAME, p.getDisplayName());
 		 				
-		 				DivinityUtils.bc(main.coloredAllianceName(args[1]) + " &bhas been formed!");
+		 				DivinityUtils.bc(main.coloredAllianceName(args[1].toLowerCase()) + " &bhas been formed!");
 		 			} else {
 		 				main.s(p, "&c&oAlliance already exists.");
 		 			}

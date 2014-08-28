@@ -5,12 +5,14 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -21,12 +23,15 @@ import org.bukkit.event.player.AsyncPlayerChatEvent;
 import com.github.lyokofirelyte.Divinity.DivinityUtils;
 import com.github.lyokofirelyte.Divinity.Commands.DivCommand;
 import com.github.lyokofirelyte.Divinity.Events.DivinityChannelEvent;
+import com.github.lyokofirelyte.Divinity.Events.DivinityPluginMessageEvent;
 import com.github.lyokofirelyte.Divinity.JSON.JSONChatClickEventType;
 import com.github.lyokofirelyte.Divinity.JSON.JSONChatExtra;
 import com.github.lyokofirelyte.Divinity.JSON.JSONChatHoverEventType;
 import com.github.lyokofirelyte.Divinity.JSON.JSONChatMessage;
+import com.github.lyokofirelyte.Divinity.Manager.DivinityManager;
 import com.github.lyokofirelyte.Divinity.Storage.DPI;
 import com.github.lyokofirelyte.Divinity.Storage.DivinityPlayer;
+import com.github.lyokofirelyte.Divinity.Storage.DivinityStorage;
 import com.github.lyokofirelyte.Divinity.Storage.DivinitySystem;
 import com.github.lyokofirelyte.Elysian.Elysian;
 
@@ -39,25 +44,24 @@ public class ElyChat implements Listener {
 		fillMap();
 	}
 	
-	private Map<String, String> qc = new HashMap<String, String>();
+	private Map<String, String[]> qc = new HashMap<String, String[]>();
 	
 	private void fillMap(){
-		qc.put("mobs", "I have killed % monsters in total!");
-		qc.put("words", "I have spoken % times in chat!");
-		qc.put("break", "I have broken % blocks in total!");
-		qc.put("place", "I have placed % blocks in total!");
-		qc.put("died", "I have died % times!");
-		qc.put("duels", "I have won % duels!");
-		qc.put("coords", "My current coords are: %");
-		qc.put("exp", "I currently have % exp.");
-		qc.put("money", "I currently have % shinies.");
+		qc.put("duels", s("I have won % duels!", DPI.DUEL_WINS.s()));
+		qc.put("coords", s("My current coords are: %", DPI.GV1.s()));
+		qc.put("exp", s("I currently have % exp.", DPI.EXP.s()));
+		qc.put("money", s("I currently have % shinies.", DPI.BALANCE.s()));
+	}
+	
+	private String[] s(String s1, String s2){
+		return new String[]{s1, s2};
 	}
 	
 	@DivCommand(name = "PM", aliases = {"tell", "pm", "msg", "message", "t", "r"}, desc = "Private Message Command", help = "/tell <player> <message>", min = 2, player = false)
 	public void onPrivateMessage(CommandSender cs, String[] args, String cmd){
 
-		DivinityPlayer dp = cs instanceof Player ? main.getDivPlayer((Player)cs) : (DivinityPlayer)main.api.getSystem();
-		String sendTo = !cmd.equals("r") ? args[0] : dp.getStr(DPI.PREVIOUS_PM);;
+		DivinityStorage dp = cs instanceof Player ? main.api.divManager.getStorage(DivinityManager.dir, ((Player)cs).getUniqueId().toString()) : main.api.divManager.getStorage(DivinityManager.sysDir, "system");
+		String sendTo = !cmd.equals("r") ? args[0] : dp.getStr(DPI.PREVIOUS_PM);
 		String message = !cmd.equals("r") ? args[1] : args[0];
 		int start = !cmd.equals("r") ? 2 : 1;
 		
@@ -69,7 +73,7 @@ public class ElyChat implements Listener {
 			if (sendTo.equals("console") || main.isOnline(sendTo)){
 				
 				if (!sendTo.equals("console")){	
-					Bukkit.getPlayer(main.matchDivPlayer(sendTo).uuid()).sendMessage(main.AS(("&3<- " + dp.getStr(DPI.DISPLAY_NAME) + "&f: " + main.matchDivPlayer(sendTo).getStr(DPI.PM_COLOR) + message)));
+					main.getPlayer(sendTo).sendMessage(main.AS(("&3<- " + dp.getStr(DPI.DISPLAY_NAME) + "&f: " + main.matchDivPlayer(sendTo).getStr(DPI.PM_COLOR) + message)));
 					cs.sendMessage(main.AS(("&3-> " + main.matchDivPlayer(sendTo).getStr(DPI.DISPLAY_NAME)) + "&f: " + dp.getStr(DPI.PM_COLOR) + message));
 					main.matchDivPlayer(sendTo).set(DPI.PREVIOUS_PM, dp.name());
 				} else {
@@ -119,11 +123,24 @@ public class ElyChat implements Listener {
 	@DivCommand(aliases = {"qc", "quickchat"}, desc = "QuickChat Command", help = "/qc <option>, /qc list", player = true)
 	public void onQC(Player p, String[] args){
 		
+		String msg = "";
+		Location l = p.getLocation();
+		
 		if (args.length == 0){
 			main.s(p, main.help("qc", this));
-		} else {
-			switch (args[0]){
+		} else if (qc.containsKey(args[0].toLowerCase())){
 			
+			if (args[0].equalsIgnoreCase("coords")){
+				msg = qc.get("coords")[0].replace("%", "&6" + l.getBlockX() + "&7, &6" + l.getBlockY() + "&7, &6" + l.getBlockZ() + "&3.");
+			} else {
+				msg = qc.get(args[0].toLowerCase())[0].replace("%", main.api.getDivPlayer(p).getStr(DPI.valueOf(qc.get(args[0].toLowerCase())[1])));
+			}
+			
+			Bukkit.broadcastMessage(main.AS("&6QC &7\u2744 " + p.getDisplayName() + "&f: &3&o" + msg.replace("none", "0")));
+			
+		} else {
+			for (String s : qc.keySet()){
+				main.s(p, s);
 			}
 		}
 	}
@@ -138,8 +155,39 @@ public class ElyChat implements Listener {
 		e.setCancelled(true);
 		main.afkCheck(e.getPlayer());
 		
+		DivinityPlayer p = main.api.getDivPlayer(e.getPlayer());
+		
 		if (!main.silentPerms(e.getPlayer(), "wa.rank.settler")){
 			e.setMessage(ChatColor.stripColor(main.AS(e.getMessage())));
+		}
+		
+		List<String> list = new ArrayList<String>(p.getList(DPI.BAN_QUEUE));
+		List<String> list2 = new ArrayList<String>(p.getList(DPI.BAN_QUEUE));
+		
+		if (p.getBool(DPI.IS_BANNING)){
+			if (p.getList(DPI.BAN_QUEUE).contains("type:ban") || p.getList(DPI.BAN_QUEUE).contains("type:tban")){
+				for (String s : list){
+					if (s.contains("reason")){
+						for (String ss : list2){
+							if (ss.contains("proof")){
+								if (main.api.divUtils.isInteger(e.getMessage())){
+									p.getList(DPI.BAN_QUEUE).add("duration:" + e.getMessage());
+									e.getPlayer().performCommand("eban a " + "#four_temp");
+								} else {
+									p.err("The number must be an integer.");
+								}
+								return;
+							}
+						}
+						p.getList(DPI.BAN_QUEUE).add("proof:" + e.getMessage().replace(" ", "%"));
+						e.getPlayer().performCommand("eban a " + "#four_local");
+						return;
+					}
+				}
+				p.getList(DPI.BAN_QUEUE).add("reason:" + e.getMessage().replace(" ", "%"));
+				e.getPlayer().performCommand("eban a " + "#three");
+				return;
+			}
 		}
 		
 		if (!main.api.getDivPlayer(e.getPlayer()).getBool(DPI.MUTED)){
@@ -197,7 +245,8 @@ public class ElyChat implements Listener {
 						}
 						msg.addExtra(extra);
 					}
-					msg.sendToPlayer(p);
+					main.s(p, msg);
+					main.api.event(new DivinityPluginMessageEvent(p, "globalChat", new String[]{"&7" + e.getPlayer().getDisplayName() + "&f: &7&o" + e.getMessage()}));
 				}
 				
 				Bukkit.getConsoleSender().sendMessage(main.AS(e.getPlayer().getDisplayName() + "&f: " + e.getMessage()));

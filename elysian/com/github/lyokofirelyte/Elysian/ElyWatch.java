@@ -39,7 +39,9 @@ public class ElyWatch implements Runnable {
 
 	@Override
 	public void run(){
+		
 		DivinitySystem system = main.api.getSystem();
+		
 		for (Player p : Bukkit.getOnlinePlayers()){
 			DivinityPlayer dp = main.api.getDivPlayer(p);
 			dp.set(DPI.IN_COMBAT, false);
@@ -52,6 +54,7 @@ public class ElyWatch implements Runnable {
 			invCheck(p, dp);
 			main.api.event(new ScoreboardUpdateEvent(p));
 		}
+		
 		system.set(DPI.ROLLBACK_IN_PROGRESS, false);
 	}
 	
@@ -124,7 +127,7 @@ public class ElyWatch implements Runnable {
 		
 		if (dp.getList(DPI.PERMS).contains("wa.staff.intern")){
 			for (String rank : main.perms.staffGroups){
-				if (dp.getList(DPI.PERMS).contains("wa.staff." + rank) && !dp.getStr(DPI.RANK_NAME).contains("WCN")){
+				if (dp.getList(DPI.PERMS).contains("wa.staff." + rank)){
 					switch (rank){
 						case "admin":
 							dp.set(DPI.RANK_NAME, "&4WCN"); 

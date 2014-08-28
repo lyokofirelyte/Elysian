@@ -38,7 +38,26 @@ public class ElyMessages implements Listener {
 			dp = main.api.getDivPlayer(p);
 		}
 		
+		if (dp != null){
+			if (dp.getBool(DPI.IS_BANNING)){
+				if (e.getType().equals("globalChat")){
+					dp.getList(DPI.PAUSED_CHAT).add(e.getExtras()[0]);
+				}
+				return;
+			}
+		}
+		
 		switch (e.getType()){
+		
+			case "globalChat": break;
+			
+			case "JSON":
+				
+				if (e.isJson() && p != null){
+					e.getJSONMessage().sendToPlayer(p);
+				}
+				
+			break;
 		
 			case "noPerms":
 				
