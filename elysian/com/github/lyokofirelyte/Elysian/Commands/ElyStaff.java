@@ -21,9 +21,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.server.ServerListPingEvent;
-import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
@@ -58,81 +56,7 @@ public class ElyStaff implements Listener {
 			 main.s(p, "playerNotFound");
 		 }
 	 }
-	 	 
-	 @DivCommand(perm = "wa.staff.admin", aliases = {"rocketban"}, desc = "Rocketban someone!", help = "/rocketban <player> <reason>", player = true, min = 2)
-	 public void onRocketBan(Player p, String[] args){
-		 
 
-		 
-		 if(main.isOnline(args[0])){
-			 main.api.schedule(this, "beginmessage", 10L, "beginmessage");
-			 main.api.schedule(this, "banmessage", 20L, "banmessage", 0);
-			 main.api.schedule(this, "banmessage", 30L, "banmessage", 20);
-			 main.api.schedule(this, "banmessage", 40L, "banmessage", 40);
-			 main.api.schedule(this, "banmessage", 50L, "banmessage", 60);
-			 main.api.schedule(this, "banmessage", 60L, "banmessage", 80);
-			 main.api.schedule(this, "banmessage", 70L, "banmessage", 100);
-			 main.api.schedule(this, "foundplayer", 80L, "foundplayer", args[0]);
-
-			 main.api.schedule(this, "rocketban", 100L, "rocketban", p, args[0], args);
-
-		 }
-
-	 }
-	 
-	 public void banmessage(int percentage){
-		 for(Player p : Bukkit.getOnlinePlayers()){
-			 main.s(p, "[Scanning for X-rayers " + percentage + "% ]");
-		 }
-	 }
-	 
-	 public void beginmessage(){
-		 for(Player p : Bukkit.getOnlinePlayers()){
-			 main.s(p, "[Scanning for X-rayers]");
-		 }
-	 }
-	 
-	 public void foundplayer(String name){
-		 for(Player p : Bukkit.getOnlinePlayers()){
-			 main.s(p, "[1 result found! " + name + " ]");
-		 } 
-	 }
-	 
-	 public void rocketban(Player p, String name, String[] params){
-		 StringBuilder reason = new StringBuilder();
-		 for(int i = 0; i < params.length; i++){
-			 try{
-				 reason.append(params[i + 1] + " ");
-			 }catch(Exception e){}
-		 }
-		 
-		p.performCommand("ban " + name + " " + reason.toString());
-	 }
-	 
-	 @DivCommand(perm = "wa.staff.admin", aliases = {"sunday"}, desc = "Sunday Balance Increase", help = "/sunday", player = false)
-	 public void onSunday(CommandSender cs, String[] args){
-		 
-		 String who = cs instanceof Player ? ((Player)cs).getDisplayName() : "&6Console";
-		 
-		 for (DivinityStorage dp : main.api.divManager.getAllUsers()){
-			 List<String> groups = new ArrayList<String>(main.perms.memberGroups);
-			 Collections.reverse(groups);
-			 for (String group : groups){
-				 if (dp.getList(DPI.PERMS).contains("wa.rank." + group)){
-					 int amount = dp.getInt(DPI.BALANCE)*Math.round(Float.parseFloat(main.perms.rankNames.get(group).split(" % ")[2]));
-					 dp.set(DPI.BALANCE, dp.getInt(DPI.BALANCE) + amount);
-					 dp.getList(DPI.MAIL).add("personal" + "%SPLIT%" + who + "%SPLIT%" + "Sunday balance updated! You were given " + amount + " this week!");
-					 
-					 if (Bukkit.getPlayer(dp.uuid()) != null){
-						 main.s(Bukkit.getPlayer(dp.uuid()), "none", "You've recieved a mail! /mail read");
-					 }
-					 
-					 break;
-				 }
-			 }
-		 }
-	 }
-	 
 	 @DivCommand(perm = "wa.staff.admin", aliases = {"ip"}, desc = "IP & Location Information", help = "/ip <player>", min = 1)
 	 public void onIP(CommandSender cs, String[] args){
 		 
