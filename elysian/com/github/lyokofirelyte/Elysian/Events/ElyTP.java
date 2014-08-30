@@ -47,19 +47,13 @@ public class ElyTP implements Listener {
 		if (!main.silentPerms(p, "wa.staff.mod2")){
 			for (Player player : Bukkit.getOnlinePlayers()){
 				if (main.api.getDivPlayer(player).getBool(DPI.TP_BLOCK)){
-					Vector vv = player.getLocation().toVector();
-					for (int x = 0; x < 7; x++){
-						if (vv.getBlockX() == tv.getBlockX()+x || vv.getX() == tv.getBlockX()-x){
-							for (int y = 0; y < 7; y++){
-								if (vv.getBlockY() == tv.getBlockY()+y || vv.getBlockY() == tv.getBlockY()-y){
-									for (int z = 0; z < 7; z++){
-										if (vv.getBlockZ() == tv.getBlockZ()+y || vv.getBlockZ() == tv.getBlockZ()-y){
-											main.s(p, "&c&oTeleblock in place at that area. Teleport cancelled.");
-											p.getWorld().playEffect(p.getLocation(), Effect.MOBSPAWNER_FLAMES, 2);
-											return;
-										}
-									}
-								}
+					Location vv = player.getLocation();
+					if (tv.getBlockX() <= vv.getBlockX()+7 && tv.getBlockX() >= vv.getBlockX()-7){
+						if (tv.getBlockZ() <= vv.getBlockZ()+7 && tv.getBlockZ() >= vv.getBlockZ()-7){
+							if (tv.getBlockY() <= vv.getBlockY()+7 && tv.getBlockY() >= vv.getBlockY()-7){
+								main.s(p, "&c&oTeleblock in place at that area. Teleport cancelled.");
+								p.getWorld().playEffect(p.getLocation(), Effect.MOBSPAWNER_FLAMES, 2);
+								return;
 							}
 						}
 					}

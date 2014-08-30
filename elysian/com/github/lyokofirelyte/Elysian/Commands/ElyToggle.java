@@ -67,6 +67,7 @@ public class ElyToggle {
 			cc(dp, "fireworks") + "fireworks (on various events)",
 			cc(dp, "deathLocs") + "deathLocs (show location of your death)",
 			cc(dp, "particles") + "particles (teleport particles)",
+			cc(dp, "xp_disp_name") + "xp_disp_name (tool name change on XP gain)",
 			cc(dp, "chat_filter") + "chat_filter (toggle swear word filtering)",
 			"&6join_message (" + dp.getStr(DPI.JOIN_MESSAGE) + ")",
 			"&6quit_message (" + dp.getStr(DPI.QUIT_MESSAGE) + ")",

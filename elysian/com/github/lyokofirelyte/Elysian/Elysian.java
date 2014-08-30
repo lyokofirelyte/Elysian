@@ -16,6 +16,8 @@ import org.bukkit.World;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
+
+import com.github.lyokofirelyte.Divinity.DivGui;
 import com.github.lyokofirelyte.Divinity.Divinity;
 import com.github.lyokofirelyte.Divinity.DivinityAPI;
 import com.github.lyokofirelyte.Divinity.DivinityModule;
@@ -32,6 +34,7 @@ import com.github.lyokofirelyte.Divinity.Storage.DivinityAlliance;
 import com.github.lyokofirelyte.Divinity.Storage.DivinityPlayer;
 import com.github.lyokofirelyte.Divinity.Storage.DivinityRegion;
 import com.github.lyokofirelyte.Divinity.Storage.DivinityRing;
+import com.github.lyokofirelyte.Divinity.Storage.DivinityStorage;
 import com.github.lyokofirelyte.Divinity.Storage.DivinitySystem;
 import com.github.lyokofirelyte.Elysian.Commands.ElyEffects;
 import com.github.lyokofirelyte.Elysian.Commands.ElyMail;
@@ -44,6 +47,7 @@ import com.github.lyokofirelyte.Elysian.Events.ElyChat;
 import com.github.lyokofirelyte.Elysian.Events.ElyLogger;
 import com.github.lyokofirelyte.Elysian.Events.ElyMobs;
 import com.github.lyokofirelyte.Elysian.Events.ElyTP;
+import com.github.lyokofirelyte.Elysian.Gui.GuiCloset;
 import com.github.lyokofirelyte.Elysian.MMO.ElyMMO;
 import com.sk89q.worldedit.bukkit.WorldEditPlugin;
 
@@ -69,11 +73,13 @@ public class Elysian extends DivinityAPI implements DivinityModule {
 	public ElyRings rings;
 	public ElySetup setup;
 	public ElyMMO mmo;
+	public ElyMMOCleanup cleanup;
 	
 	public DivInvManager invManager;
 	
 	public Map<ElyTask, Integer> tasks = new HashMap<ElyTask, Integer>();
 	public Map<Location, List<List<String>>> queue = new HashMap<Location, List<List<String>>>();
+	public Map<Integer, GuiCloset> closets = new HashMap<>();
 
 	@Override
 	public void onEnable(){
@@ -84,6 +90,10 @@ public class Elysian extends DivinityAPI implements DivinityModule {
 	
 	@Override
 	public void onDisable(){
+		for (DivinityStorage dp : api.divManager.getAllUsers()){
+			dp.set(DPI.DIS_ENTITY, "none");
+			dp.set(DPI.IS_DIS, false);
+		}
 		Bukkit.getScheduler().cancelTasks(this);
 	}
 

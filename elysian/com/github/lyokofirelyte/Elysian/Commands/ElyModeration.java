@@ -286,7 +286,7 @@ public class ElyModeration {
 			 		}
 			 		
 			 		for (Player player : Bukkit.getOnlinePlayers()){
-			 			main.effects.playCirleFw(player, main.api.divUtils.getRandomColor(), Type.BALL_LARGE, 3, 1, 1, true, false);
+			 			main.effects.playCircleFw(player, main.api.divUtils.getRandomColor(), Type.BALL_LARGE, 3, 1, 1, true, false);
 			 		}
 			 		
 			 		bdp.set(DPI.OWNED_CHESTS, new ArrayList<String>());

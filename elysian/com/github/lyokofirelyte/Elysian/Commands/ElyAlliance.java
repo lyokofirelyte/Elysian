@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -17,10 +18,15 @@ import com.github.lyokofirelyte.Divinity.Events.DivinityChannelEvent;
 import com.github.lyokofirelyte.Divinity.Manager.DivinityManager;
 import com.github.lyokofirelyte.Divinity.Storage.DAI;
 import com.github.lyokofirelyte.Divinity.Storage.DPI;
+import com.github.lyokofirelyte.Divinity.Storage.DRF;
+import com.github.lyokofirelyte.Divinity.Storage.DRI;
 import com.github.lyokofirelyte.Divinity.Storage.DivinityAlliance;
 import com.github.lyokofirelyte.Divinity.Storage.DivinityPlayer;
+import com.github.lyokofirelyte.Divinity.Storage.DivinityRegion;
 import com.github.lyokofirelyte.Divinity.Storage.DivinityStorage;
 import com.github.lyokofirelyte.Elysian.Elysian;
+import com.sk89q.worldedit.bukkit.selections.Selection;
+import com.sk89q.worldedit.regions.RegionSelector;
 
 public class ElyAlliance {
 
@@ -83,6 +89,7 @@ public class ElyAlliance {
 					"/a upgrade <name>",
 					"/a disband <name>",
 					"/a transfer <name> <name>",
+					"/a desc <name> <words>",
 					"/a <message for chat>",
 					"/toggle alliance (in/out of chat)"
 		 		};
@@ -93,6 +100,25 @@ public class ElyAlliance {
 
 		 	break;
 		 	
+		 	case "desc":
+		 		
+		 		if (args.length >= 3){
+		 			if (doesAllianceExist(args[1])){
+		 				if (main.api.getDivAlliance(args[1]).getStr(DAI.LEADER).equals(dp.uuid().toString())){
+			 				main.api.getDivAlliance(args[1]).set(DAI.DESC, main.api.divUtils.createString(args, 3));
+			 				dp.s("Updated desc!");
+		 				} else {
+		 					dp.err("You must be the leader.");
+		 				}
+		 			} else {
+		 				dp.err("That alliance does not exist.");
+		 			}
+		 		} else {
+		 			dp.err("/a desc <name> <words>");
+		 		}
+		 		
+		 	break;
+		 	
 		 	case "upgrade":
 		 		
 		 		if (main.perms(p, "wa.staff.mod")){
@@ -100,6 +126,8 @@ public class ElyAlliance {
 		 				DivinityAlliance alliance = main.api.getDivAlliance(args[1]);
 		 				if (alliance.getInt(DAI.TIER) < 10){
 		 					alliance.set(DAI.TIER, alliance.getInt(DAI.TIER) + 1);
+			 				setCubeSizeFromPlayerPosition(main.api.getDivRegion(args[1].toLowerCase()), p, 85 + (18*alliance.getInt(DAI.TIER)), false);
+		 					DivinityUtils.bc(main.coloredAllianceName(args[1].toLowerCase()) + " &bhas been upgraded to tier &6" + alliance.getInt(DAI.TIER)+ "&b!");
 		 				} else {
 		 					main.s(p, "&c&oThat alliance is already at max tier.");
 		 				}
@@ -176,11 +204,12 @@ public class ElyAlliance {
 		 	case "create":
 		 		
 		 		if (args.length == 5){
-		 			if (!doesAllianceExist(args[1])){
+		 			if (!doesAllianceExist(args[1]) && main.perms(p, "wa.staff.mod2")){
 		 				
 		 				DivinityAlliance alliance = main.api.getDivAlliance(args[1].toLowerCase());
 		 				DivinityPlayer leader = main.matchDivPlayer(args[4]);
-		 				Vector v = p.getLocation().toVector();
+		 				Location l = p.getLocation();
+		 				Vector v = l.toVector();
 		 				
 		 				leader.set(DPI.ALLIANCE_NAME, args[1].toLowerCase());
 		 				leader.set(DPI.ALLIANCE_COLOR_1, args[2]);
@@ -199,6 +228,17 @@ public class ElyAlliance {
 
 		 				Bukkit.getPlayer(leader.uuid()).performCommand("nick " + ChatColor.stripColor(main.AS(Bukkit.getPlayer(leader.uuid()).getDisplayName())));
 		 				leader.set(DPI.DISPLAY_NAME, p.getDisplayName());
+		 				
+		 				DivinityRegion region = main.api.getDivRegion(args[1].toLowerCase());
+		 				
+		 				region = setCubeSizeFromPlayerPosition(region, p, 85, false);
+						region.set(DRI.PRIORITY, 5);
+						region.set(DRF.BLOCK_BREAK, true);
+						region.set(DRF.BLOCK_PLACE, true);
+						region.set(DRF.FIRE_SPREAD, true);
+						region.set(DRF.TNT_EXPLODE, true);
+						region.getList(DRI.PERMS).add("wa.alliance." + args[0].toLowerCase());
+						region.getList(DRI.PERMS).add("wa.staff.admin");
 		 				
 		 				DivinityUtils.bc(main.coloredAllianceName(args[1].toLowerCase()) + " &bhas been formed!");
 		 			} else {
@@ -258,6 +298,8 @@ public class ElyAlliance {
 		 						for (String player : alliance.getList(DAI.MEMBERS)){
 		 							if (Bukkit.getPlayer(UUID.fromString(player)) != null){
 		 								main.s(Bukkit.getPlayer(UUID.fromString(player)), p.getDisplayName() + " &bhas donated &6" + args[2] + " &bto your alliance!");
+		 							} else {
+		 								main.matchDivPlayer(player).getList(DPI.MAIL).add("personal" + "%SPLIT%" + "&6System" + "%SPLIT%" + p.getDisplayName() + " &bhas donated &6" + args[2] + " &bto your alliance!");
 		 							}
 		 						}
 		 						
@@ -340,6 +382,7 @@ public class ElyAlliance {
 		 				
 		 				String[] messages = new String[]{
 		 					"Alliance Name: " + main.coloredAllianceName(args[1]),
+		 					"Description: &6" + alliance.getStr(DAI.DESC),
 		 					"Leader: " + main.matchDivPlayer(UUID.fromString(alliance.getStr(DAI.LEADER))).getStr(DPI.DISPLAY_NAME),
 		 					"Member Count: &6" + members.size(),
 		 					"Tier: &6" + alliance.getStr(DAI.TIER),
@@ -410,6 +453,7 @@ public class ElyAlliance {
 
 		 		if (!dp.getStr(DPI.ALLIANCE_NAME).equals("none") && !dp.getBool(DPI.ALLIANCE_LEADER)){
 		 			removeFromAlliance(dp, dp.getStr(DPI.ALLIANCE_NAME));
+		 			main.perms.deRank(dp);
 		 			DivinityUtils.bc(p.getDisplayName() + " has left " + main.coloredAllianceName(dp.getStr(DPI.ALLIANCE_NAME)) + "!");
 		 		} else {
 		 			main.s(p, "&c&oYou're not in an alliance or you are the leader.");
@@ -441,6 +485,30 @@ public class ElyAlliance {
 				
 			break;
 		 }
+	 }
+	 
+	 private DivinityRegion setCubeSizeFromPlayerPosition(DivinityRegion region, Player p, int amount, boolean doY){
+		 
+			RegionSelector s = main.we.getSession(p).getRegionSelector(main.we.wrapPlayer(p).getWorld());
+			s.selectPrimary(new com.sk89q.worldedit.Vector(p.getLocation().getX()-amount, doY ? p.getLocation().getY()-amount : 0, p.getLocation().getZ()-amount));
+			s.selectSecondary(new com.sk89q.worldedit.Vector(p.getLocation().getX()+amount, doY ? p.getLocation().getY()+amount : 256, p.getLocation().getZ()+amount));
+			
+			Selection sel = main.we.getSelection(p);
+			Vector max = sel.getMaximumPoint().toVector();
+			Vector min = sel.getMinimumPoint().toVector();
+				
+			region.set(DRI.WORLD, p.getWorld().getName());
+			region.set(DRI.MAX_BLOCK, max.getBlockX() + " " + max.getBlockY() + " " + max.getBlockZ());
+			region.set(DRI.MIN_BLOCK, min.getBlockX() + " " + min.getBlockY() + " " + min.getBlockZ());
+			region.set(DRI.AREA, sel.getArea());
+			region.set(DRI.LENGTH, sel.getLength());
+			region.set(DRI.HEIGHT, sel.getHeight());
+			region.set(DRI.WIDTH, sel.getWidth());
+			
+			s.selectPrimary(new com.sk89q.worldedit.Vector(p.getLocation().getX(), p.getLocation().getY(), p.getLocation().getZ()));
+			s.selectSecondary(new com.sk89q.worldedit.Vector(p.getLocation().getX(), p.getLocation().getY(), p.getLocation().getZ()));
+			
+			return region;
 	 }
 
 	 private void removeFromAlliance(DivinityPlayer player, String alliance){

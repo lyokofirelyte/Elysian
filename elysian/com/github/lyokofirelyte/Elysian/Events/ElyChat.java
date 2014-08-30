@@ -5,7 +5,6 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -231,7 +230,7 @@ public class ElyChat implements Listener {
 					
 					for (String message : rawMsg.split(" ")){
 						if (linkCheck(message)){
-							extra = new JSONChatExtra(main.AS(" &6&o" + shorten(message) + globalColor), null, null);
+							extra = new JSONChatExtra(main.AS(" &6&o" + main.api.title.getPageTitle(message) + globalColor), null, null);
 							extra.setHoverEvent(JSONChatHoverEventType.SHOW_TEXT, main.AS("&7&oNavigate to URL"));
 							extra.setClickEvent(JSONChatClickEventType.OPEN_URL, message);
 						} else if (message.startsWith("cmd:")){
@@ -275,36 +274,5 @@ public class ElyChat implements Listener {
 	  		return true;
 	  	}
 	  	return false;
-	}
-	
-	public static String shorten(String URL){
-			
-		String link = "";
-			
-		if (!URL.startsWith("http")){
-			URL = "http://" + URL;
-		}
-			
-		int error = 0;
-		
-		try {
-			URL url = new URL("http://www.tinyurl.com/api-create.php?url=" + URL);
-			HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-			connection.setRequestMethod("GET");
-			
-			if (connection.getResponseCode() != 200){
-				error = connection.getResponseCode();
-				throw new RuntimeException("Failed to shorten link. HTTP error code: " + error);
-			} else {
-				BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-				link = reader.readLine();
-			}
-				
-			connection.disconnect();
-				
-		} catch (Exception e){
-			link = "&4&l(&cHTTP Error: " + error + "&4&l)&r";
-		}
-		return link;
 	}
 }

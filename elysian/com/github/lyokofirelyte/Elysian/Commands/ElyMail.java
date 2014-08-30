@@ -113,7 +113,7 @@ public class ElyMail {
 					  
 					  case "all":
 						  
-						  if (!main.perms(p, "wa.staff.mod2")){
+						  if (!main.perms(p, "wa.staff.intern")){
 							  send = false;
 						  }
 						  

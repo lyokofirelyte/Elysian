@@ -41,7 +41,7 @@ public class SkyBlade extends ElyMMO {
 		if (dp.getLong(MMO.SKY_BLADE_CD) <= System.currentTimeMillis()){
 			dp.set(MMO.IS_SKY_BLADING, true);
 			blade(p, dp);
-			dp.set(MMO.SKY_BLADE_CD, System.currentTimeMillis() + (600000 - (dp.getInt(ElySkill.MINING)*1000)));
+			dp.set(MMO.SKY_BLADE_CD, System.currentTimeMillis() + (600000 - (dp.getLevel(ElySkill.ATTACK)*1000)));
 		} else {
 			dp.err("Sky blade is on cooldown! &6" + ((System.currentTimeMillis() - dp.getLong(MMO.SKY_BLADE_CD))/1000)*-1 + " &c&oseconds remain.");
 		}

@@ -16,6 +16,7 @@ import org.bukkit.Sound;
 import org.bukkit.World;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.FallingBlock;
+import org.bukkit.entity.Monster;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -87,7 +88,7 @@ public class ElyRings implements Listener {
 	public void calculate(Player p, Vector v, String destination, String ring, boolean tp){
 		
 		 for (Entity e : p.getNearbyEntities(5D, 5D, 5D)){
-			 if (e instanceof Player == false){
+			 if (e instanceof Player == false && (e instanceof Monster || e instanceof Player == false)){
 				 e.remove();
 			 }
 		 }
@@ -222,7 +223,7 @@ public class ElyRings implements Listener {
 	public void endLocs(Player p, Location dest, boolean tp, DivinityRing currentRing, DivinityRing destRing){
 		
 		if (tp){
-			main.effects.playCirleFw(p, Color.WHITE, Type.BALL_LARGE, 5, 1, 0, true, false);
+			main.effects.playCircleFw(p, Color.WHITE, Type.BALL_LARGE, 5, 1, 0, true, false);
 			main.api.schedule(this, "endLocs2", 5L, "ending2", p, dest, currentRing, destRing);
 		}
 	}
@@ -230,13 +231,13 @@ public class ElyRings implements Listener {
 	public void endLocs2(Player p, Location dest, DivinityRing r1, DivinityRing r2){
 		
 		for (Entity e : p.getNearbyEntities(3D, 3D, 3D)){
-			if (e instanceof Player){
+			if (e instanceof ItemStack == false && e instanceof FallingBlock == false){
 				e.teleport(new Location(dest.getWorld(), dest.getX() + new Random().nextInt(3), dest.getY()+1, dest.getZ() + new Random().nextInt(3), e.getLocation().getYaw(), e.getLocation().getPitch()));
 			}
 		}
 		
 		p.teleport(new Location(dest.getWorld(), dest.getX() + new Random().nextInt(3), dest.getY()+1, dest.getZ() + new Random().nextInt(3), p.getLocation().getYaw(), p.getLocation().getPitch()));
-		main.effects.playCirleFw(p, Color.WHITE, Type.BALL_LARGE, 5, 1, 0, true, false);
+		main.effects.playCircleFw(p, Color.WHITE, Type.BALL_LARGE, 5, 1, 0, true, false);
 		calculate(p, r2.getCenterLoc().toVector(), r1.name(), r2.name(), false);
 	}
 	

@@ -10,6 +10,7 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import com.github.lyokofirelyte.Divinity.DivinityUtils;
 import com.github.lyokofirelyte.Divinity.Storage.DPI;
 import com.github.lyokofirelyte.Divinity.Storage.DivinityPlayer;
+import com.github.lyokofirelyte.Divinity.Storage.ElySkill;
 import com.github.lyokofirelyte.Elysian.Elysian;
 
 public class ElyJoinQuit implements Listener {
@@ -39,6 +40,7 @@ public class ElyJoinQuit implements Listener {
 		
 		DivinityUtils.customBC("&2+ " + pl.getDisplayName() + " &e&o(" + p.getStr(DPI.JOIN_MESSAGE) + "&e&o)");
 		main.mail.checkMail(e.getPlayer());
+		defaultCheck(p);
 	}
 	
 	@EventHandler
@@ -65,5 +67,18 @@ public class ElyJoinQuit implements Listener {
 	@EventHandler
 	public void onKick(PlayerKickEvent e){
 		e.setLeaveMessage(null);
+	}
+	
+	private void defaultCheck(DivinityPlayer p){
+		
+		for (ElySkill s : ElySkill.values()){
+			if (p.getStr(s).equals("none")){
+				p.set(s, "0 0 100");
+			}
+		}
+		
+		if (p.getStr(DPI.XP_DISP_NAME_TOGGLE).equals("none")){
+			p.set(DPI.XP_DISP_NAME_TOGGLE, true);
+		}
 	}
 }

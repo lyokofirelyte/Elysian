@@ -27,6 +27,7 @@ import org.bukkit.util.Vector;
 
 import com.github.lyokofirelyte.Divinity.DivinityUtils;
 import com.github.lyokofirelyte.Divinity.Commands.DivCommand;
+import com.github.lyokofirelyte.Divinity.Events.DivinityChannelEvent;
 import com.github.lyokofirelyte.Divinity.Storage.DPI;
 import com.github.lyokofirelyte.Divinity.Storage.DivinityPlayer;
 import com.github.lyokofirelyte.Elysian.Elysian;
@@ -74,7 +75,7 @@ public class ElyMobs implements Listener {
 		}
 	}
 	
-	public void checkHeath(LivingEntity e){
+	public void checkHealth(LivingEntity e){
 		if (!e.isDead()){
 			e.setCustomNameVisible(false);
 		}
@@ -85,6 +86,12 @@ public class ElyMobs implements Listener {
 		
 		if (e.getEntity().getType().equals(EntityType.ENDER_DRAGON)){
 			main.api.getSystem().set(DPI.ENDERDRAGON_DEAD, false);
+		}
+		
+		if (e.getEntity().getType().equals(EntityType.HORSE)){
+			Location l = e.getEntity().getLocation();
+			String coords = "&6" + l.getBlockX() + "&7, &6" + l.getBlockY() + "&7, &6" + l.getBlockZ();
+			main.api.event(new DivinityChannelEvent("&6System", "wa.staff.intern", "&c&oOh! &4\u2744", e.getEntity().getKiller().getDisplayName() + " &c&okilled a horse at " + coords + "&c.", "&c"));
 		}
 		
 		if (e.getEntity().getWorld().getName().equals("world")){
@@ -132,8 +139,17 @@ public class ElyMobs implements Listener {
 				
 				killer.set(DPI.DUEL_PARTNER, "none");
 				deadDP.set(DPI.DUEL_PARTNER, "killed");
-				deadDP.set(DPI.BACKUP_INVENTORY, dead.getInventory().getContents());
-				deadDP.set(DPI.DEATH_ARMOR, dead.getInventory().getArmorContents());
+				
+				for (ItemStack i : dead.getInventory().getContents()){
+					if (i != null){
+						deadDP.getStack(DPI.BACKUP_INVENTORY).add(i);
+					}
+				}
+				for (ItemStack i : dead.getInventory().getArmorContents()){
+					if (i != null){
+						deadDP.getStack(DPI.BACKUP_INVENTORY).add(i);
+					}
+				}
 				
 				if (killer.getBool(DPI.IS_DUEL_SAFE)){
 					e.setDroppedExp(0);
@@ -198,7 +214,7 @@ public class ElyMobs implements Listener {
 		DivinityPlayer dp = main.api.getDivPlayer(e.getPlayer());
 		
 		if (!dp.getBool(DPI.EXP_DEPOSIT)){
-			if (e.getPlayer().getWorld().getName().equals("world")){
+			if (e.getPlayer().getWorld().getName().equals("world") || e.getPlayer().getWorld().getName().equals("world_the_end") || e.getPlayer().getWorld().getName().equals("world_nether")){
 				dp.set(DPI.EXP, dp.getInt(DPI.EXP) + new Integer(e.getAmount()));
 				e.setAmount(0);
 			}
@@ -216,15 +232,6 @@ public class ElyMobs implements Listener {
 			dp.set(DPI.DUEL_PARTNER, "none");
 			if (dp.getBool(DPI.IS_DUEL_SAFE)){
 				for (ItemStack i : dp.getStack(DPI.BACKUP_INVENTORY)){
-					if (i != null){
-						if (e.getPlayer().getInventory().firstEmpty() != -1){
-							e.getPlayer().getInventory().addItem(i);
-						} else {
-							e.getPlayer().getWorld().dropItem(e.getPlayer().getLocation(), i);
-						}
-					}
-				}
-				for (ItemStack i : dp.getStack(DPI.DEATH_ARMOR)){
 					if (i != null){
 						if (e.getPlayer().getInventory().firstEmpty() != -1){
 							e.getPlayer().getInventory().addItem(i);

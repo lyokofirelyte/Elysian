@@ -28,16 +28,21 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
+import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.inventory.ItemStack;
 import org.apache.commons.math3.util.Precision;
 
+import com.github.lyokofirelyte.Divinity.DivinityUtils;
 import com.github.lyokofirelyte.Divinity.Commands.DivCommand;
 import com.github.lyokofirelyte.Divinity.Events.DivinityChannelEvent;
+import com.github.lyokofirelyte.Divinity.Events.SkillExpGainEvent;
 import com.github.lyokofirelyte.Divinity.Storage.DPI;
 import com.github.lyokofirelyte.Divinity.Storage.DivinityPlayer;
 import com.github.lyokofirelyte.Divinity.Storage.DivinityStorage;
 import com.github.lyokofirelyte.Divinity.Storage.DivinitySystem;
+import com.github.lyokofirelyte.Divinity.Storage.ElySkill;
 import com.github.lyokofirelyte.Elysian.Elysian;
 
 public class ElyLogger implements Listener, Runnable {
@@ -108,18 +113,6 @@ public class ElyLogger implements Listener, Runnable {
 	@SuppressWarnings("deprecation")
 	@EventHandler
 	public void onInteract(PlayerInteractEvent e){
-		
-		if (e.getAction() == Action.RIGHT_CLICK_BLOCK && e.getClickedBlock() != null && (e.getClickedBlock().getType().equals(Material.BED_BLOCK) || e.getClickedBlock().getType().equals(Material.BED))){
-			int sleeping = 0;
-			for (Player p : Bukkit.getOnlinePlayers()){
-				if (p.isSleeping()){
-					sleeping++;
-				}
-			}
-			if (sleeping > (Bukkit.getOnlinePlayers().length/2)){
-				e.getPlayer().getWorld().setTime(0);
-			}
-		}
 		
 		if (e.getAction() == Action.LEFT_CLICK_BLOCK && e.getClickedBlock() != null && main.api.getDivPlayer(e.getPlayer()).getBool(DPI.LOGGER) && e.getPlayer().getItemInHand().getType().equals(Material.ENDER_PORTAL_FRAME)){
 			
@@ -233,7 +226,7 @@ public class ElyLogger implements Listener, Runnable {
 			
 				default: break;
 			
-				case WOOD_DOOR: case FENCE_GATE: case TRAP_DOOR:
+				case WOOD_DOOR: case FENCE_GATE: case TRAP_DOOR: case LEVER:
 				
 					if (recent.containsKey(player)){
 						if (recent.get(e.getPlayer().getName()).contains("door")){
@@ -302,7 +295,7 @@ public class ElyLogger implements Listener, Runnable {
 		String matName = mat.name().toLowerCase();
 		DivinityPlayer dp = main.api.getDivPlayer(e.getPlayer());
 		
-		if (!dp.getList(DPI.PERMS).contains("wa.member")){
+		if (!dp.getList(DPI.PERMS).contains("wa.member") || dp.getBool(DPI.IS_STAFF_TP)){
 			e.setCancelled(true);
 			return;
 		}
@@ -324,7 +317,7 @@ public class ElyLogger implements Listener, Runnable {
 			}
 		}
 		
-		if (!e.getBlock().getWorld().getName().equals("WACP")){
+		if (e.getBlock().getWorld().getName().equals("world")){
 			addToQue(e.getBlock().getLocation(), "&b" + e.getPlayer().getName(), "&cdestroyed &b" + matName, "break", matName + "split" + e.getBlock().getData(), "AIRsplit0");
 		}
 	}
@@ -347,11 +340,32 @@ public class ElyLogger implements Listener, Runnable {
 			addToQue(e.getBlock().getLocation(), "&b" + e.getPlayer().getName(), "&aplaced &b" + e.getBlock().getType().toString().toLowerCase(), "place", "AIRsplit0", matName + "split" + e.getBlock().getData());
 		}
 		
-		if (!e.getPlayer().getWorld().getName().equals("WACP") && protectedMats.contains(e.getBlock().getType())){
+		if (main.api.getDivPlayer(e.getPlayer()).getBool(DPI.IS_STAFF_TP)){
+			e.setCancelled(true);
+			return;
+		}
+		
+		if (e.getPlayer().getWorld().getName().equals("world") && protectedMats.contains(e.getBlock().getType())){
 			main.s(e.getPlayer(), "none", "This storage unit is now protected. Allow friend access with /chest add <player>.");
 			Location l = e.getBlock().getLocation();
 			String loc = l.getWorld().getName() + " " + l.toVector().getBlockX() + " " + l.toVector().getBlockY() + " " + l.toVector().getBlockZ();
 			main.api.getDivPlayer(e.getPlayer()).getList(DPI.OWNED_CHESTS).add(loc);
+		}
+	}
+	
+	@EventHandler
+	public void onDrop(PlayerDropItemEvent e){
+		
+		if (main.api.getDivPlayer(e.getPlayer()).getBool(DPI.IS_STAFF_TP)){
+			e.setCancelled(true);
+		}
+	}
+	
+	@EventHandler
+	public void onPickup(PlayerPickupItemEvent e){
+		
+		if (main.api.getDivPlayer(e.getPlayer()).getBool(DPI.IS_STAFF_TP)){
+			e.setCancelled(true);
 		}
 	}
 	
@@ -360,6 +374,7 @@ public class ElyLogger implements Listener, Runnable {
 	public void onEntityExplode(EntityExplodeEvent event) {
 		
 		Entity e = event.getEntity();
+		int amt = 0;
 	    
 	    if (e.getType().equals(EntityType.ENDER_CRYSTAL) && e.getWorld().equals(Bukkit.getWorld("world"))){
 	    	event.setCancelled(true);
@@ -372,11 +387,20 @@ public class ElyLogger implements Listener, Runnable {
 	    	}
 	    }
 
-	    for (Block block : event.blockList()) {
-	    	if (block.getType().equals(Material.TNT) || protectedMats.contains(block.getType())){
+	    for (Block block : event.blockList()){
+	    	
+	    	if (protectedMats.contains(block.getType())){
 	    		event.setCancelled(true);
+	    	}
+	    	
+	    	if (block.getType().equals(Material.TNT)){
+	    		amt++;
+	    		if (amt >= 3){
+	    			event.setCancelled(true);
+	    		}
 	    		break;
 	    	}
+	    	
 			addToQue(block.getLocation(), "&benvironment-explosion", "&cblew up &b" + block.getType().name().toLowerCase(), "break", block.getType().name().toLowerCase() + "split" + block.getData(), "AIRsplit0");
 	    }
 	}
@@ -397,11 +421,18 @@ public class ElyLogger implements Listener, Runnable {
 			dp.set(DPI.LOGGER, !dp.getBool(DPI.LOGGER));
 			
 			if (dp.getBool(DPI.LOGGER)){
-				main.s(p, "none", "&oLogger activated!");
-				p.setItemInHand(new ItemStack(Material.ENDER_PORTAL_FRAME, 1));
+				
+				main.s(p, "none", "&oLogger activated! (Use ender portal frame)");
+				
+				if (p.getItemInHand() == null || p.getItemInHand().getType().equals(Material.AIR)){
+					p.setItemInHand(new ItemStack(Material.ENDER_PORTAL_FRAME, 1));
+				} else {
+					p.getInventory().addItem(new ItemStack(Material.ENDER_PORTAL_FRAME, 1));
+				}
+				
 			} else {
 				main.s(p, "none", "&oLogger deactivated!");
-				p.setItemInHand(new ItemStack(Material.AIR));
+				p.getInventory().removeItem(new ItemStack(Material.ENDER_PORTAL_FRAME));
 			}
 			
 		} else if (main.api.divUtils.isInteger(args[0])){
@@ -724,6 +755,8 @@ public class ElyLogger implements Listener, Runnable {
 				break;
 			}
 		}
+		
+		recent = new HashMap<String, List<String>>();
 
 		try {
 			yaml.save(file);

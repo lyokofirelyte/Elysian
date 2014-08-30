@@ -24,6 +24,7 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockFadeEvent;
 import org.bukkit.event.block.BlockFromToEvent;
 import org.bukkit.event.block.BlockIgniteEvent;
+import org.bukkit.event.block.BlockPhysicsEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.entity.EntityChangeBlockEvent;
@@ -36,6 +37,7 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.util.Vector;
 
 import com.github.lyokofirelyte.Divinity.Commands.DivCommand;
+import com.github.lyokofirelyte.Divinity.Events.DivinityChannelEvent;
 import com.github.lyokofirelyte.Divinity.Events.DivinityTeleportEvent;
 import com.github.lyokofirelyte.Divinity.Manager.DivinityManager;
 import com.github.lyokofirelyte.Divinity.Storage.DPI;
@@ -126,7 +128,7 @@ public class ElyProtect implements Listener {
 			}
 		}
 		
-		if (e.getPlayer().getGameMode().equals(GameMode.CREATIVE) && p.getItemInHand().getType().equals(Material.BLAZE_ROD)){
+		if (e.getPlayer().getGameMode().equals(GameMode.CREATIVE) && p.getItemInHand() != null && p.getItemInHand().getType().equals(Material.BLAZE_ROD)){
 			
 			RegionSelector sel = main.we.getSession(p).getRegionSelector(main.we.wrapPlayer(p).getWorld());
 			com.sk89q.worldedit.Vector v = new com.sk89q.worldedit.Vector(l.getBlockX(), l.getBlockY(), l.getBlockZ());
@@ -221,9 +223,12 @@ public class ElyProtect implements Listener {
 			}
 			
 			if ((args[0].startsWith("//") && !e.getMessage().contains("schematic")) || args[0].startsWith("/wand")){
-				if (e.getPlayer().getWorld().getName().equalsIgnoreCase("WACP") || e.getPlayer().getWorld().getName().equalsIgnoreCase("not_cylum")){
+				if (e.getPlayer().getWorld().getName().equalsIgnoreCase("WACP") || e.getPlayer().getWorld().getName().equalsIgnoreCase("not_cylum") || main.perms(p, "wa.staff.mod2")){
 					e.setCancelled(true);
 					op(p, e.getMessage());
+					if (e.getPlayer().getWorld().equals("world")){
+						main.api.event(new DivinityChannelEvent("&6System", "wa.staff.admin", "&c&oOh! (ADMIN) &4\u2744", p.getDisplayName() + " used &6" + e.getMessage() + " &c&oin the main world.", "&c"));
+					}
 				}
 			}
 		}
@@ -303,6 +308,22 @@ public class ElyProtect implements Listener {
 	}
 	
 	@EventHandler
+	public void onFlow(BlockPhysicsEvent e){
+		
+		Material mat = e.getBlock().getType();
+		
+		if (mat.equals(Material.WATER)){
+			if (hasFlag(isInAnyRegion(e.getBlock().getLocation()), DRF.WATER_FLOW)){
+				e.setCancelled(true);
+			}
+		} else if (mat.equals(Material.LAVA)){
+			if (hasFlag(isInAnyRegion(e.getBlock().getLocation()), DRF.LAVA_FLOW)){
+				e.setCancelled(true);
+			}
+		}
+	}
+	
+	@EventHandler
 	public void onFlow(BlockFromToEvent e){
 		
 		Material mat = e.getToBlock().getType();
@@ -313,6 +334,10 @@ public class ElyProtect implements Listener {
 			}
 		} else if (mat.equals(Material.LAVA)){
 			if (hasFlag(isInAnyRegion(e.getToBlock().getLocation()), DRF.LAVA_FLOW)){
+				e.setCancelled(true);
+			}
+		} else if (e.getBlock().getType().equals(Material.ICE)){
+			if (hasFlag(isInAnyRegion(e.getToBlock().getLocation()), DRF.MELT)){
 				e.setCancelled(true);
 			}
 		}
@@ -327,7 +352,7 @@ public class ElyProtect implements Listener {
 			if (hasFlag(isInAnyRegion(e.getBlock().getLocation()), DRF.LEAF_DECAY)){
 				e.setCancelled(true);
 			}
-		} else if (mat.equals(Material.SNOW_BLOCK) || mat.equals(Material.SNOW)){
+		} else if (mat.equals(Material.SNOW_BLOCK) || mat.equals(Material.SNOW) || mat.equals(Material.ICE)){
 			if (hasFlag(isInAnyRegion(e.getBlock().getLocation()), DRF.MELT)){
 				e.setCancelled(true);
 			}

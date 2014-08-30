@@ -78,7 +78,7 @@
        			 <configuration>
        			 	<artifactSet>
  				 		<includes>
-    						<include>org.apache.commons:*</include>
+    						<include>org.apache.commons:*</include>s
   						</includes>
   						<excludes>
   							<exclude>com.sk89q:WorldEdit</exclude>

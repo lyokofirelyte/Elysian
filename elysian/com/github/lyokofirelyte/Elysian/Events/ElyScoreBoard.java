@@ -41,7 +41,6 @@ public class ElyScoreBoard implements Listener {
 		
 		String[] scoreNames = new String[]{
 			"§3Shinies: ",
-			"§3Patrol Lvl: ",
 			"§9Online: ",
 			"§3Exp: ",
 			"§5/root"
@@ -49,7 +48,6 @@ public class ElyScoreBoard implements Listener {
 		
 		Integer[] scoreValues = new Integer[]{
 			dp.getInt(DPI.BALANCE),
-			dp.getInt(DPI.PATROL_LEVEL),
 			Bukkit.getOnlinePlayers().length,
 			dp.getInt(DPI.EXP),
 			0

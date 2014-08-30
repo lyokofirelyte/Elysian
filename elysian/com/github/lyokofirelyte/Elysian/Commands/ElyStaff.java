@@ -18,8 +18,12 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.server.ServerListPingEvent;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
@@ -35,6 +39,7 @@ import com.github.lyokofirelyte.Divinity.Storage.DPI;
 import com.github.lyokofirelyte.Divinity.Storage.DivinityPlayer;
 import com.github.lyokofirelyte.Divinity.Storage.DivinityStorage;
 import com.github.lyokofirelyte.Elysian.Elysian;
+import com.github.lyokofirelyte.Elysian.Gui.GuiChest;
 
 public class ElyStaff implements Listener {
 
@@ -51,6 +56,92 @@ public class ElyStaff implements Listener {
 			 p.openInventory(main.getPlayer(args[0]).getInventory());
 		 } else {
 			 main.s(p, "playerNotFound");
+		 }
+	 }
+	 
+	 @DivCommand(perm = "wa.staff.admin", aliases = {"ip"}, desc = "IP & Location Information", help = "/ip <player>", min = 1)
+	 public void onIP(CommandSender cs, String[] args){
+		 
+		 if (main.isOnline(args[0])){
+			 
+			 try {
+				 Player p = main.getPlayer(args[0]);
+				 main.s(cs, "&6Location Overview: " + p.getDisplayName());
+				 main.s(cs, "IP: &3" + p.getAddress().getHostName());
+				 main.s(cs, "Port: &3" + p.getAddress().getPort());
+				 main.s(cs, "Country: &3" + main.api.playerLocation.getCountry(p));
+				 main.s(cs, "City: &3" + main.api.playerLocation.getCity(p));
+				 main.s(cs, "Postal Code: &3" + main.api.playerLocation.getPostal(p));
+			 } catch (Exception e){
+				 main.s(cs, "&c&oAn error occured fetching the information.");
+			 }
+			 
+		 } else {
+			 main.s(cs, "&c&oThat player is not online.");
+		 }
+	 }
+	 
+	 @DivCommand(perm = "wa.staff.intern", aliases = {"stafftp"}, desc = "Staff Grief Teleport Check Command", help = "/stafftp <player>", player = true)
+	 public void onStaffTp(Player p, String[] args){
+		 
+		 DivinityPlayer dp = main.api.getDivPlayer(p);
+		 
+		 if (dp.getBool(DPI.IS_STAFF_TP)){
+			 dp.set(DPI.IS_STAFF_TP, false);
+			 p.teleport(dp.getLoc(DPI.GV1));
+			 p.setFlying(false); p.setAllowFlight(false);
+			 dp.set(DPI.GV1, "none");
+			 return;
+		 }
+		 
+		 if (args.length == 1 && main.doesPartialPlayerExist(args[0]) && main.isOnline(args[0])){
+			 dp.set(DPI.IS_STAFF_TP, true);
+			 dp.set(DPI.GV1, p.getLocation());
+			 p.setAllowFlight(true); p.setFlying(true);
+			 p.teleport(main.getPlayer(args[0]));
+			 dp.s("Type /stafftp again to end this session.");
+			 main.api.event(new DivinityChannelEvent("&6System", "wa.staff.intern", "&c&oOh! &4\u2744", p.getDisplayName() + " &c&ostaff teleported to " + main.getPlayer(args[0]).getDisplayName() + "&c&o!", "&c"));
+		 } else {
+			 dp.err("That player is not online or not in the API!");
+		 }
+	 }
+	 
+	 @DivCommand(perm = "wa.rank.citizen", aliases = {"workbench", "wb"}, desc = "Open a Workbench", help = "/wb", player = true)
+	 public void onWB(Player p, String[] args){
+		 p.openWorkbench(p.getLocation(), true);
+	 }
+	 
+	 @DivCommand(perm = "wa.staff.mod2", aliases= {"dis"}, desc = "Spooky Disguise Command", help = "/dis <mob>", player = true)
+	 public void onDis(Player p, String[] args){
+		 
+		 DivinityPlayer dp = main.api.getDivPlayer(p);
+		 EntityType type = null;
+		 
+		 if (dp.getBool(DPI.IS_DIS)){
+			 
+			 if (!((LivingEntity)dp.getRawInfo(DPI.DIS_ENTITY)).isDead()){
+				 ((LivingEntity)dp.getRawInfo(DPI.DIS_ENTITY)).remove();
+			 }
+			 
+			 dp.set(DPI.DIS_ENTITY, "none");
+			 dp.set(DPI.IS_DIS, false);
+			 p.removePotionEffect(PotionEffectType.INVISIBILITY);
+			 dp.s("Back to normal!");
+			 
+		 } else {
+		 
+			 try {
+				 type = EntityType.valueOf(args[0].toUpperCase());
+				 LivingEntity e = (LivingEntity) p.getWorld().spawnEntity(p.getLocation(), type);
+				 e.setMaxHealth(Double.MAX_VALUE);
+				 e.setHealth(Double.MAX_VALUE);
+				 dp.set(DPI.IS_DIS, true);
+				 dp.set(DPI.DIS_ENTITY, e);
+				 p.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, Integer.MAX_VALUE, 3), true);
+				 e.setPassenger(p);
+			 } catch (Exception e){
+				 main.s(p, "&c&oThat entity does not existttttt!@#$%^& rawr &omeow");
+			 }
 		 }
 	 }
 	 
@@ -126,6 +217,21 @@ public class ElyStaff implements Listener {
 		 }
 	 }
 	 
+	 @DivCommand(perm = "wa.staff.mod", aliases = {"chestview"}, desc = "Chest Lookup / View Command", help = "/chestview <player>, /chestview lookup <player> <item>", player = true, min = 1)
+	 public void onChestView(Player p, String[] args){
+		 
+		 if (args[0].equals("lookup")){
+			 
+		 } else {
+		
+			 if (main.doesPartialPlayerExist(args[0])){
+				 main.invManager.displayGui(p, new GuiChest(main, main.matchDivPlayer(args[0])));
+			 } else {
+				 main.s(p, "playerNotFound");
+			 }
+		 }
+	 }
+	 
 	 @DivCommand(perm = "wa.rank.dweller", aliases = {"seen"}, desc = "Seen Command", help = "/seen <player>", player = false, min = 1)
 	 public void onSeen(CommandSender cs, String[] args){
 		 
@@ -151,7 +257,7 @@ public class ElyStaff implements Listener {
 		 }
 	 }
 	 
-	 @DivCommand(perm = "wa.rank.intern", aliases = {"abandonship"}, desc = "ABANDON SHIP!", help = "/abandonship", player = true, min = 0)
+	 @DivCommand(perm = "wa.staff.intern", aliases = {"abandonship"}, desc = "ABANDON SHIP!", help = "/abandonship", player = true, min = 0)
 	 public void onAbandon(CommandSender cs, String[] args){
 		 main.api.schedule(this, "abandonship", 10L, "abandonship");
 		 main.api.schedule(this, "abandonship", 20L, "abandonship");
@@ -641,6 +747,16 @@ public class ElyStaff implements Listener {
 			p.teleport(new Location(p.getWorld(), p.getLocation().getX(), p.getWorld().getHighestBlockYAt(p.getLocation())+1, p.getLocation().getZ(), p.getLocation().getYaw(), p.getLocation().getPitch()));	
 		} else {
 			main.s(p, "none", "No location found!");
+		}
+	}
+	
+	@EventHandler
+	public void onMOTD(ServerListPingEvent e){
+		
+		String motd = main.api.getSystem().getStr(DPI.MOTD);
+		
+		if (!motd.equals("none")){
+			e.setMotd(main.AS(motd));
 		}
 	}
 	

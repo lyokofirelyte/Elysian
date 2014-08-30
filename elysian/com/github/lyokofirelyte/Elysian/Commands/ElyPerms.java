@@ -7,8 +7,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.bukkit.FireworkEffect.Type;
 import org.bukkit.command.CommandSender;
 
+import com.github.lyokofirelyte.Divinity.DivinityUtils;
 import com.github.lyokofirelyte.Divinity.Commands.DivCommand;
 import com.github.lyokofirelyte.Divinity.Storage.DPI;
 import com.github.lyokofirelyte.Divinity.Storage.DivinityPlayer;
@@ -64,6 +66,24 @@ public class ElyPerms {
 		 rankNames.put("immortal", "&4 % 1m % 5 % amplified world, 4th home, /soar (limited)");
 	 }
 	 
+	 public void deRank(DivinityPlayer dp){
+		 
+		 for (int i = memberGroups.size()-1; i >= 0; i--){
+			 if (dp.getList(DPI.PERMS).contains("wa.rank." + memberGroups.get(i))){
+				 if (!memberGroups.get(i).equals("member")){
+					 dp.getList(DPI.PERMS).remove("wa.rank." + memberGroups.get(i));
+					 String[] rank = main.perms.rankNames.get(memberGroups.get(i)).split(" % ");
+					 dp.set(DPI.RANK_COLOR, rank[0]);
+					 dp.set(DPI.RANK_DESC, rank[0] + memberGroups.get(i).substring(0, 1).toUpperCase() + memberGroups.get(i).substring(1) + "\n" + "&6" + rank[3].replace(", ", "&7, &6"));
+					 dp.set(DPI.RANK_NAME, !dp.getList(DPI.PERMS).contains("wa.staff.intern") ? memberGroups.get(i).substring(0, 1).toUpperCase() : dp.getStr(DPI.RANK_NAME));
+				 } else {
+					 dp.err("Could not derank you lower than member.");
+				 }
+				 break;
+			 }
+		 }
+	 }
+	 
 	 @DivCommand(aliases = {"perms"}, desc = "Modify Permissions and Groups", help = "/perms <add, groupadd, remove, groupremove, view, list> <player> <perm>, /perms view <player> all", player = false, min = 1)
 	 public void onPerms(CommandSender cs, String[] args){
 		 
@@ -76,6 +96,12 @@ public class ElyPerms {
 					 DivinityPlayer dp = main.matchDivPlayer(args[1]);
 			 
 					 switch (args[0].toLowerCase()){
+					 
+					 	case "derank":
+					 		
+					 		deRank(dp);
+					 		
+					 	break;
 					 
 					 	case "groupadd": case "groupremove":
 					 		

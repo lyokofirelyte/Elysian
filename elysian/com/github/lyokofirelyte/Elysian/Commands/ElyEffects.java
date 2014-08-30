@@ -62,7 +62,7 @@ public class ElyEffects {
 					if (cmd.equalsIgnoreCase("flare") && main.perms(p, "wa.rank.national")){
 						overHeadFW(victim, getColor(args[0]), Type.valueOf(args[1].toUpperCase()) != null ? Type.valueOf(args[1].toUpperCase()) : Type.BURST);
 					} else {
-						playCirleFw(victim, getColor(args[0]), Type.valueOf(args[1].toUpperCase()) != null ? Type.valueOf(args[1].toUpperCase()) : Type.BURST, 5, 1, 1, true, false);
+						playCircleFw(victim, getColor(args[0]), Type.valueOf(args[1].toUpperCase()) != null ? Type.valueOf(args[1].toUpperCase()) : Type.BURST, 5, 1, 1, true, false);
 					}
 					
 				} else {
@@ -77,7 +77,7 @@ public class ElyEffects {
 		}
 	}
 	
-	public void playCirleFw(Player p, Color color, Type type, int radius, int height, int addY, boolean hollow, boolean sphere){
+	public void playCircleFw(Player p, Color color, Type type, int radius, int height, int addY, boolean hollow, boolean sphere){
 		for (Location l : main.api.divUtils.circle(p.getLocation(), radius, height, hollow, sphere, addY)){
 			main.fw(p.getWorld(), l, type, color);
 		}

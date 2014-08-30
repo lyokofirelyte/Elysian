@@ -17,6 +17,7 @@ import com.github.lyokofirelyte.Divinity.Events.ScoreboardUpdateEvent;
 import com.github.lyokofirelyte.Divinity.Storage.DPI;
 import com.github.lyokofirelyte.Divinity.Storage.DivinityPlayer;
 import com.github.lyokofirelyte.Divinity.Storage.DivinitySystem;
+import com.github.lyokofirelyte.Divinity.Storage.ElySkill;
 import com.github.lyokofirelyte.Elysian.MMO.MMO;
 
 public class ElyWatch implements Runnable {
@@ -55,6 +56,7 @@ public class ElyWatch implements Runnable {
 			main.api.event(new ScoreboardUpdateEvent(p));
 		}
 		
+		sleeping();
 		system.set(DPI.ROLLBACK_IN_PROGRESS, false);
 	}
 	
@@ -146,6 +148,7 @@ public class ElyWatch implements Runnable {
 							dp.set(DPI.STAFF_DESC, "&7&oNew staff of the server.\n&7&oResponsible for improving their focus on the server.\n&7&oCan check griefs and provide general help to members.");
 						break;
 					}
+					break;
 				}
 			}
 		}
@@ -162,6 +165,7 @@ public class ElyWatch implements Runnable {
 	
 	@SuppressWarnings("unchecked")
 	private void invCheck(Player p, DivinityPlayer dp){
+		
 		if ((!dp.getBool(MMO.IS_MINING) && dp.getLong(MMO.SUPER_BREAKER_CD) > System.currentTimeMillis()) || dp.getLong(MMO.SUPER_BREAKER_CD) <= System.currentTimeMillis()){
 			for (ItemStack i : p.getInventory().getContents()){
 				if (i != null && i.hasItemMeta() && i.getItemMeta().hasLore()){
@@ -184,7 +188,44 @@ public class ElyWatch implements Runnable {
 						dp.set(MMO.IS_MINING, false);
 					}
 				}
+			}			
+		}
+		
+		for (ItemStack i : p.getInventory().getContents()){
+			if (i != null && i.hasItemMeta() && i.getItemMeta().hasDisplayName()){
+				if ((p.getItemInHand() != null && !p.getItemInHand().equals(i)) || p.getItemInHand() == null){
+					for (ElySkill skill : ElySkill.values()){
+						if (i.getItemMeta().getDisplayName().toLowerCase().contains(skill.s().toLowerCase())){
+							ItemMeta im = i.getItemMeta();
+							String[] type = i.getType().toString().toLowerCase().split("_");
+							im.setDisplayName(main.AS("&f" + type[0].substring(0, 1).toUpperCase() + type[0].substring(1)));
+							if (type.length > 1){
+								for (int ii = 1; ii < type.length; ii++){
+									im.setDisplayName(main.AS(im.getDisplayName() + " " + type[ii].substring(0, 1).toUpperCase() + type[ii].substring(1)));
+								}
+							}
+							i.setItemMeta(im);
+							break;
+						}
+					}
+				}
 			}
+		}
+	}
+	
+	private void sleeping(){
+		
+		int sleeping = 0;
+		
+		for (Player p : Bukkit.getOnlinePlayers()){
+			if (p.isSleeping() && p.getWorld().getName().equals("world")){
+				sleeping++;
+			}
+		}
+		
+		if (sleeping > (Bukkit.getOnlinePlayers().length/2)){
+			Bukkit.getWorld("world").setTime(0);
+			DivinityUtils.bc("Over half of the server is sleeping - setting to day.");
 		}
 	}
 }

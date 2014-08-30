@@ -8,6 +8,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.script.ScriptEngine;
+import javax.script.ScriptEngineManager;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -90,6 +93,12 @@ public class ElyCommand {
 		main.s(p, "Updated!");
 	}
 	
+	@DivCommand(perm = "wa.staff.admin", aliases = {"motd"}, desc = "Change the MOTD", help = "/motd <message>", player = false, min = 1)
+	public void onMOTD(CommandSender p, String[] args){
+		main.api.getSystem().set(DPI.MOTD, main.api.divUtils.createString(args, 0));
+		main.s(p, "&bUpdated!");
+	}
+	
 	@DivCommand(aliases = {"enderdragon"}, desc = "Spawn the enderdragon in the end", help = "/enderdragon", player = true)
 	public void onEnderDragon(Player p, String[] args){
 		
@@ -106,6 +115,11 @@ public class ElyCommand {
 		} else {
 			main.s(p, "&c&oActive cooldown. &6" + ((system.getLong(DPI.ENDERDRAGON_CD) - System.currentTimeMillis())/1000)/60 + " &c&ominutes remain.");
 		}
+	}
+	
+	@DivCommand(aliases = {"colors"}, desc = "View the colors", help = "/colors", player = false)
+	public void onColors(CommandSender cs, String[] args){
+		main.s(cs, "&aa &bb &cc &dd &ee &ff &00 &11 &22 &33 &44 &55 &66 &77 &88 &99 &7&ll &7&mm &7&nn &7&oo &7&rr");
 	}
 	
 	@DivCommand(aliases = {"calendar"}, desc = "View our calendar!", help = "/calendar", player = true, min = 0)
@@ -139,6 +153,16 @@ public class ElyCommand {
 	@DivCommand(perm = "wa.staff.admin", aliases = {"bc", "broadcast"}, desc = "Broadcasts a message", help = "/broadcast", player = false, min = 1)
 	public void onBroadcast(CommandSender cs, String[] args){
 		DivinityUtils.bc(main.api.divUtils.createString(args, 0));
+	}
+	
+	@DivCommand(aliases = {"calc"}, desc = "Calculator Command", help = "/calc <query>", player = false)
+	public void onCalc(CommandSender cs, String[] args){
+		try {
+			ScriptEngine engine = new ScriptEngineManager().getEngineByName("js");  
+			main.s(cs, (double)engine.eval(main.api.divUtils.createString(args, 0)) + "");
+		} catch (Exception e){
+			main.s(cs, "&c&oInvalid equation.");
+		}
 	}
 	
 	@DivCommand(perm = "wa.rank.villager", aliases = {"hat"}, desc = "Wear a hat!", help = "/hat", player = true)

@@ -2,9 +2,11 @@ package com.github.lyokofirelyte.Elysian;
 
 import org.bukkit.Bukkit;
 import org.bukkit.event.Listener;
+import org.bukkit.inventory.ItemStack;
 
 import com.github.lyokofirelyte.Divinity.Divinity;
 import com.github.lyokofirelyte.Divinity.Manager.DivInvManager;
+import com.github.lyokofirelyte.Divinity.Storage.DPI;
 import com.github.lyokofirelyte.Elysian.Commands.ElyAlliance;
 import com.github.lyokofirelyte.Elysian.Commands.ElyCommand;
 import com.github.lyokofirelyte.Elysian.Commands.ElyEconomy;
@@ -31,7 +33,10 @@ import com.github.lyokofirelyte.Elysian.Events.ElyMobs;
 import com.github.lyokofirelyte.Elysian.Events.ElyMove;
 import com.github.lyokofirelyte.Elysian.Events.ElyScoreBoard;
 import com.github.lyokofirelyte.Elysian.Events.ElyTP;
+import com.github.lyokofirelyte.Elysian.Gui.GuiCloset;
+import com.github.lyokofirelyte.Elysian.Gui.GuiRoot;
 import com.github.lyokofirelyte.Elysian.MMO.ElyMMO;
+import com.github.lyokofirelyte.Elysian.MMO.Abilities.LifeForce;
 import com.github.lyokofirelyte.Elysian.MMO.Abilities.SkyBlade;
 import com.github.lyokofirelyte.Elysian.MMO.Abilities.SuperBreaker;
 import com.github.lyokofirelyte.Elysian.MMO.Abilities.TreeFeller;
@@ -63,9 +68,12 @@ public class ElySetup {
 		main.pro = new ElyProtect(main);
 		main.rings = new ElyRings(main);
 		main.invManager = new DivInvManager(main.api);
+		main.cleanup = new ElyMMOCleanup(main);
 		main.mmo.treeFeller = new TreeFeller(main);
 		main.mmo.superBreaker = new SuperBreaker(main);
 		main.mmo.skyBlade = new SkyBlade(main);
+		main.mmo.life = new LifeForce(main);
+		closet();
 		listener();
 		commands();
 		tasks();
@@ -121,13 +129,32 @@ public class ElySetup {
 			main.effects,
 			main.mobs,
 			main.pro,
-			main.rings
+			main.rings,
+			main.mmo,
+			main.closets.get(0)
 		);
 	}
 	
 	private void tasks(){
 		main.tasks.put(ElyTask.ANNOUNCER, Bukkit.getScheduler().scheduleSyncRepeatingTask(main, main.announcer, 0L, 1200000L));
+		main.tasks.put(ElyTask.MMO_BLOCKS, Bukkit.getScheduler().scheduleSyncRepeatingTask(main, main.cleanup, 0L, 21600000L));
 		main.tasks.put(ElyTask.LOGGER, Bukkit.getScheduler().scheduleSyncRepeatingTask(main, main.logger, 300L, 300L));
 		main.tasks.put(ElyTask.WATCHER, Bukkit.getScheduler().scheduleSyncRepeatingTask(main, main.watcher, 500L, 500L));
+	}
+	
+	private void closet(){
+		
+		for (int i = 0; i < 5; i++){
+			main.closets.put(i, new GuiCloset(main, i == 0 ? new GuiRoot(main) : main.closets.get(i-1)));
+		}
+		
+		for (ItemStack i : main.api.getSystem().getStack(DPI.CLOSET_ITEMS)){
+			for (int x = 0; x < 5; x++){
+				if (main.closets.get(x).getInv().firstEmpty() != -1){
+					main.closets.get(x).getInv().addItem(i);
+					break;
+				}
+			}
+		}
 	}
 }

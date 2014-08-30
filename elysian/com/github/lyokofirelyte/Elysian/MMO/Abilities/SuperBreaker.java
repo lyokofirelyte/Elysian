@@ -26,12 +26,12 @@ public class SuperBreaker extends ElyMMO {
 		super(i);
 	}
 
-	public void r(Player p, DivinityPlayer dp){
-		dp.set(MMO.IS_SUPER_BREAKING, !dp.getBool(MMO.IS_SUPER_BREAKING));
-		dp.s("Super breaker " + (dp.getBool(MMO.IS_SUPER_BREAKING) + "").replace("true", "&aactive! Left click a block to get rekt!").replace("false", "&cinactive."));
+	public void r(Player p, DivinityPlayer dp, MMO isVar){
+		dp.set(isVar, !dp.getBool(isVar));
+		dp.s("Super breaker " + (dp.getBool(isVar) + "").replace("true", "&aactive! Left click a block to rek it!").replace("false", "&cinactive."));
 	}
 
-	public void l(Player p, DivinityPlayer dp, Block b){
+	public void l(Player p, DivinityPlayer dp, Block b, MMO isVar, MMO isVar2, MMO cdVar, ElySkill skill){
 		
 		String result = main.pro.isInAnyRegion(b.getLocation());
 		
@@ -42,13 +42,13 @@ public class SuperBreaker extends ElyMMO {
 			}
 		}
 		
-		if (dp.getLong(MMO.SUPER_BREAKER_CD) <= System.currentTimeMillis()){
-			dp.set(MMO.IS_MINING, true);
+		if (dp.getLong(cdVar) <= System.currentTimeMillis()){
+			dp.set(isVar2, true);
 			mine(p, dp);
-			dp.set(MMO.SUPER_BREAKER_CD, System.currentTimeMillis() + (600000 - (dp.getInt(ElySkill.MINING)*1000)));
-		} else if (!dp.getBool(MMO.IS_MINING)){
-			dp.err("Super breaker on cooldown! &6" + ((System.currentTimeMillis() - dp.getLong(MMO.SUPER_BREAKER_CD))/1000)*-1 + " &c&oseconds remain.");
-			dp.set(MMO.IS_SUPER_BREAKING, false);
+			dp.set(cdVar, System.currentTimeMillis() + (600000 - (dp.getLevel(skill)*1000)));
+		} else if (!dp.getBool(isVar2)){
+			dp.err("Super breaker or turbo drill on cooldown! &6" + ((System.currentTimeMillis() - dp.getLong(cdVar))/1000)*-1 + " &c&oseconds remain.");
+			dp.set(isVar, false);
 		}
 	}
 	

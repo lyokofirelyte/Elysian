@@ -10,11 +10,6 @@ import org.bukkit.Location;
 import org.bukkit.Sound;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
-import org.bukkit.event.Listener;
-import org.bukkit.event.block.Action;
-import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.util.Vector;
 
 import com.github.lyokofirelyte.Divinity.Storage.DRF;
@@ -48,7 +43,7 @@ public class TreeFeller extends ElyMMO {
 		
 		if (dp.getLong(MMO.TREE_FELLER_CD) <= System.currentTimeMillis()){
 			chop(p, dp, b.getLocation());
-			dp.set(MMO.TREE_FELLER_CD, System.currentTimeMillis() + (180000 - (dp.getInt(ElySkill.WOODCUTTING)*1000)));
+			dp.set(MMO.TREE_FELLER_CD, System.currentTimeMillis() + (180000 - (dp.getLevel(ElySkill.WOODCUTTING)*1000)));
 		} else {
 			dp.err("Tree feller on cooldown! &6" + ((System.currentTimeMillis() - dp.getLong(MMO.TREE_FELLER_CD))/1000)*-1 + " &c&oseconds remain.");
 		}
@@ -87,7 +82,7 @@ public class TreeFeller extends ElyMMO {
 		
 		if (skyOpen){
 			dp.s("The sky is clear! Wooosssh!");
-			p.teleport(new Location(l.getWorld(), l.getX(), top+1, l.getZ(), p.getLocation().getYaw(), 90));
+			p.teleport(new Location(l.getWorld(), l.getX(), top+3, l.getZ(), p.getLocation().getYaw(), 90));
 			p.setVelocity(new Vector(0, 3, 0));
 			main.api.schedule(this, "tpPlayer", 30L, "tpPlayer", p, new Location(l.getWorld(), l.getX(), top + 10, l.getZ(), p.getLocation().getYaw(), 90));
 			main.api.repeat(this, "checkPlayer", 35L, 1L, "treeCheck" + p.getName(), p, top, bottom, blocks);
@@ -101,6 +96,7 @@ public class TreeFeller extends ElyMMO {
 				}
 			}
 			dp.set(MMO.IS_TREE_FELLING, false);
+			dp.set(MMO.IS_CHOPPING, false);
 		}
 	}
 	
