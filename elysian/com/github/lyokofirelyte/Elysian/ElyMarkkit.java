@@ -23,8 +23,6 @@ import org.bukkit.inventory.meta.ItemMeta;
 import com.github.lyokofirelyte.Divinity.Storage.DPI;
 import com.github.lyokofirelyte.Divinity.Storage.DivinityPlayer;
 
-
-
 /**
  * 
  * @author msnijder30

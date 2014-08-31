@@ -118,17 +118,17 @@ public class ElyProtect implements Listener {
 	@EventHandler (priority = EventPriority.LOW)
 	public void onInteract(PlayerInteractEvent e){
 		
-		String result = isInAnyRegion(e.getPlayer().getLocation());
 		Player p = e.getPlayer();
+		String result = isInAnyRegion(p.getLocation());
 		Location l = e.getClickedBlock() != null ? e.getClickedBlock().getLocation() : e.getPlayer().getLocation();
 		
 		if (hasFlag(result, DRF.INTERACT)){
-			if (!hasRegionPerms(e.getPlayer(), result)){
+			if (!hasRegionPerms(p, result)){
 				e.setCancelled(true);
 			}
 		}
 		
-		if (e.getPlayer().getGameMode().equals(GameMode.CREATIVE) && p.getItemInHand() != null && p.getItemInHand().getType().equals(Material.BLAZE_ROD)){
+		if (p.getGameMode().equals(GameMode.CREATIVE) && p.getItemInHand() != null && p.getItemInHand().getType().equals(Material.BLAZE_ROD)){
 			
 			RegionSelector sel = main.we.getSession(p).getRegionSelector(main.we.wrapPlayer(p).getWorld());
 			com.sk89q.worldedit.Vector v = new com.sk89q.worldedit.Vector(l.getBlockX(), l.getBlockY(), l.getBlockZ());
@@ -223,10 +223,10 @@ public class ElyProtect implements Listener {
 			}
 			
 			if ((args[0].startsWith("//") && !e.getMessage().contains("schematic")) || args[0].startsWith("/wand")){
-				if (e.getPlayer().getWorld().getName().equalsIgnoreCase("WACP") || e.getPlayer().getWorld().getName().equalsIgnoreCase("not_cylum") || main.perms(p, "wa.staff.mod2")){
+				if (p.getWorld().getName().equalsIgnoreCase("WACP") || e.getPlayer().getWorld().getName().equalsIgnoreCase("not_cylum") || main.perms(p, "wa.staff.mod2")){
 					e.setCancelled(true);
 					op(p, e.getMessage());
-					if (e.getPlayer().getWorld().equals("world")){
+					if (p.getWorld().equals("world")){
 						main.api.event(new DivinityChannelEvent("&6System", "wa.staff.admin", "&c&oOh! (ADMIN) &4\u2744", p.getDisplayName() + " used &6" + e.getMessage() + " &c&oin the main world.", "&c"));
 					}
 				}

@@ -34,15 +34,12 @@ import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.inventory.ItemStack;
 import org.apache.commons.math3.util.Precision;
 
-import com.github.lyokofirelyte.Divinity.DivinityUtils;
 import com.github.lyokofirelyte.Divinity.Commands.DivCommand;
 import com.github.lyokofirelyte.Divinity.Events.DivinityChannelEvent;
-import com.github.lyokofirelyte.Divinity.Events.SkillExpGainEvent;
 import com.github.lyokofirelyte.Divinity.Storage.DPI;
 import com.github.lyokofirelyte.Divinity.Storage.DivinityPlayer;
 import com.github.lyokofirelyte.Divinity.Storage.DivinityStorage;
 import com.github.lyokofirelyte.Divinity.Storage.DivinitySystem;
-import com.github.lyokofirelyte.Divinity.Storage.ElySkill;
 import com.github.lyokofirelyte.Elysian.Elysian;
 
 public class ElyLogger implements Listener, Runnable {
@@ -336,7 +333,7 @@ public class ElyLogger implements Listener, Runnable {
 		if (e.getBlock() != null && main.api.getDivPlayer(e.getPlayer()).getBool(DPI.LOGGER) && e.getPlayer().getItemInHand().getType().equals(Material.ENDER_PORTAL_FRAME)){
 			lookup(e.getPlayer(), e.getBlock().getLocation());
 			e.setCancelled(true);
-		} else if (!e.getBlock().getWorld().getName().equals("WACP")){
+		} else if (e.getBlock().getWorld().getName().equals("world")){
 			addToQue(e.getBlock().getLocation(), "&b" + e.getPlayer().getName(), "&aplaced &b" + e.getBlock().getType().toString().toLowerCase(), "place", "AIRsplit0", matName + "split" + e.getBlock().getData());
 		}
 		
@@ -345,7 +342,7 @@ public class ElyLogger implements Listener, Runnable {
 			return;
 		}
 		
-		if (e.getPlayer().getWorld().getName().equals("world") && protectedMats.contains(e.getBlock().getType())){
+		if (!e.getPlayer().getWorld().getName().equals("WACP") && protectedMats.contains(e.getBlock().getType())){
 			main.s(e.getPlayer(), "none", "This storage unit is now protected. Allow friend access with /chest add <player>.");
 			Location l = e.getBlock().getLocation();
 			String loc = l.getWorld().getName() + " " + l.toVector().getBlockX() + " " + l.toVector().getBlockY() + " " + l.toVector().getBlockZ();

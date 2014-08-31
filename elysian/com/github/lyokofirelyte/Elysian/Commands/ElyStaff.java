@@ -152,7 +152,7 @@ public class ElyStaff implements Listener {
 			 List<String> groups = new ArrayList<String>(main.perms.memberGroups);
 			 Collections.reverse(groups);
 			 for (String group : groups){
-				 if (dp.getList(DPI.PERMS).contains("wa.rank." + group)){
+				 if (dp.getList(DPI.PERMS).contains("wa." + ("rank." + group).replace("rank.member", "member"))){
 					 int amount = dp.getInt(DPI.BALANCE)*Math.round(Float.parseFloat(main.perms.rankNames.get(group).split(" % ")[2]));
 					 dp.set(DPI.BALANCE, dp.getInt(DPI.BALANCE) + amount);
 					 dp.getList(DPI.MAIL).add("personal" + "%SPLIT%" + who + "%SPLIT%" + "Sunday balance updated! You were given " + amount + " this week!");
@@ -193,40 +193,40 @@ public class ElyStaff implements Listener {
 	 public void onPlaceDown(Player p, String[] args){
 		 
 		 Block newSign = p.getWorld().getBlockAt(new Location(p.getWorld(), p.getLocation().getBlockX(), p.getLocation().getBlockY(), p.getLocation().getBlockZ()));
-		 newSign.setType(Material.WALL_SIGN);
+		 newSign.setType(args[0].equals("side") ? Material.WALL_SIGN : Material.SIGN_POST);
 			 
 		 Sign s = (Sign) newSign.getState();
 		 s.setLine(0, "§dWC §5Markkit");
 			 
 		 ConfigurationSection configSection = main.markkitYaml.getConfigurationSection("Items");
+		 String text = "§fNot Found";
 			 
 		 for (String path : configSection.getKeys(false)){
-				 
 			 if((Integer.parseInt(main.markkitYaml.getString("Items." + path + ".ID")) == p.getItemInHand().getTypeId()) && (Integer.parseInt(main.markkitYaml.getString("Items." + path + ".Damage")) == p.getItemInHand().getDurability())){
-				 s.setLine(1, "§f" + path);
-			 } else {
-				 s.setLine(1, "§fNot Found");
+				 text = "§f" + path;
+				 break;
 			 }
-			 
-			 org.bukkit.material.Sign sign =  new org.bukkit.material.Sign(args[0].equals("side") ? Material.WALL_SIGN : Material.SIGN_POST);
-			 sign.setFacingDirection(DivinityUtils.getPlayerDirection(p.getLocation().getYaw()).getOppositeFace());
-			 s.setData(sign);
-			 s.update();
 		 }
+		 
+		 s.setLine(1, text);
+		 org.bukkit.material.Sign sign = new org.bukkit.material.Sign(args[0].equals("side") ? Material.WALL_SIGN : Material.SIGN_POST);
+		 sign.setFacingDirection(DivinityUtils.getPlayerDirection(p.getLocation().getYaw()).getOppositeFace());
+		 s.setData(sign);
+		 s.update();
 	 }
 	 
 	 @DivCommand(perm = "wa.staff.mod", aliases = {"chestview"}, desc = "Chest Lookup / View Command", help = "/chestview <player>, /chestview lookup <player> <item>", player = true, min = 1)
 	 public void onChestView(Player p, String[] args){
 		 
-		 if (args[0].equals("lookup")){
-			 
+		 if (args.length != 1 && args.length != 3){
+			 main.s(p, main.help("chestview", this));
+			 return;
+		 }
+
+		 if (main.doesPartialPlayerExist(args.length == 1 ? args[0] : args[1])){
+			 main.invManager.displayGui(p, new GuiChest(main, (args.length == 1 ? main.matchDivPlayer(args[0]) : main.matchDivPlayer(args[1])), args.length == 1 ? "all" : args[2]));
 		 } else {
-		
-			 if (main.doesPartialPlayerExist(args[0])){
-				 main.invManager.displayGui(p, new GuiChest(main, main.matchDivPlayer(args[0])));
-			 } else {
-				 main.s(p, "playerNotFound");
-			 }
+			main.s(p, "playerNotFound");
 		 }
 	 }
 	 

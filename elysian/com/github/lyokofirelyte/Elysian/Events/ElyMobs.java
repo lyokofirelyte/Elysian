@@ -88,7 +88,7 @@ public class ElyMobs implements Listener {
 			main.api.getSystem().set(DPI.ENDERDRAGON_DEAD, false);
 		}
 		
-		if (e.getEntity().getType().equals(EntityType.HORSE)){
+		if (e.getEntity().getType().equals(EntityType.HORSE) && e.getEntity().getKiller() != null && e.getEntity().getKiller() instanceof Player){
 			Location l = e.getEntity().getLocation();
 			String coords = "&6" + l.getBlockX() + "&7, &6" + l.getBlockY() + "&7, &6" + l.getBlockZ();
 			main.api.event(new DivinityChannelEvent("&6System", "wa.staff.intern", "&c&oOh! &4\u2744", e.getEntity().getKiller().getDisplayName() + " &c&okilled a horse at " + coords + "&c.", "&c"));

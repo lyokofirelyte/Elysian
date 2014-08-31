@@ -15,7 +15,6 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.block.Block;
-import org.bukkit.entity.FallingBlock;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -23,7 +22,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
-import org.bukkit.event.entity.EntityChangeBlockEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
@@ -473,6 +471,7 @@ public class ElyMMO extends HashMap<Material, MXP> implements Listener {
 
 			JSONChatMessage msg = new JSONChatMessage(main.AS("&3\u2744 "), null, null);
 			JSONChatExtra extra = null;
+			int loops = 0;
 			
 			for (DivinityStorage ds : players.get(values.get(i))){
 
@@ -487,6 +486,12 @@ public class ElyMMO extends HashMap<Material, MXP> implements Listener {
 				extra = new JSONChatExtra(main.AS(ds.getStr(DPI.DISPLAY_NAME) + " &b(&6" + total + "&b) &3\u2744 "), null, null);
 				extra.setHoverEvent(JSONChatHoverEventType.SHOW_TEXT, main.AS(hoverText));
 				msg.addExtra(extra);
+				
+				loops++;
+				
+				if (loops >= 3){
+					break;
+				}
 			}
 			
 			main.s(p, msg);
@@ -610,12 +615,12 @@ public class ElyMMO extends HashMap<Material, MXP> implements Listener {
 	@EventHandler
 	public void onDeath(EntityDeathEvent e){
 		
-		if (e.getEntity() instanceof Player == false && e.getEntity().getKiller() instanceof Player){
+		if (e.getEntity() instanceof Player == false && e.getEntity().getKiller() != null && e.getEntity().getKiller() instanceof Player){
 			
 			Player p = e.getEntity().getKiller();
 			DivinityPlayer dp = main.api.getDivPlayer(p);
 			
-			if (get(p.getItemInHand().getType()).canUseTool(ElySkill.ATTACK, p.getItemInHand().getType(), main.api.getDivPlayer(p).getLevel(ElySkill.ATTACK))){
+			if (p.getItemInHand() != null && !p.getItemInHand().getType().equals(Material.AIR) && containsKey(p.getItemInHand().getType()) && get(p.getItemInHand().getType()).canUseTool(ElySkill.ATTACK, p.getItemInHand().getType(), main.api.getDivPlayer(p).getLevel(ElySkill.ATTACK))){
 				if (new Random().nextInt(100) <= dp.getLevel(ElySkill.ATTACK)*0.4){
 					List<ItemStack> drops = new ArrayList<ItemStack>();
 					for (ItemStack i : e.getDrops()){

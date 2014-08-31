@@ -38,7 +38,7 @@ public class GuiCloset extends DivGui {
 		
 		for (int i = 0; i < 5; i++){
 			if (parent.equals(main.closets.get(i))){
-				closets = i;
+				closets = i+1;
 				break;
 			}
 		}
@@ -46,7 +46,7 @@ public class GuiCloset extends DivGui {
 		if (main.closets.containsKey(closets-1)){
 			addButton(52, createItem("&3PAGE " + (closets-1), new String[] { "&b< < <" }, Enchantment.DURABILITY, 10, Material.FLINT));
 		} else {
-			addButton(52, createItem("&b( e l y s i a n )", new String[] { "&b< < <" }, Enchantment.DURABILITY, 10, Material.BEACON));
+			addButton(52, createItem("&b( e l y s i a n )", new String[] { "&b< < <" }, Enchantment.DURABILITY, 10, Material.FLINT));
 		}
 		
 		if (main.closets.containsKey(closets+1)){
@@ -67,6 +67,8 @@ public class GuiCloset extends DivGui {
 				
 				if (main.closets.containsKey(closets-1)){
 					main.invManager.displayGui(p, main.closets.get(closets-1));
+				} else {
+					main.invManager.displayGui(p, new GuiRoot(main));
 				}
 				
 			break;
@@ -97,6 +99,7 @@ public class GuiCloset extends DivGui {
 						buyer.s("Purchased for &6" + price + "&b!");
 						seller.getList(DPI.MAIL).add("personal" + "%SPLIT%" + "&6System" + "%SPLIT%" + p.getDisplayName() + " &bpurchased your &6" + item.getType().toString() + "&b!");
 						
+						main.api.getSystem().getStack(DPI.CLOSET_ITEMS).remove(item);
 						p.getInventory().addItem(modItem(item));
 						getInv().remove(item);
 						
@@ -132,6 +135,22 @@ public class GuiCloset extends DivGui {
 	
 	@DivCommand(aliases = {"sell"}, desc = "Add an item to the trading house in /root!", help = "/sell <price>", player = true, min = 1)
 	public void onSell(Player p, String[] args){
+		
+		int amt = 0;
+		
+		for (int i = 0; i < 5; i++){
+			if (main.closets.get(i).getInv().getContents().length > 0){
+				for (ItemStack item : main.closets.get(i).getInv().getContents()){
+					if (item != null && item.getItemMeta().getLore().contains(p.getName())){
+						amt++;
+						if (amt >= 3){
+							main.s(p, "&c&oYou can only sell 3 items. Try opening up a player-owned shop?");
+							return;
+						}
+					}
+				}
+			}
+		}
 		
 		if (isRoom(null, false)){
 			if (p.getItemInHand() != null && !p.getItemInHand().getType().equals(Material.AIR)){

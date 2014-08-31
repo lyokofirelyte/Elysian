@@ -17,7 +17,6 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 
-import com.github.lyokofirelyte.Divinity.DivGui;
 import com.github.lyokofirelyte.Divinity.Divinity;
 import com.github.lyokofirelyte.Divinity.DivinityAPI;
 import com.github.lyokofirelyte.Divinity.DivinityModule;
@@ -86,6 +85,7 @@ public class Elysian extends DivinityAPI implements DivinityModule {
 		setup = new ElySetup(this);
 		setup.start();
 		register(this);
+		markkitYaml = api.getSystem().getMarkkit();
 	}
 	
 	@Override
@@ -103,9 +103,7 @@ public class Elysian extends DivinityAPI implements DivinityModule {
 	}
 	
 	@Override
-	public void onRegister(){
-		markkitYaml = api.getSystem().getMarkkit();
-	}
+	public void onRegister(){}
 	
 	@Override
 	public void onUnRegister(){}

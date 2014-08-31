@@ -148,6 +148,10 @@ public class ElySetup {
 			main.closets.put(i, new GuiCloset(main, i == 0 ? new GuiRoot(main) : main.closets.get(i-1)));
 		}
 		
+		for (int i = 0; i < 5; i++){
+			main.closets.get(i).create();
+		}
+		
 		for (ItemStack i : main.api.getSystem().getStack(DPI.CLOSET_ITEMS)){
 			for (int x = 0; x < 5; x++){
 				if (main.closets.get(x).getInv().firstEmpty() != -1){

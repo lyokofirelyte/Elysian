@@ -1,5 +1,6 @@
 package com.github.lyokofirelyte.Elysian;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -163,7 +164,7 @@ public class ElyWatch implements Runnable {
 		}
 	}
 	
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({ "unchecked", "deprecation" })
 	private void invCheck(Player p, DivinityPlayer dp){
 		
 		if ((!dp.getBool(MMO.IS_MINING) && dp.getLong(MMO.SUPER_BREAKER_CD) > System.currentTimeMillis()) || dp.getLong(MMO.SUPER_BREAKER_CD) <= System.currentTimeMillis()){
@@ -196,14 +197,14 @@ public class ElyWatch implements Runnable {
 				if ((p.getItemInHand() != null && !p.getItemInHand().equals(i)) || p.getItemInHand() == null){
 					for (ElySkill skill : ElySkill.values()){
 						if (i.getItemMeta().getDisplayName().toLowerCase().contains(skill.s().toLowerCase())){
-							ItemMeta im = i.getItemMeta();
-							String[] type = i.getType().toString().toLowerCase().split("_");
-							im.setDisplayName(main.AS("&f" + type[0].substring(0, 1).toUpperCase() + type[0].substring(1)));
-							if (type.length > 1){
-								for (int ii = 1; ii < type.length; ii++){
-									im.setDisplayName(main.AS(im.getDisplayName() + " " + type[ii].substring(0, 1).toUpperCase() + type[ii].substring(1)));
-								}
+							ItemStack newItem = new ItemStack(i.getTypeId(), i.getAmount(), i.getData().getData());
+							ItemMeta im = newItem.getItemMeta();
+							im.setLore(i.getItemMeta().hasLore() ? i.getItemMeta().getLore() : new ArrayList<String>());
+							
+							for (Enchantment e : i.getItemMeta().getEnchants().keySet()){
+								im.addEnchant(e, i.getItemMeta().getEnchants().get(e), true);
 							}
+							
 							i.setItemMeta(im);
 							break;
 						}
