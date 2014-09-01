@@ -246,7 +246,7 @@ public class ElyMMO extends HashMap<Material, MXP> implements Listener {
 		}
 	}
 
-	@EventHandler
+	@EventHandler (ignoreCancelled = true, priority = EventPriority.MONITOR)
 	public void onMob(EntityDamageByEntityEvent e){
 		
 		if (e.getEntity() instanceof Player == false && e.getDamager() instanceof Player){
@@ -577,7 +577,7 @@ public class ElyMMO extends HashMap<Material, MXP> implements Listener {
 		if (level < 99){
 			
 			double needed = Double.parseDouble(results[2]);
-			int xp = Integer.parseInt(results[1]) + (level >= 70 ? e.getXp() + Math.round(e.getXp()/5) : e.getXp());
+			int xp = Integer.parseInt(results[1]) + (level >= 70 ? e.getXp() + Math.round(e.getXp()/4) : e.getXp()) + 10;
 			dp.set(e.getSkill(), level + " " + xp + " " + needed);
 			
 			if (!main.logger.protectedMats.contains(p.getItemInHand().getType()) && !e.getSkill().equals(ElySkill.BUILDING) && p.getItemInHand() != null && !p.getItemInHand().getType().equals(Material.AIR) && dp.getBool(DPI.XP_DISP_NAME_TOGGLE)){
@@ -587,7 +587,7 @@ public class ElyMMO extends HashMap<Material, MXP> implements Listener {
 			}
 			
 			if (xp >= needed){
-				needed = needed + (needed*.13) + (500*level);
+				needed = needed + (needed*.10) + (500*level);
 				dp.set(e.getSkill(), (level+1) + " " + xp + " " + needed);
 				dp.s("Your &6" + e.getSkill().s() + " &blevel is now &6" + (level+1) + "&b!");
 				main.fw(p.getWorld(), p.getLocation(), Type.BALL, main.api.divUtils.getRandomColor());
@@ -660,23 +660,23 @@ public class ElyMMO extends HashMap<Material, MXP> implements Listener {
 			
 			case RIGHT_CLICK_AIR:
 				
-				if (isHolding(p, "_axe")){
+				if (isHolding(p, "_axe") && dp.getLevel(ElySkill.WOODCUTTING) >= 10){
 					treeFeller.r(p, dp);
 				}
 				
-				if (isHolding(p, "_pickaxe")){
+				if (isHolding(p, "_pickaxe") && dp.getLevel(ElySkill.MINING) >= 10){
 					superBreaker.r(p, dp, MMO.IS_SUPER_BREAKING);
 				}
 				
-				if (isHolding(p, "_spade")){
+				if (isHolding(p, "_spade") && dp.getLevel(ElySkill.DIGGING) >= 10){
 					superBreaker.r(p, dp, MMO.IS_TURBO_DRILLING);
 				}
 				
-				if (isHolding(p, "_sword")){
+				if (isHolding(p, "_sword") && dp.getLevel(ElySkill.ATTACK) >= 10){
 					skyBlade.r(p, dp);
 				}
 				
-				if (isHolding(p, "sapling")){
+				if (isHolding(p, "sapling") && dp.getLevel(ElySkill.FARMING) >= 10){
 					life.r(p, dp);
 				}
 				
