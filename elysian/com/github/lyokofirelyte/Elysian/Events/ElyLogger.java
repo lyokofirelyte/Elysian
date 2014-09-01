@@ -50,7 +50,7 @@ public class ElyLogger implements Listener, Runnable {
 		main = i;
 	}
 	
-	List<Material> protectedMats = Arrays.asList(
+	public List<Material> protectedMats = Arrays.asList(
 		Material.CHEST,
 		Material.FURNACE,
 		Material.BREWING_STAND,

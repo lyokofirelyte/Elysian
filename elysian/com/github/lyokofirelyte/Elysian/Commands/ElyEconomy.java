@@ -145,7 +145,9 @@ public class ElyEconomy {
 		 main.s(sendTo, "none", "&6Server Total: &b" + serverTotal);
 		 
 		 for (int i = 0; i < 10; i++){
-			 main.s(sendTo, players.get(balances.get(i)).getStr(DPI.DISPLAY_NAME) + "&f: &6" + balances.get(i));
+			 if (balances.size() > i){
+				 main.s(sendTo, players.get(balances.get(i)).getStr(DPI.DISPLAY_NAME) + "&f: &6" + balances.get(i));
+			 }
 		 }
 	 }
 }

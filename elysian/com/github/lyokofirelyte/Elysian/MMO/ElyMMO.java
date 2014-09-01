@@ -235,7 +235,7 @@ public class ElyMMO extends HashMap<Material, MXP> implements Listener {
 		return results;
 	}
 	
-	@EventHandler
+	@EventHandler (ignoreCancelled = true, priority = EventPriority.MONITOR)
 	public void onFall(EntityDamageEvent e){
 		
 		if (e.getCause() == DamageCause.FALL && e.getEntity() instanceof Player){
@@ -500,12 +500,8 @@ public class ElyMMO extends HashMap<Material, MXP> implements Listener {
 		p.sendMessage(main.AS("&7&oHover for full skill layout."));
 	}
 	
-	@EventHandler (priority = EventPriority.MONITOR)
+	@EventHandler (ignoreCancelled = true, priority = EventPriority.MONITOR)
 	public void onBreak(BlockBreakEvent e){
-		
-		if (e.isCancelled()){
-			return;
-		}
 		
 		Player p = e.getPlayer();
 		DivinityPlayer dp = main.api.getDivPlayer(p);
@@ -536,13 +532,9 @@ public class ElyMMO extends HashMap<Material, MXP> implements Listener {
 		}
 	}
 	
-	@EventHandler (priority = EventPriority.MONITOR)
+	@EventHandler (ignoreCancelled = true, priority = EventPriority.MONITOR)
 	public void onPlace(BlockPlaceEvent e){
-		
-		if (e.isCancelled()){
-			return;
-		}
-		
+
 		Player p = e.getPlayer();
 		DivinityPlayer dp = main.api.getDivPlayer(e.getPlayer());
 		
@@ -588,7 +580,7 @@ public class ElyMMO extends HashMap<Material, MXP> implements Listener {
 			int xp = Integer.parseInt(results[1]) + (level >= 70 ? e.getXp() + Math.round(e.getXp()/5) : e.getXp());
 			dp.set(e.getSkill(), level + " " + xp + " " + needed);
 			
-			if (p.getItemInHand() != null && !p.getItemInHand().getType().equals(Material.AIR) && dp.getBool(DPI.XP_DISP_NAME_TOGGLE)){
+			if (!main.logger.protectedMats.contains(p.getItemInHand().getType()) && !e.getSkill().equals(ElySkill.BUILDING) && p.getItemInHand() != null && !p.getItemInHand().getType().equals(Material.AIR) && dp.getBool(DPI.XP_DISP_NAME_TOGGLE)){
 				ItemMeta im = e.getPlayer().getItemInHand().getItemMeta();
 				im.setDisplayName(main.AS("&b&o" + e.getSkill().s() + " &6&o" + xp + "&b&o/&6&o" + Math.round(needed)));
 				p.getItemInHand().setItemMeta(im);

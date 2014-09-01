@@ -222,11 +222,11 @@ public class ElyProtect implements Listener {
 				break;
 			}
 			
-			if ((args[0].startsWith("//") && !e.getMessage().contains("schematic")) || args[0].startsWith("/wand")){
+			if ((args[0].startsWith("//") && !e.getMessage().contains("schematic")) || args[0].startsWith("/wand") || args[0].equals("/j")){
 				if (p.getWorld().getName().equalsIgnoreCase("WACP") || e.getPlayer().getWorld().getName().equalsIgnoreCase("not_cylum") || main.perms(p, "wa.staff.mod2")){
 					e.setCancelled(true);
 					op(p, e.getMessage());
-					if (p.getWorld().equals("world")){
+					if (p.getWorld().getName().equals("world")){
 						main.api.event(new DivinityChannelEvent("&6System", "wa.staff.admin", "&c&oOh! (ADMIN) &4\u2744", p.getDisplayName() + " used &6" + e.getMessage() + " &c&oin the main world.", "&c"));
 					}
 				}

@@ -153,9 +153,10 @@ public class ElyStaff implements Listener {
 			 Collections.reverse(groups);
 			 for (String group : groups){
 				 if (dp.getList(DPI.PERMS).contains("wa." + ("rank." + group).replace("rank.member", "member"))){
-					 int amount = dp.getInt(DPI.BALANCE)*Math.round(Float.parseFloat(main.perms.rankNames.get(group).split(" % ")[2]));
-					 dp.set(DPI.BALANCE, dp.getInt(DPI.BALANCE) + amount);
-					 dp.getList(DPI.MAIL).add("personal" + "%SPLIT%" + who + "%SPLIT%" + "Sunday balance updated! You were given " + amount + " this week!");
+					 float amt = Float.parseFloat(main.perms.rankNames.get(group).split(" % ")[2])/100;
+					 float amount = dp.getInt(DPI.BALANCE)*amt;
+					 dp.set(DPI.BALANCE, dp.getInt(DPI.BALANCE) + Math.round(amount));
+					 dp.getList(DPI.MAIL).add("personal" + "%SPLIT%" + who + "%SPLIT%" + "Sunday balance updated! You were given " + Math.round(amount) + " this week!");
 					 
 					 if (Bukkit.getPlayer(dp.uuid()) != null){
 						 main.s(Bukkit.getPlayer(dp.uuid()), "none", "You've recieved a mail! /mail read");
