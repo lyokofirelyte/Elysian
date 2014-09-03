@@ -121,6 +121,7 @@ public class ElyLogger implements Listener, Runnable {
 			DivinityPlayer dp = main.api.getDivPlayer(e.getPlayer());
 			Location l = e.getClickedBlock().getLocation();
 			String loc = l.getWorld().getName() + " " + l.toVector().getBlockX() + " " + l.toVector().getBlockY() + " " + l.toVector().getBlockZ();
+			e.setCancelled(true);
 			
 			List<String> names = dp.getList(DPI.CHEST_NAMES);
 			List<String> failedNames = new ArrayList<String>();

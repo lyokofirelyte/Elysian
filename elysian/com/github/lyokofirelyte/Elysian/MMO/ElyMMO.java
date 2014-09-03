@@ -114,6 +114,8 @@ public class ElyMMO extends HashMap<Material, MXP> implements Listener {
 		sm(Material.VINE, ElySkill.FARMING, 300, 97);
 		sm(Material.WATER_LILY, ElySkill.FARMING, 325, 98);
 		
+		sm(Material.ARROW, ElySkill.CRAFTING, 5, 0);
+		sm(Material.STICK, ElySkill.CRAFTING, 5, 0);
 		sm(Material.WORKBENCH, ElySkill.CRAFTING, 10, 0);
 		sm(Material.FURNACE, ElySkill.CRAFTING, 15, 5);
 		sm(Material.WOOD, ElySkill.CRAFTING, 20, 10);
@@ -507,10 +509,11 @@ public class ElyMMO extends HashMap<Material, MXP> implements Listener {
 		DivinityPlayer dp = main.api.getDivPlayer(p);
 		Location l = e.getBlock().getLocation();
 		Material itemInHand = p.getItemInHand() != null ? p.getItemInHand().getType() : Material.AIR;
+		boolean cont = true;
 		
 		if (main.api.getSystem().getList(MMO.INVALID_BLOCKS).contains(l.getWorld().getName() + " " + l.getBlockX() + " " + l.getBlockY() + " " + l.getBlockZ())){
 			main.api.getSystem().getList(MMO.INVALID_BLOCKS).remove(l.getWorld().getName() + " " + l.getBlockX() + " " + l.getBlockY() + " " + l.getBlockZ());
-			return;
+			cont = false;
 		}
 		
 		List<ElySkill> skills = Arrays.asList(ElySkill.WOODCUTTING, ElySkill.MINING, ElySkill.DIGGING, ElySkill.FARMING);
@@ -520,14 +523,23 @@ public class ElyMMO extends HashMap<Material, MXP> implements Listener {
 			
 			Boolean[] results = canGiveXp(p, e.getBlock().getType(), skills.get(i), itemInHand, skillTools.get(i));
 			
-			if (results[1]){
-				if (new Random().nextInt(101) < (dp.getLevel(skills.get(i))*0.3)){
-					p.getWorld().dropItemNaturally(p.getLocation(), new ItemStack(e.getBlock().getType()));
+			if (results[0]){
+				if (skills.get(i).equals(ElySkill.FARMING)){
+					cont = true;
 				}
 			}
 			
-			if (results[0]){
-				main.api.event(new SkillExpGainEvent(p, skills.get(i), get(e.getBlock().getType()).getXP(skills.get(i))));
+			if (cont){
+			
+				if (results[1]){
+					if (new Random().nextInt(101) < (dp.getLevel(skills.get(i))*0.3)){
+						p.getWorld().dropItemNaturally(p.getLocation(), new ItemStack(e.getBlock().getType()));
+					}
+				}
+				
+				if (results[0]){
+					main.api.event(new SkillExpGainEvent(p, skills.get(i), get(e.getBlock().getType()).getXP(skills.get(i))));
+				}
 			}
 		}
 	}
@@ -581,9 +593,26 @@ public class ElyMMO extends HashMap<Material, MXP> implements Listener {
 			dp.set(e.getSkill(), level + " " + xp + " " + needed);
 			
 			if (!main.logger.protectedMats.contains(p.getItemInHand().getType()) && !e.getSkill().equals(ElySkill.BUILDING) && p.getItemInHand() != null && !p.getItemInHand().getType().equals(Material.AIR) && dp.getBool(DPI.XP_DISP_NAME_TOGGLE)){
-				ItemMeta im = e.getPlayer().getItemInHand().getItemMeta();
-				im.setDisplayName(main.AS("&b&o" + e.getSkill().s() + " &6&o" + xp + "&b&o/&6&o" + Math.round(needed)));
-				p.getItemInHand().setItemMeta(im);
+				
+				boolean cont = true;
+				
+				if (p.getItemInHand().hasItemMeta() && p.getItemInHand().getItemMeta().hasDisplayName()){
+					
+					cont = false;
+					
+					for (ElySkill skill : ElySkill.values()){
+						if (p.getItemInHand().getItemMeta().getDisplayName().toLowerCase().contains(skill.toString().toLowerCase())){
+							cont = true;
+							break;
+						}
+					}
+				}
+				
+				if (cont){
+					ItemMeta im = e.getPlayer().getItemInHand().getItemMeta();
+					im.setDisplayName(main.AS("&b&o" + e.getSkill().s() + " &6&o" + xp + "&b&o/&6&o" + Math.round(needed)));
+					p.getItemInHand().setItemMeta(im);
+				}
 			}
 			
 			if (xp >= needed){
