@@ -79,7 +79,9 @@ public class ElyLogger implements Listener, Runnable {
 			Map<Player, Map<String, Integer>> warningsCurrent = new HashMap<Player, Map<String, Integer>>(warnings);
 			for (Player p : warningsCurrent.keySet()){
 				for (String mat : warningsCurrent.get(p).keySet()){
-					main.api.event(new DivinityChannelEvent("&6System", "wa.staff.intern", "&c&oOh! &4\u2744", p.getDisplayName() + " &c&ofound " + warningsCurrent.get(p).get(mat) + " &6&o" + mat, "&c"));
+					if (p != null && p.isOnline()){
+						main.api.event(new DivinityChannelEvent("&6System", "wa.staff.intern", "&c&oOh! &4\u2744", p.getDisplayName() + " &c&ofound " + warningsCurrent.get(p).get(mat) + " &6&o" + mat, "&c"));
+					}
 				}
 			}
 			warnings = new HashMap<Player, Map<String, Integer>>();
