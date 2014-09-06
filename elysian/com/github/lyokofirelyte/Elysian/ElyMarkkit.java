@@ -6,7 +6,10 @@ import java.util.List;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.block.Block;
+import org.bukkit.block.Chest;
 import org.bukkit.block.Sign;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -33,10 +36,11 @@ public class ElyMarkkit implements Listener {
 
 	private Elysian main;
 	private HashMap<String, Inventory> inventory = new HashMap<String, Inventory>();
+	private HashMap<String, Inventory> playershop = new HashMap<String, Inventory>();
 	private HashMap<String, String> invName = new HashMap<String, String>();
 	private HashMap<String, Integer> totalPrice = new HashMap<String, Integer>();
 	private HashMap<String, Integer> showPrice = new HashMap<String, Integer>();
-	
+	private HashMap<String, Location> chestLocation = new HashMap<String, Location>();
 	public ElyMarkkit(Elysian i){
 		main = i;
 	}
@@ -49,7 +53,14 @@ public class ElyMarkkit implements Listener {
 		if (main.silentPerms(p, "wa.staff.mod2") == true && e.getLine(0).equalsIgnoreCase("markkit") && e.getLine(1) != null && !e.getLine(1).equals("")){
 			e.setLine(0, main.AS("&dWC &5Markkit"));
 			e.setLine(1, main.AS("&f" + e.getLine(1)));
-		} else if (e.getLine(0).equalsIgnoreCase("markkit")){
+		} else if(main.silentPerms(p, "wa.staff.intern") == true && e.getLine(0).equalsIgnoreCase("playershop") && e.getLine(1) != null && !e.getLine(1).equals("")){
+			org.bukkit.material.Sign sign = (org.bukkit.material.Sign) e.getBlock().getState().getData();
+			Block attached = e.getBlock().getRelative(sign.getAttachedFace());
+			if(attached.getType() == Material.CHEST) {
+				e.setLine(0, main.AS("&3Playershop"));
+				e.setLine(1, main.AS("&f" + e.getLine(1)));
+			}
+		}else if (e.getLine(0).equalsIgnoreCase("markkit")){
 			e.setLine(0, main.AS("&4INVALID!"));
 			e.setLine(1, main.AS("&cWE DIDN'T"));
 			e.setLine(2, main.AS("&cLISTEN! D:"));
@@ -65,13 +76,55 @@ public class ElyMarkkit implements Listener {
 	@EventHandler
 	public void onClick(final InventoryClickEvent e){
 		
+		System.out.println(e.getRawSlot());
 		Player p = (Player) e.getWhoClicked();
 			
 		List<Integer> sellCart = Arrays.asList(0, 1, 2, 9, 10, 11, 18, 19, 20, 27, 28, 29, 36, 37, 38);
 		List<Integer> buyCart = Arrays.asList(6, 7, 8, 15, 16, 17, 24, 25, 26, 33, 34, 35, 42, 43, 44);
 		List<Integer> itemSlot = Arrays.asList(4, 13, 22, 31, 40, 49);
+		List<Integer> buyCartPlayerShop = Arrays.asList(36, 37, 38, 39, 40, 41, 42, 43);
+		List<Integer> forSale = Arrays.asList(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26);
+		if(e.getInventory().getName().contains("Playershop")){
+			e.setCancelled(true);
+			String clicker = e.getWhoClicked().getName();
+			
+			if(forSale.contains(e.getRawSlot())){
+				for(int i : buyCartPlayerShop){
+					if(e.getInventory().getItem(i) == null){
+						ItemStack clicked = e.getCurrentItem();
+						clicked.setAmount(1);
+						e.getInventory().setItem(i, clicked);
+						return;
+					}
+				}
+			}else if(e.getRawSlot() == 44){
+				int total = 0;
+				for(int i : buyCartPlayerShop){
+					if(e.getInventory().getItem(i) != null && e.getInventory().getItem(i).getType() != Material.AIR){
+						int money = main.markkitYaml.getInt("playershop." + e.getInventory().getItem(44).getItemMeta().getDisplayName().split(" ")[0] + "." + e.getInventory().getItem(i).getTypeId() + "." + e.getInventory().getItem(i).getDurability());
+						total = total + money;
+						Chest c = (Chest) e.getWhoClicked().getLocation().getWorld().getBlockAt(chestLocation.get(e.getInventory().getItem(44).getItemMeta().getDisplayName().split(" ")[0])).getState();
+						c.getInventory().removeItem(new ItemStack(e.getInventory().getItem(i).getType(), 1));
+						
+					}
+				}
+				System.out.println(total);
 
-		if(e.getInventory().getName().contains("items stocked") || e.getInventory().getName().contains("Double price!")){
+				
+				
+				DivinityPlayer dp = main.api.getDivPlayer(p);
+				dp.set(DPI.BALANCE, dp.getInt(DPI.BALANCE) - total);
+				
+				if(main.doesPartialPlayerExist(e.getInventory().getItem(44).getItemMeta().getDisplayName().split(" ")[0])){
+				DivinityPlayer dp2 = main.matchDivPlayer(e.getInventory().getItem(44).getItemMeta().getDisplayName().split(" ")[0]);
+					dp.set(DPI.BALANCE, dp.getInt(DPI.BALANCE) + total);
+				}
+
+				
+			}else if(e.getInventory().getItem(e.getRawSlot()) != null && buyCartPlayerShop.contains(e.getRawSlot())){
+				e.getInventory().setItem(e.getRawSlot(), new ItemStack(Material.AIR));
+			}
+		}else if(e.getInventory().getName().contains("items stocked") || e.getInventory().getName().contains("Double price!")){
 			e.setCancelled(true);
 			String name = invName.get(e.getWhoClicked().getName());
 			if(e.getCurrentItem() != null){
@@ -160,7 +213,7 @@ public class ElyMarkkit implements Listener {
 				ItemStack calculateLeft = new ItemStack(Material.MUSHROOM_SOUP, 1);
 				ItemMeta leftMeta = calculateLeft.getItemMeta();
 				leftMeta.setDisplayName(ChatColor.RED + "Click here to calculate the price!");
-				leftMeta.setLore(Arrays.asList(ChatColor.GREEN + "Price: " + showPrice.get(e.getWhoClicked().getName())));
+				leftMeta.setLore(Arrays.asList(ChatColor.GREEN + "Price: " + showPrice.get(e.getWhoClicked().getName())/2));
 				calculateLeft.setItemMeta(leftMeta);
 					
 				e.getInventory().setItem(45, calculateLeft);
@@ -204,7 +257,7 @@ public class ElyMarkkit implements Listener {
 				}else{
 					main.markkitYaml.set("Items." + name + ".isSellDoubled", false);
 				}
-				loadInventory((Player)e.getWhoClicked(), name);
+				loadMarkkitInventory((Player)e.getWhoClicked(), name);
 			break;
 					
 			case 47:
@@ -278,7 +331,7 @@ public class ElyMarkkit implements Listener {
 									}else{
 										main.markkitYaml.set("Items." + name + ".isSellDoubled", false);
 									}
-									loadInventory((Player)e.getWhoClicked(), name);
+									loadMarkkitInventory((Player)e.getWhoClicked(), name);
 								} else {
 									main.s(p, "You do not have enough money!");
 									totalPrice.put(e.getWhoClicked().getName(), 0);
@@ -332,7 +385,20 @@ public class ElyMarkkit implements Listener {
 						}
 						String name = sign.getLine(1).replace("§f", "");
 						invName.put(e.getPlayer().getName(), name);
-						loadInventory(e.getPlayer(), name);
+						loadMarkkitInventory(e.getPlayer(), name);
+					}else if(sign.getLine(0).equals(main.AS("&3Playershop"))){
+						
+						Block attached = e.getClickedBlock().getRelative(e.getBlockFace().getOppositeFace());
+						if(attached.getType() == Material.CHEST) {
+							if (e.getPlayer().getItemInHand() != null && e.getPlayer().getItemInHand().getType() != Material.AIR){
+								main.s(e.getPlayer(), "You must use your hand to activate the sign.");
+								return;
+							}
+							Chest c = (Chest) attached.getState();
+							String name = sign.getLine(1).replace("§f", "");
+							loadPlayerShopInventory(e.getPlayer(), c.getInventory(), name);
+							chestLocation.put(name, new Location(c.getWorld(), c.getLocation().getBlockX(), c.getLocation().getBlockY(), c.getLocation().getBlockZ()));
+						}
 					}
 				}
 			}
@@ -351,8 +417,47 @@ public class ElyMarkkit implements Listener {
 				}
 			}
 		}
+
+		public void loadPlayerShopInventory(Player buyer, Inventory passed, String owner){
+			Inventory temp = Bukkit.createInventory(null, 45, main.AS("&3Playershop"));
+			List<Integer> divider = Arrays.asList(27, 28, 29, 30, 31, 32, 33, 34, 35);
+			for(ItemStack istack : passed.getContents()){
+				if(istack != null && istack.getType() != Material.AIR){
+					if(!temp.contains(new ItemStack(istack.getType(), 1, (short)istack.getDurability()))){
+						ItemStack itemstack = new ItemStack(istack.getType());
+						itemstack.setDurability(istack.getDurability());
+						ItemMeta i = itemstack.getItemMeta();
+						i.setDisplayName(itemstack.getType().name().toLowerCase());
+						
+						if(main.markkitYaml.getString("playershop." + owner + "." + itemstack.getTypeId() + "." + itemstack.getDurability()) != null){
+							i.setLore(Arrays.asList("Price: " + main.markkitYaml.getString("playershop." + owner + "." + itemstack.getTypeId() + "." + itemstack.getDurability())));
+						}else{
+							i.setLore(Arrays.asList("Price not found"));
+						}
+						itemstack.setItemMeta(i);
+						temp.addItem(itemstack);
+					}
+				}
+			}
+			for(int i : divider){
+				ItemStack divide = new ItemStack(Material.THIN_GLASS);
+				ItemMeta divMeta = divide.getItemMeta();
+				divMeta.setDisplayName(main.AS("&5Separator"));
+				divide.setItemMeta(divMeta);
+				temp.setItem(i, divide);
+			}
+			ItemStack buy = new ItemStack(Material.WOOL);
+			buy.setDurability((short)5);
+			ItemMeta buyMeta = buy.getItemMeta();
+			buyMeta.setDisplayName(owner + " 's shop");
+			buyMeta.setLore(Arrays.asList("Click to buy the items in your cart!"));
+			buy.setItemMeta(buyMeta);
+			temp.setItem(44, buy);
+			playershop.put(owner, temp);
+			buyer.openInventory(playershop.get(owner));
+		}
 		
-		public void loadInventory(Player p, String name){
+		public void loadMarkkitInventory(Player p, String name){
 			Material mat = Material.getMaterial(main.markkitYaml.getInt("Items." + name + ".ID"));
 			short damage = (short) main.markkitYaml.getInt("Items." + name + ".Damage");
 			
