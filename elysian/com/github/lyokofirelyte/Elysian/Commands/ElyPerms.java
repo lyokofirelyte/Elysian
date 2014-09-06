@@ -42,6 +42,7 @@ public class ElyPerms {
 	 );
 	 
 	 public List<String> staffGroups = Arrays.asList(
+		"owner",
 		"admin",
 		"mod2",
 		"mod",

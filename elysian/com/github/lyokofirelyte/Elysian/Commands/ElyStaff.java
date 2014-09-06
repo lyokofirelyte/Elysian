@@ -3,7 +3,9 @@ package com.github.lyokofirelyte.Elysian.Commands;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -16,7 +18,9 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
+import org.bukkit.entity.ItemFrame;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Painting;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -26,6 +30,7 @@ import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
+import org.json.simple.JSONObject;
 
 import com.github.lyokofirelyte.Divinity.DivinityUtils;
 import com.github.lyokofirelyte.Divinity.Commands.DivCommand;
@@ -45,6 +50,34 @@ public class ElyStaff implements Listener {
 	 
 	 public ElyStaff(Elysian i){
 		 main = i;
+	 }
+	 
+	 @DivCommand(perm = "wa.staff.admin", aliases = {"ts3auth"}, desc = "Set TS3Auth Info", help = "/ts3auth <user> <pass>", player = false, min = 2)
+	 public void onTS3Auth(CommandSender p, String[] args){
+		 main.api.getSystem().set(DPI.TS3_CREDENTIALS, args[0] + " " + args[1]);
+		 main.api.ts3.start();
+		 main.s(p, "Updated.");
+	 }
+	 
+	 @DivCommand(aliases = {"register"}, desc = "Register on the website!", help = "/register <pass>", player = true, min = 1)
+	 public void onRegister(Player p, String[] args){
+		 
+		 DivinityPlayer dp = main.api.getDivPlayer(p);
+		 Map<String, String> input = new HashMap<String, String>();
+		 input.put("username", p.getName());
+		 input.put("password", args[0]);
+		 
+		 JSONObject result;
+		 
+		 if (!dp.getBool(DPI.REGISTERED)){
+			 result = main.getWeb().sendPost("register", input);
+			 main.s(p, result.get("success").toString().replace("true", "&aSuccess!").replace("false", "&cFailed to create account!"));
+			 if ((boolean) result.get("success")){
+				 dp.set(DPI.REGISTERED, true);
+			 }
+		 } else {
+			 dp.err("You're already registered.");
+		 }
 	 }
 	 
 	 @DivCommand(perm = "wa.staff.mod2", aliases = {"invsee"}, desc = "Inventory Spy Command", help = "/invsee <player>", player = true, min = 1)
@@ -177,7 +210,7 @@ public class ElyStaff implements Listener {
 			 int killed = 0;
 			 
 			 for (Entity e : p.getNearbyEntities(d, d, d)){
-				 if (e instanceof Player == false){
+				 if (e instanceof Player == false && e instanceof ItemFrame == false && e instanceof Painting == false){
 					 e.remove();
 					 killed++;
 				 }
@@ -273,7 +306,7 @@ public class ElyStaff implements Listener {
 		 p.kickPlayer("§4Abandoned Ship!");
 	 }
 	 
-	 @DivCommand(perm = "wa.staff.intern", aliases = {"speed"}, desc = "Speed Command", help = "/speed <1-10>", player = true, min = 1, max = 1)
+	 @DivCommand(perm = "wa.staff.mod", aliases = {"speed"}, desc = "Speed Command", help = "/speed <1-10>", player = true, min = 1, max = 1)
 	 public void onSpeed(CommandSender cs, String[] args){
 		 Player p = (Player)cs;
 		 if(main.api.divUtils.isInteger(args[0])){

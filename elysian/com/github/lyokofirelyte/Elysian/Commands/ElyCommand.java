@@ -80,6 +80,85 @@ public class ElyCommand {
 		return new String[]{arg, arg1};
 	}
 	
+	@DivCommand(perm = "wa.rank.dweller", aliases = {"notepad"}, desc = "Notepad Management System", help = "/notepad", player = true)
+	public void onNotepad(Player p, String[] args){
+		
+		DivinityPlayer dp = main.api.getDivPlayer(p);
+		JSONChatMessage msg = new JSONChatMessage("");
+		JSONChatExtra addButton = new JSONChatExtra(main.AS("&bElysian Note System &a{+}"));
+		addButton.setClickEvent(JSONChatClickEventType.RUN_COMMAND, "/notepad #add");
+		addButton.setHoverEvent(JSONChatHoverEventType.SHOW_TEXT, main.AS("&aAdd a new note!"));
+		msg.addExtra(addButton);
+		
+		int counter = 0;
+		
+		if (args.length == 0){
+			
+			p.sendMessage("");
+			main.s(p, msg);
+			
+			for (String message : dp.getList(DPI.NOTEPAD)){
+				JSONChatMessage m = new JSONChatMessage(main.AS("&7" + main.numerals.get(counter) + "&f: &3" + message + " "));
+				JSONChatExtra editButton = new JSONChatExtra(main.AS("&7[&e*&7] "));
+				JSONChatExtra deleteButton = new JSONChatExtra(main.AS("&7[&c-&7]"));
+				editButton.setHoverEvent(JSONChatHoverEventType.SHOW_TEXT, main.AS("&eEdit this note."));
+				editButton.setClickEvent(JSONChatClickEventType.SUGGEST_COMMAND, "/notepad #edit <" + counter + "> " + message);
+				deleteButton.setHoverEvent(JSONChatHoverEventType.SHOW_TEXT, main.AS("&cDelete this note."));
+				deleteButton.setClickEvent(JSONChatClickEventType.RUN_COMMAND, "/notepad #delete " + message);
+				m.addExtra(editButton);
+				m.addExtra(deleteButton);
+				main.s(p, m);
+				counter++;
+				if (counter == 101){
+					break;
+				}
+			}
+			
+			p.sendMessage("");
+			
+		} else {
+			
+			switch (args[0]){
+			
+				case "#add":
+					
+					dp.s("Please type in a new note to add.");
+					dp.s("%c will be replaced by your current coords.");
+					dp.getList(DPI.NOTEPAD_SETTING).add("add");
+					
+				break;
+				
+				case "#edit":
+					
+					String message = "";
+					
+					if (args.length >= 2){
+						boolean set = args[1].contains("<");
+						int num = set ? Integer.parseInt(args[1].replace("<", "").replace(">", "")) : 0;
+						num = num < dp.getList(DPI.NOTEPAD).size() ? num : dp.getList(DPI.NOTEPAD).size()-1;
+						Location l = p.getLocation();
+						if (set){
+							message = main.api.divUtils.createString(args, 2);
+							dp.getList(DPI.NOTEPAD).set(num, message.replace("%c", l.getBlockX() + "," + l.getBlockY() + "," + l.getBlockZ()));
+						} else {
+							message = main.api.divUtils.createString(args, 1);
+							dp.getList(DPI.NOTEPAD).add(message.replace("%c", l.getBlockX() + "," + l.getBlockY() + "," + l.getBlockZ()));
+						}
+						onNotepad(p, new String[]{});
+					}
+					
+				break;
+				
+				case "#delete":
+					
+					dp.getList(DPI.NOTEPAD).remove(main.api.divUtils.createString(args, 1));
+					onNotepad(p, new String[]{});
+					
+				break;
+			}
+		}
+	}
+	
 	@DivCommand(aliases = {"root", "menu"}, desc = "Open the main menu", help = "/root", player = true)
 	public void onRoot(Player p, String[] args){
 		main.invManager.displayGui(p, new GuiRoot(main));
@@ -302,7 +381,8 @@ public class ElyCommand {
 					if (main.perms(p, "wa.staff.admin")){
 					
 						try {
-							main.api.divManager.load();
+							main.api.divManager.load(true);
+							main.api.divManager.load(false);
 							main.onRegister();
 						} catch (Exception e) {
 							e.printStackTrace();

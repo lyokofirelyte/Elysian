@@ -31,6 +31,7 @@ import org.bukkit.event.entity.EntityChangeBlockEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
+import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
@@ -99,6 +100,19 @@ public class ElyProtect implements Listener {
 		
 		if (e.getPlayer().getGameMode().equals(GameMode.CREATIVE) && e.getPlayer().getItemInHand().getType().equals(Material.BLAZE_ROD)){
 			e.setCancelled(true);
+		}
+	}
+	
+	@EventHandler
+	public void onFoodLevel(FoodLevelChangeEvent e){
+		
+		if (e.getEntity() instanceof Player){
+		
+			String result = isInAnyRegion(e.getEntity().getLocation());
+			
+			if (hasFlag(result, DRF.TAKE_DAMAGE)){
+				e.setCancelled(true);
+			}
 		}
 	}
 	

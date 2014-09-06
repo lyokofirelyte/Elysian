@@ -159,6 +159,15 @@ public class ElyChat implements Listener {
 		List<String> list = new ArrayList<String>(p.getList(DPI.BAN_QUEUE));
 		List<String> list2 = new ArrayList<String>(p.getList(DPI.BAN_QUEUE));
 		
+		if (p.getList(DPI.NOTEPAD_SETTING).size() > 0){
+			List<String> notepad = p.getList(DPI.NOTEPAD_SETTING);
+			if (notepad.contains("add")){
+				notepad.remove("add");
+				e.getPlayer().performCommand("notepad #edit " + e.getMessage());
+				return;
+			}
+		}
+		
 		if (p.getBool(DPI.IS_BANNING)){
 			if (p.getList(DPI.BAN_QUEUE).contains("type:ban") || p.getList(DPI.BAN_QUEUE).contains("type:tban")){
 				for (String s : list){

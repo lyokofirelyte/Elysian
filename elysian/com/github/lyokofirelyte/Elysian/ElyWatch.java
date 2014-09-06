@@ -132,6 +132,10 @@ public class ElyWatch implements Runnable {
 			for (String rank : main.perms.staffGroups){
 				if (dp.getList(DPI.PERMS).contains("wa.staff." + rank)){
 					switch (rank){
+						case "owner":
+							dp.set(DPI.RANK_NAME, "&5WCN");
+							dp.set(DPI.STAFF_DESC, "&7&oThe owner of the server!");
+						break;
 						case "admin":
 							dp.set(DPI.RANK_NAME, "&4WCN"); 
 							dp.set(DPI.STAFF_DESC, "&7&oAn administrator of the server.\n&7&oResponsible for server management.\n&7&oPlugin Devs: Hugs, Winneon, Msnijder");

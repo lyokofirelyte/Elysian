@@ -1,12 +1,19 @@
 package com.github.lyokofirelyte.Elysian;
 
+
+import java.util.ArrayList;
+
 import org.bukkit.Bukkit;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.event.Listener;
 import org.bukkit.inventory.ItemStack;
 
 import com.github.lyokofirelyte.Divinity.Divinity;
 import com.github.lyokofirelyte.Divinity.Manager.DivInvManager;
+import com.github.lyokofirelyte.Divinity.Manager.DivinityManager;
 import com.github.lyokofirelyte.Divinity.Storage.DPI;
+import com.github.lyokofirelyte.Divinity.Storage.DivinityGame;
+import com.github.lyokofirelyte.Divinity.Storage.DivinityStorage;
 import com.github.lyokofirelyte.Elysian.Commands.ElyAlliance;
 import com.github.lyokofirelyte.Elysian.Commands.ElyCommand;
 import com.github.lyokofirelyte.Elysian.Commands.ElyEconomy;
@@ -33,6 +40,11 @@ import com.github.lyokofirelyte.Elysian.Events.ElyMobs;
 import com.github.lyokofirelyte.Elysian.Events.ElyMove;
 import com.github.lyokofirelyte.Elysian.Events.ElyScoreBoard;
 import com.github.lyokofirelyte.Elysian.Events.ElyTP;
+import com.github.lyokofirelyte.Elysian.Games.Spleef.Spleef;
+import com.github.lyokofirelyte.Elysian.Games.Spleef.SpleefData.SpleefDataType;
+import com.github.lyokofirelyte.Elysian.Games.Spleef.SpleefData.SpleefGameData;
+import com.github.lyokofirelyte.Elysian.Games.Spleef.SpleefData.SpleefPlayerData;
+import com.github.lyokofirelyte.Elysian.Games.Spleef.SpleefStorage;
 import com.github.lyokofirelyte.Elysian.Gui.GuiCloset;
 import com.github.lyokofirelyte.Elysian.Gui.GuiRoot;
 import com.github.lyokofirelyte.Elysian.MMO.ElyMMO;
@@ -51,6 +63,7 @@ public class ElySetup {
 	}
 	
 	public void start(){
+		
 		main.api = (Divinity) Bukkit.getPluginManager().getPlugin("Divinity");
 		main.we = (WorldEditPlugin) Bukkit.getPluginManager().getPlugin("WorldEdit");
 		main.logger = new ElyLogger(main);
@@ -73,10 +86,30 @@ public class ElySetup {
 		main.mmo.superBreaker = new SuperBreaker(main);
 		main.mmo.skyBlade = new SkyBlade(main);
 		main.mmo.life = new LifeForce(main);
+		main.spleef = new Spleef(main);
+		
 		closet();
 		listener();
 		commands();
 		tasks();
+		
+		main.numerals = new ArrayList<String>(YamlConfiguration.loadConfiguration(main.getResource("numerals.yml")).getStringList("Numerals"));
+		
+		main.api.divManager.enums.add(SpleefGameData.class);
+		
+		try {
+			main.api.divManager.load(false);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		for (DivinityStorage game : main.api.divManager.getMap(DivinityManager.gamesDir + "spleef/").values()){
+			SpleefStorage s = new SpleefStorage(main, SpleefDataType.GAME, game.name());
+			for (SpleefGameData data : SpleefGameData.values()){
+				s.put(data, game.getStr(data));
+			}
+			main.spleef.module.data.put(game.name(), s);
+		}
 	}
 
 	private void regList(Listener... classes){
@@ -102,7 +135,8 @@ public class ElySetup {
 			main.pro,
 			main.rings,
 			main.invManager,
-			main.mmo
+			main.mmo,
+			main.spleef.active
 		);
 	}
 	
@@ -131,7 +165,8 @@ public class ElySetup {
 			main.pro,
 			main.rings,
 			main.mmo,
-			main.closets.get(0)
+			main.closets.get(0),
+			main.spleef.commandMain
 		);
 	}
 	

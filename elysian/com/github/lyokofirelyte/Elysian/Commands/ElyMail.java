@@ -51,12 +51,12 @@ public class ElyMail {
 		  	  
 		  	  case "clear":
 		  		  
-		  		  DivinityPlayer clearing = null;
+		  		  DivinityStorage clearing = null;
 		  		  
 		  		  if (p instanceof Player){
 		  			clearing = main.api.getDivPlayer((Player)p);
 		  		  } else {
-		  			clearing = (DivinityPlayer) main.api.getSystem();
+		  			clearing = main.api.getSystem();
 		  		  }
 		  		  
 		  		  if (clearing.getList(DPI.MAIL).size() > 0){
@@ -155,12 +155,12 @@ public class ElyMail {
 	 
 	 public void checkMail(CommandSender p){
 		 
-		 DivinityPlayer reading = null;
+		 DivinityStorage reading = null;
  		  
  		  if (p instanceof Player){
  			  reading = main.api.getDivPlayer((Player)p);
  		  } else {
- 			  reading = (DivinityPlayer) main.api.getSystem();
+ 			  reading = main.api.getSystem();
  		  }
  		  
  		  if (reading.getList(DPI.MAIL).size() > 0){

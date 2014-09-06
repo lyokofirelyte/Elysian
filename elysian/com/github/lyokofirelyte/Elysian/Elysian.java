@@ -1,6 +1,7 @@
 package com.github.lyokofirelyte.Elysian;
 
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -27,6 +28,7 @@ import com.github.lyokofirelyte.Divinity.Events.ScoreboardUpdateEvent;
 import com.github.lyokofirelyte.Divinity.JSON.JSONChatMessage;
 import com.github.lyokofirelyte.Divinity.Manager.DivInvManager;
 import com.github.lyokofirelyte.Divinity.Manager.DivinityManager;
+import com.github.lyokofirelyte.Divinity.Manager.WebsiteManager;
 import com.github.lyokofirelyte.Divinity.Storage.DAI;
 import com.github.lyokofirelyte.Divinity.Storage.DPI;
 import com.github.lyokofirelyte.Divinity.Storage.DivinityAlliance;
@@ -46,6 +48,8 @@ import com.github.lyokofirelyte.Elysian.Events.ElyChat;
 import com.github.lyokofirelyte.Elysian.Events.ElyLogger;
 import com.github.lyokofirelyte.Elysian.Events.ElyMobs;
 import com.github.lyokofirelyte.Elysian.Events.ElyTP;
+import com.github.lyokofirelyte.Elysian.Games.Spleef.Spleef;
+import com.github.lyokofirelyte.Elysian.Games.Spleef.SpleefStorage;
 import com.github.lyokofirelyte.Elysian.Gui.GuiCloset;
 import com.github.lyokofirelyte.Elysian.MMO.ElyMMO;
 import com.sk89q.worldedit.bukkit.WorldEditPlugin;
@@ -73,12 +77,14 @@ public class Elysian extends DivinityAPI implements DivinityModule {
 	public ElySetup setup;
 	public ElyMMO mmo;
 	public ElyMMOCleanup cleanup;
+	public Spleef spleef;
 	
 	public DivInvManager invManager;
 	
 	public Map<ElyTask, Integer> tasks = new HashMap<ElyTask, Integer>();
 	public Map<Location, List<List<String>>> queue = new HashMap<Location, List<List<String>>>();
 	public Map<Integer, GuiCloset> closets = new HashMap<>();
+	public List<String> numerals = new ArrayList<String>();
 
 	@Override
 	public void onEnable(){
@@ -90,10 +96,12 @@ public class Elysian extends DivinityAPI implements DivinityModule {
 	
 	@Override
 	public void onDisable(){
+		
 		for (DivinityStorage dp : api.divManager.getAllUsers()){
 			dp.set(DPI.DIS_ENTITY, "none");
 			dp.set(DPI.IS_DIS, false);
 		}
+		
 		Bukkit.getScheduler().cancelTasks(this);
 	}
 
@@ -113,6 +121,10 @@ public class Elysian extends DivinityAPI implements DivinityModule {
 			Bukkit.getScheduler().cancelTask(tasks.get(task));
 			tasks.remove(task);
 		}
+	}
+	
+	public WebsiteManager getWeb(){
+		return new WebsiteManager(api);
 	}
 	
 	public DivinityAlliance getDivAlliance(String alliance){
