@@ -168,6 +168,11 @@ public class ElyChat implements Listener {
 			}
 		}
 		
+		if (p.getBool(DPI.PATROL_INPUT)){
+			e.getPlayer().performCommand("patrol #add " + e.getMessage());
+			return;
+		}
+		
 		if (p.getBool(DPI.IS_BANNING)){
 			if (p.getList(DPI.BAN_QUEUE).contains("type:ban") || p.getList(DPI.BAN_QUEUE).contains("type:tban")){
 				for (String s : list){

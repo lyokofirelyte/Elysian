@@ -61,6 +61,10 @@ public class ElyJoinQuit implements Listener {
 			p.set(DPI.SPECTATE_TARGET, "none");
 		}
 		
+		if (main.mmo.patrols.doesPatrolExistWithPlayer(pl)){
+			main.mmo.patrols.getPatrolWithPlayer(pl).getMembers().remove(pl.getName());
+		}
+		
 		DivinityUtils.customBC("&4- " + pl.getDisplayName() + " &e&o(" + p.getStr(DPI.QUIT_MESSAGE) + "&e&o)");
 	}
 	

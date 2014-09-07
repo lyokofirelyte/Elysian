@@ -135,41 +135,43 @@ public class SpleefCommandMain {
 				
 				if (sender.getInvite() != null && !sender.getInvite().equals(sender)){
 					if (Bukkit.getPlayer(sender.getInvite().toDp().uuid()) != null){
-						for (SpleefGame game : getAllGames()){
-							if (game.involvedPlayers().size() <= 0 && game.isEnabled()){
-								
-								sender.toDp().set(DPI.BACKUP_INVENTORY, new ArrayList<ItemStack>());
-								
-								for (ItemStack i : Bukkit.getPlayer(sender.toDp().uuid()).getInventory().getContents()){
-									if (i != null){
-										sender.toDp().getStack(DPI.BACKUP_INVENTORY).add(i);
+						if (!sender.inGame() && !sender.getInvite().inGame()){
+							for (SpleefGame game : getAllGames()){
+								if (game.involvedPlayers().size() <= 0 && game.isEnabled()){
+									
+									sender.toDp().set(DPI.BACKUP_INVENTORY, new ArrayList<ItemStack>());
+									
+									for (ItemStack i : Bukkit.getPlayer(sender.toDp().uuid()).getInventory().getContents()){
+										if (i != null){
+											sender.toDp().getStack(DPI.BACKUP_INVENTORY).add(i);
+										}
 									}
-								}
-								
-								sender.getInvite().toDp().set(DPI.BACKUP_INVENTORY, new ArrayList<ItemStack>());
-								
-								for (ItemStack i : Bukkit.getPlayer(sender.getInvite().toDp().uuid()).getInventory().getContents()){
-									if (i != null){
-										sender.getInvite().toDp().getStack(DPI.BACKUP_INVENTORY).add(i);
+									
+									sender.getInvite().toDp().set(DPI.BACKUP_INVENTORY, new ArrayList<ItemStack>());
+									
+									for (ItemStack i : Bukkit.getPlayer(sender.getInvite().toDp().uuid()).getInventory().getContents()){
+										if (i != null){
+											sender.getInvite().toDp().getStack(DPI.BACKUP_INVENTORY).add(i);
+										}
 									}
+									
+									Bukkit.getPlayer(sender.toDp().uuid()).getInventory().clear();
+									Bukkit.getPlayer(sender.getInvite().toDp().uuid()).getInventory().clear();
+									Bukkit.getPlayer(sender.toDp().uuid()).getInventory().addItem(new ItemStack(Material.DIAMOND_SPADE));
+									Bukkit.getPlayer(sender.getInvite().toDp().uuid()).getInventory().addItem(new ItemStack(Material.DIAMOND_SPADE));
+									game.involvedPlayers().add(sender);
+									game.involvedPlayers().add(sender.getInvite());
+									sender.setCurrentGame(game);
+									sender.getInvite().setCurrentGame(game);
+									sender.setInGame(true);
+									sender.getInvite().setInGame(true);
+									sender.setOpponent(sender.getInvite());
+									sender.getInvite().setOpponent(sender);
+									sender.getInvite().setInvite(sender.getInvite());
+									sender.setInvite(sender);
+									game.teleportPlayers();
+									return;
 								}
-								
-								Bukkit.getPlayer(sender.toDp().uuid()).getInventory().clear();
-								Bukkit.getPlayer(sender.getInvite().toDp().uuid()).getInventory().clear();
-								Bukkit.getPlayer(sender.toDp().uuid()).getInventory().addItem(new ItemStack(Material.DIAMOND_SPADE));
-								Bukkit.getPlayer(sender.getInvite().toDp().uuid()).getInventory().addItem(new ItemStack(Material.DIAMOND_SPADE));
-								game.involvedPlayers().add(sender);
-								game.involvedPlayers().add(sender.getInvite());
-								sender.setCurrentGame(game);
-								sender.getInvite().setCurrentGame(game);
-								sender.setInGame(true);
-								sender.getInvite().setInGame(true);
-								sender.setOpponent(sender.getInvite());
-								sender.getInvite().setOpponent(sender);
-								sender.getInvite().setInvite(sender.getInvite());
-								sender.setInvite(sender);
-								game.teleportPlayers();
-								return;
 							}
 						}
 						sender.toDp().err("No games are open at the moment!");
@@ -181,6 +183,13 @@ public class SpleefCommandMain {
 				} else {
 					sender.toDp().err("You don't have any invites.");
 				}
+				
+			break;
+			
+			case "saveArenas":
+
+				main.update();
+				sender.toDp().s("Updated!");
 				
 			break;
 			

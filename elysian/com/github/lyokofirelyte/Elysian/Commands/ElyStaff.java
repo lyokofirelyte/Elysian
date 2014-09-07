@@ -54,9 +54,14 @@ public class ElyStaff implements Listener {
 	 
 	 @DivCommand(perm = "wa.staff.admin", aliases = {"ts3auth"}, desc = "Set TS3Auth Info", help = "/ts3auth <user> <pass>", player = false, min = 2)
 	 public void onTS3Auth(CommandSender p, String[] args){
-		 main.api.getSystem().set(DPI.TS3_CREDENTIALS, args[0] + " " + args[1]);
-		 main.api.ts3.start();
-		 main.s(p, "Updated.");
+		 
+		 if (args[0].equals("stop")){
+			 main.api.ts3.stop();
+		 } else {
+			 main.api.getSystem().set(DPI.TS3_CREDENTIALS, args[0] + " " + args[1]);
+			 main.api.ts3.start();
+			 main.s(p, "Updated.");
+		 }
 	 }
 	 
 	 @DivCommand(aliases = {"register"}, desc = "Register on the website!", help = "/register <pass>", player = true, min = 1)

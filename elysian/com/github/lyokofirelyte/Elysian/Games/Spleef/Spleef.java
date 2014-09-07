@@ -19,7 +19,6 @@ public class Spleef implements ElyGame {
 		module = new SpleefModule(this);
 		commandMain = new SpleefCommandMain(this);
 		active = new SpleefActive(this);
-		main.api.repeat(this, "update", 20L, 400L, "spleefUpdater", null);
 	}
 	
 	public void update(){

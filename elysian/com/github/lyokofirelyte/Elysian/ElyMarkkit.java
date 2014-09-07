@@ -76,7 +76,6 @@ public class ElyMarkkit implements Listener {
 	@EventHandler
 	public void onClick(final InventoryClickEvent e){
 		
-		System.out.println(e.getRawSlot());
 		Player p = (Player) e.getWhoClicked();
 			
 		List<Integer> sellCart = Arrays.asList(0, 1, 2, 9, 10, 11, 18, 19, 20, 27, 28, 29, 36, 37, 38);
@@ -108,9 +107,6 @@ public class ElyMarkkit implements Listener {
 						
 					}
 				}
-				System.out.println(total);
-
-				
 				
 				DivinityPlayer dp = main.api.getDivPlayer(p);
 				dp.set(DPI.BALANCE, dp.getInt(DPI.BALANCE) - total);

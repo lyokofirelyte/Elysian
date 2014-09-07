@@ -13,6 +13,7 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
 
 import com.github.lyokofirelyte.Divinity.DivinityUtils;
+import com.github.lyokofirelyte.Divinity.Events.DivinityTeleportEvent;
 import com.github.lyokofirelyte.Divinity.Storage.DPI;
 import com.github.lyokofirelyte.Divinity.Storage.DivinityPlayer;
 import com.github.lyokofirelyte.Elysian.Games.Spleef.SpleefData.SpleefGame;
@@ -55,7 +56,7 @@ public class SpleefActive implements Listener {
 						DivinityUtils.bc(Bukkit.getPlayer(sp.opponent().toDp().uuid()).getDisplayName() + " &bhas defeated " + Bukkit.getPlayer(sp.toDp().uuid()).getDisplayName() + " &bin a 1v1 spleef round!");
 						for (SpleefPlayer player : game.involvedPlayers()){
 							Player p = Bukkit.getPlayer(player.toDp().uuid());
-							main.main.staff.onBack(p, new String[]{});
+							main.main.api.event(new DivinityTeleportEvent(p, new Location(p.getWorld(), p.getLocation().getX(), p.getLocation().getY()+9, p.getLocation().getZ())));
 							p.getInventory().clear();
 							for (ItemStack i : player.toDp().getStack(DPI.BACKUP_INVENTORY)){
 								p.getInventory().addItem(i);

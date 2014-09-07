@@ -48,6 +48,8 @@ import com.github.lyokofirelyte.Elysian.Games.Spleef.SpleefStorage;
 import com.github.lyokofirelyte.Elysian.Gui.GuiCloset;
 import com.github.lyokofirelyte.Elysian.Gui.GuiRoot;
 import com.github.lyokofirelyte.Elysian.MMO.ElyMMO;
+import com.github.lyokofirelyte.Elysian.MMO.ElyPatrol;
+import com.github.lyokofirelyte.Elysian.MMO.Abilities.HolyMackerel;
 import com.github.lyokofirelyte.Elysian.MMO.Abilities.LifeForce;
 import com.github.lyokofirelyte.Elysian.MMO.Abilities.SkyBlade;
 import com.github.lyokofirelyte.Elysian.MMO.Abilities.SuperBreaker;
@@ -86,6 +88,8 @@ public class ElySetup {
 		main.mmo.superBreaker = new SuperBreaker(main);
 		main.mmo.skyBlade = new SkyBlade(main);
 		main.mmo.life = new LifeForce(main);
+		main.mmo.holy = new HolyMackerel(main);
+		main.mmo.patrols = new ElyPatrol(main);
 		main.spleef = new Spleef(main);
 		
 		closet();
@@ -166,7 +170,8 @@ public class ElySetup {
 			main.rings,
 			main.mmo,
 			main.closets.get(0),
-			main.spleef.commandMain
+			main.spleef.commandMain,
+			main.mmo.patrols
 		);
 	}
 	

@@ -15,6 +15,7 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.block.Block;
+import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -27,8 +28,10 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.inventory.CraftItemEvent;
+import org.bukkit.event.player.PlayerFishEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
@@ -43,6 +46,7 @@ import com.github.lyokofirelyte.Divinity.Storage.DivinityPlayer;
 import com.github.lyokofirelyte.Divinity.Storage.DivinityStorage;
 import com.github.lyokofirelyte.Divinity.Storage.ElySkill;
 import com.github.lyokofirelyte.Elysian.Elysian;
+import com.github.lyokofirelyte.Elysian.MMO.Abilities.HolyMackerel;
 import com.github.lyokofirelyte.Elysian.MMO.Abilities.LifeForce;
 import com.github.lyokofirelyte.Elysian.MMO.Abilities.SkyBlade;
 import com.github.lyokofirelyte.Elysian.MMO.Abilities.SuperBreaker;
@@ -57,6 +61,10 @@ public class ElyMMO extends HashMap<Material, MXP> implements Listener {
 	public SuperBreaker superBreaker;
 	public SkyBlade skyBlade;
 	public LifeForce life;
+	public HolyMackerel holy;
+	public ElyPatrol patrols;
+	
+	public Map<String, List<Item>> noPickup = new HashMap<>();
 	
 	public ElyMMO(Elysian i) {
 		main = i;
@@ -69,6 +77,8 @@ public class ElyMMO extends HashMap<Material, MXP> implements Listener {
 		sm(Material.LOG_2, ElySkill.WOODCUTTING, 138, 15);
 		sm(Material.LEAVES, ElySkill.WOODCUTTING, 168, 30);
 		sm(Material.LEAVES_2, ElySkill.WOODCUTTING, 200, 45);
+		
+		sm(Material.RAW_FISH, ElySkill.FISHING, 0, 200);
 		
 		sm(Material.STONE, ElySkill.MINING, 15, 0);
 		sm(Material.NETHERRACK, ElySkill.MINING, 15, 0);
@@ -326,6 +336,8 @@ public class ElyMMO extends HashMap<Material, MXP> implements Listener {
 			case ENDURANCE: return "&6JUMP OFF OF CLIFFS, BUT DON'T DIE!\n&6This decreases fall damage as you level.";
 			case BUILDING: return "&6You just place stuff. Pretty easy. What, you want a medal or something?";
 			case FARMING: return "&6The best skill to get 99 in. Tear down crops.";
+			case PATROL: return "&6Hunt or skill with a group of people and share the XP!";
+			case FISHING: return "&6Just fish stuff! :)";
 		}
 	}
 	
@@ -348,6 +360,7 @@ public class ElyMMO extends HashMap<Material, MXP> implements Listener {
 			case BUILDING: return "&6You literally get nothing for leveling this skill. Nothing.";
 			case FARMING: return "&bLevel 10: &6LIFE FORCE (right-click sapling)\n&7&oPlants a random tree.\n&7&oEvery level decreases cooldown by 1 second.";
 			case PATROL: return "&6More Shop Options";
+			case FISHING: return "&bLevel 10: &6HOLY MACKEREL! (right-click rod)\n&7&oWhip up a crazy fish-storm!\n&7&oThe cooldown for this does not change as you level.";
 		}
 	}
 	
@@ -503,6 +516,16 @@ public class ElyMMO extends HashMap<Material, MXP> implements Listener {
 	}
 	
 	@EventHandler (ignoreCancelled = true, priority = EventPriority.MONITOR)
+	public void onFish(PlayerFishEvent e){
+		
+		if (new Random().nextInt(101) < (main.api.getDivPlayer(e.getPlayer()).getLevel(ElySkill.FISHING)*0.3)){
+			e.getPlayer().getWorld().dropItemNaturally(e.getPlayer().getLocation(), new ItemStack(Material.RAW_FISH));
+		}
+		
+		main.api.event(new SkillExpGainEvent(e.getPlayer(), ElySkill.FISHING, 200));
+	}
+	
+	@EventHandler (ignoreCancelled = true, priority = EventPriority.MONITOR)
 	public void onBreak(BlockBreakEvent e){
 		
 		Player p = e.getPlayer();
@@ -582,14 +605,28 @@ public class ElyMMO extends HashMap<Material, MXP> implements Listener {
 		
 		Player p = e.getPlayer();
 		DivinityPlayer dp = main.api.getDivPlayer(p);
+		e.setXp(dp.getBool(DPI.IGNORE_XP) ? e.getXp() : e.getXp()*2); // Added for balancing - current curve way too high.
 		
 		String[] results = dp.getStr(e.getSkill()).split(" ");
 		int level = Integer.parseInt(results[0]);
 		
+		if (!dp.getBool(DPI.IGNORE_XP) && !dp.getBool(DPI.SHARE_XP)){
+			if (patrols.doesPatrolExistWithPlayer(p)){
+				for (String member : patrols.getPatrolWithPlayer(p).getMembers()){
+					if (!member.equals(p.getName())){
+						main.matchDivPlayer(member).set(DPI.IGNORE_XP, true);
+						main.api.event(new SkillExpGainEvent(main.getPlayer(member), e.getSkill(), Math.round(e.getXp()/5)));
+					}
+				}
+			}
+		}
+		
+		dp.set(DPI.IGNORE_XP, false);
+		
 		if (level < 99){
 			
 			double needed = Double.parseDouble(results[2]);
-			int xp = Integer.parseInt(results[1]) + (level >= 70 ? e.getXp() + Math.round(e.getXp()/4) : e.getXp()) + 10;
+			int xp = Integer.parseInt(results[1]) + (level >= 70 ? e.getXp() + Math.round(e.getXp()/4) : e.getXp()) + 20;
 			dp.set(e.getSkill(), level + " " + xp + " " + needed);
 			
 			if (!main.logger.protectedMats.contains(p.getItemInHand().getType()) && !e.getSkill().equals(ElySkill.BUILDING) && p.getItemInHand() != null && !p.getItemInHand().getType().equals(Material.AIR) && dp.getBool(DPI.XP_DISP_NAME_TOGGLE)){
@@ -657,6 +694,19 @@ public class ElyMMO extends HashMap<Material, MXP> implements Listener {
 		}
 	}
 	
+	@EventHandler
+	public void onPickup(PlayerPickupItemEvent e){
+		
+		for (String user : noPickup.keySet()){
+			for (Item i : noPickup.get(user)){
+				if (i.equals(e.getItem())){
+					e.setCancelled(true);
+					return;
+				}
+			}
+		}
+	}
+	
 	@EventHandler (priority = EventPriority.MONITOR)
 	public void onInteract(PlayerInteractEntityEvent e){
 		
@@ -707,6 +757,10 @@ public class ElyMMO extends HashMap<Material, MXP> implements Listener {
 				
 				if (isHolding(p, "sapling") && dp.getLevel(ElySkill.FARMING) >= 10){
 					life.r(p, dp);
+				}
+				
+				if (isHolding(p, "fishing") && dp.getLevel(ElySkill.FISHING) >= 10){
+					holy.l(p, dp, p.getLocation());
 				}
 				
 				// nothing suspicious move along
