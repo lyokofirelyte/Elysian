@@ -117,6 +117,10 @@ public class ElyMobs implements Listener {
 				DivinityPlayer killer = main.api.getDivPlayer((Player)e.getEntity().getKiller());
 				DivinityPlayer deadDP = main.api.getDivPlayer((Player)e.getEntity());
 				
+				if (killer.equals(deadDP)){
+					return;
+				}
+				
 				List<String> wins = killer.getList(DPI.DUEL_WINS);
 				
 				for (String win : wins){
@@ -167,7 +171,9 @@ public class ElyMobs implements Listener {
 		e.setDeathMessage(null);
 		
 		if (e.getEntity().getKiller() != null && e.getEntity().getKiller() instanceof Player){
-			return;
+			if (!((Player)e.getEntity()).equals((Player)e.getEntity().getKiller())){
+				return;
+			}
 		}
 
 		Vector v = e.getEntity().getLocation().toVector();

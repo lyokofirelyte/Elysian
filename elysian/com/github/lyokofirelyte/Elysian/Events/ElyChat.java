@@ -150,7 +150,7 @@ public class ElyChat implements Listener {
 		e.setCancelled(true);
 		main.afkCheck(e.getPlayer());
 		
-		DivinityPlayer p = main.api.getDivPlayer(e.getPlayer());
+		final DivinityPlayer p = main.api.getDivPlayer(e.getPlayer());
 		
 		if (!main.silentPerms(e.getPlayer(), "wa.rank.settler")){
 			e.setMessage(ChatColor.stripColor(main.AS(e.getMessage())));
@@ -258,6 +258,12 @@ public class ElyChat implements Listener {
 					main.api.event(new DivinityPluginMessageEvent(p, "globalChat", new String[]{"&7" + e.getPlayer().getDisplayName() + "&f: &7&o" + e.getMessage()}));
 				}
 				
+				Map<String, Object> map = new HashMap<String, Object>();
+				map.put("user", ChatColor.stripColor(main.AS(p.getStr(DPI.DISPLAY_NAME))));
+				map.put("message", ChatColor.stripColor(main.AS(e.getMessage())));
+				map.put("type", "minecraft_insert");
+				String msg = (String) main.api.web.sendPost("/api/chat", map).get("message");
+				main.api.web.messages.add(msg);
 				Bukkit.getConsoleSender().sendMessage(main.AS(e.getPlayer().getDisplayName() + "&f: " + e.getMessage()));
 				
 			}}).start();

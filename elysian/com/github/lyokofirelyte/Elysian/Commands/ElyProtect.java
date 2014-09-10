@@ -83,7 +83,8 @@ public class ElyProtect implements Listener {
 		"&c&oI'll do a lot of things, but I won't do that!",
 		"&6&o/ely helpmepleaseIdontknowwhatImdoing",
 		"&c&oThere's a time and place for everything, but not now!",
-		"&c&oIf only that was really a command... &c&o/ely help&c&o."
+		"&c&oIf only that was really a command... &7&o/ely help&c&o.",
+		"&c&oHelp me help you help us all, by typing &6&o/ely help&c&o."
 	);
 	
 	@EventHandler
@@ -321,6 +322,10 @@ public class ElyProtect implements Listener {
 		if (hasFlag(isInAnyRegion(e.getBlock().getLocation()), DRF.GRAVITY)){
 			e.setCancelled(true);
 		}
+	
+		if (e.getBlock().getType().equals(Material.LADDER)){
+			e.setCancelled(true);
+		}
 	}
 	
 	@EventHandler
@@ -336,6 +341,8 @@ public class ElyProtect implements Listener {
 			if (hasFlag(isInAnyRegion(e.getBlock().getLocation()), DRF.LAVA_FLOW)){
 				e.setCancelled(true);
 			}
+		} else if (mat.equals(Material.LADDER)){
+			e.setCancelled(true);
 		}
 	}
 	

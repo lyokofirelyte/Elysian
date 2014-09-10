@@ -52,7 +52,7 @@ public class SkyBlade extends ElyMMO {
 		List<Entity> ents = new ArrayList<Entity>();
 		
 		for (Entity e : p.getNearbyEntities(10D, 10D, 10D)){
-			if (e instanceof Monster || e instanceof Animals){
+			if (e instanceof Monster){
 				ents.add(e);
 				e.setVelocity(e.getLocation().getDirection().multiply(-3));
 			}

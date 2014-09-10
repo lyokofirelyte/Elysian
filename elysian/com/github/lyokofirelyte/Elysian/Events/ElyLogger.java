@@ -278,18 +278,18 @@ public class ElyLogger implements Listener, Runnable {
 				dp.set(DPI.CHEST_MODE, "none");
 				main.s(p, "none", "Action cancelled.");
 			break;
+			
+			/*case "folder":TODO
+				dp.set(DPI.CHEST_MODE, "folder " + args[1]);
+			break;*/
 		}
 	}
 	
 	//location, player, message, event, what it was, what it now is
 	
 	@SuppressWarnings("deprecation")
-	@EventHandler(priority = EventPriority.LOWEST)
+	@EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
 	public void onBreak(BlockBreakEvent e){
-		
-		if (e.isCancelled()){
-			return;
-		}
 
 		Material mat = e.getBlock().getType();
 		String matName = mat.name().toLowerCase();

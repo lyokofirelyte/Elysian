@@ -78,7 +78,7 @@ public class ElyMMO extends HashMap<Material, MXP> implements Listener {
 		sm(Material.LEAVES, ElySkill.WOODCUTTING, 168, 30);
 		sm(Material.LEAVES_2, ElySkill.WOODCUTTING, 200, 45);
 		
-		sm(Material.RAW_FISH, ElySkill.FISHING, 0, 200);
+		sm(Material.RAW_FISH, ElySkill.FISHING, 200, 0);
 		
 		sm(Material.STONE, ElySkill.MINING, 15, 0);
 		sm(Material.NETHERRACK, ElySkill.MINING, 15, 0);
@@ -184,12 +184,6 @@ public class ElyMMO extends HashMap<Material, MXP> implements Listener {
 		tool(Material.IRON_SPADE, ElySkill.DIGGING, 25);
 		tool(Material.GOLD_SPADE, ElySkill.DIGGING, 30);
 		tool(Material.DIAMOND_SPADE, ElySkill.DIGGING, 45);
-		
-		tool(Material.LEATHER_HELMET, ElySkill.RESISTANCE, 0);
-		tool(Material.CHAINMAIL_HELMET, ElySkill.RESISTANCE, 15);
-		tool(Material.IRON_HELMET, ElySkill.RESISTANCE, 25);
-		tool(Material.GOLD_HELMET, ElySkill.RESISTANCE, 30);
-		tool(Material.DIAMOND_HELMET, ElySkill.RESISTANCE, 45);
 	}
 	
 	private void tool(Material tool, ElySkill skill, int level){
@@ -360,7 +354,7 @@ public class ElyMMO extends HashMap<Material, MXP> implements Listener {
 			case BUILDING: return "&6You literally get nothing for leveling this skill. Nothing.";
 			case FARMING: return "&bLevel 10: &6LIFE FORCE (right-click sapling)\n&7&oPlants a random tree.\n&7&oEvery level decreases cooldown by 1 second.";
 			case PATROL: return "&6More Shop Options";
-			case FISHING: return "&bLevel 10: &6HOLY MACKEREL! (right-click rod)\n&7&oWhip up a crazy fish-storm!\n&7&oThe cooldown for this does not change as you level.";
+			case FISHING: return "&bLevel 10: &6HOLY MACKEREL! (left-click rod)\n&7&oWhip up a crazy fish-storm!\n&7&oThe cooldown for this does not change as you level.";
 		}
 	}
 	
@@ -518,11 +512,12 @@ public class ElyMMO extends HashMap<Material, MXP> implements Listener {
 	@EventHandler (ignoreCancelled = true, priority = EventPriority.MONITOR)
 	public void onFish(PlayerFishEvent e){
 		
-		if (new Random().nextInt(101) < (main.api.getDivPlayer(e.getPlayer()).getLevel(ElySkill.FISHING)*0.3)){
-			e.getPlayer().getWorld().dropItemNaturally(e.getPlayer().getLocation(), new ItemStack(Material.RAW_FISH));
+		if (e.getCaught() != null){
+			if (new Random().nextInt(101) < (main.api.getDivPlayer(e.getPlayer()).getLevel(ElySkill.FISHING)*0.3)){
+				e.getPlayer().getWorld().dropItemNaturally(e.getPlayer().getLocation(), new ItemStack(Material.RAW_FISH));
+			}
+			main.api.event(new SkillExpGainEvent(e.getPlayer(), ElySkill.FISHING, 200));
 		}
-		
-		main.api.event(new SkillExpGainEvent(e.getPlayer(), ElySkill.FISHING, 200));
 	}
 	
 	@EventHandler (ignoreCancelled = true, priority = EventPriority.MONITOR)
@@ -556,7 +551,9 @@ public class ElyMMO extends HashMap<Material, MXP> implements Listener {
 			
 				if (results[1]){
 					if (new Random().nextInt(101) < (dp.getLevel(skills.get(i))*0.3)){
-						p.getWorld().dropItemNaturally(p.getLocation(), new ItemStack(e.getBlock().getType()));
+						if (!e.getBlock().getType().equals(Material.MOB_SPAWNER)){
+							p.getWorld().dropItemNaturally(p.getLocation(), new ItemStack(e.getBlock().getType()));
+						}
 					}
 				}
 				
@@ -595,7 +592,6 @@ public class ElyMMO extends HashMap<Material, MXP> implements Listener {
 		return b != null && b.getType().toString().toLowerCase().contains(item.toLowerCase());
 	}
 	
-	//lvl xp xp_needed
 	@EventHandler (priority = EventPriority.MONITOR)
 	public void onXp(SkillExpGainEvent e){
 		
@@ -759,10 +755,6 @@ public class ElyMMO extends HashMap<Material, MXP> implements Listener {
 					life.r(p, dp);
 				}
 				
-				if (isHolding(p, "fishing") && dp.getLevel(ElySkill.FISHING) >= 10){
-					holy.l(p, dp, p.getLocation());
-				}
-				
 				// nothing suspicious move along
 				if (p.getItemInHand().getType().equals(Material.CAKE) || p.getItemInHand().getType().equals(Material.CAKE_BLOCK)){
 					dp.err("This cake is a lie, you should ask for your money back.");
@@ -785,6 +777,10 @@ public class ElyMMO extends HashMap<Material, MXP> implements Listener {
 				
 				if (isHolding(p, "_spade") && dp.getBool(MMO.IS_TURBO_DRILLING)){
 					superBreaker.l(p, dp, b, MMO.IS_TURBO_DRILLING, MMO.IS_DIGGING, MMO.TURBO_DRILL_CD, ElySkill.DIGGING);
+				}
+				
+				if (isHolding(p, "fishing") && dp.getLevel(ElySkill.FISHING) >= 10){
+					holy.l(p, dp, p.getLocation());
 				}
 				
 			break;

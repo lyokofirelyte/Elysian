@@ -37,7 +37,7 @@ public class HolyMackerel extends ElyMMO {
 		
 		new Thread(new Runnable(){ public void run(){
 			
-			List<Location> dropLocs = main.api.divUtils.circle(l, 10, 1, false, false, 10);
+			List<Location> dropLocs = main.api.divUtils.circle(l, 3, 1, false, false, 10);
 			
 			for (Location l : dropLocs){
 				
@@ -55,13 +55,17 @@ public class HolyMackerel extends ElyMMO {
 			try { Thread.sleep(1000); } catch (InterruptedException e) {}
 			
 			for (Item i : noPickup.get(p.getName())){
-				i.setVelocity(new Vector(0, 0.5, 0));
+				if (i != null && !i.isDead()){
+					i.setVelocity(new Vector(0, 0.5, 0));
+				}
 			}
 			
 			try { Thread.sleep(1000); } catch (InterruptedException e) {}
 			
 			for (Item i : noPickup.get(p.getName())){
-				i.remove();
+				if (i != null && !i.isDead()){
+					i.remove();
+				}
 			}
 			
 			ItemStack fancyFish = new ItemStack(Material.COOKED_FISH);

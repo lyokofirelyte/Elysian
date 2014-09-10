@@ -68,14 +68,14 @@ public class ElyStaff implements Listener {
 	 public void onRegister(Player p, String[] args){
 		 
 		 DivinityPlayer dp = main.api.getDivPlayer(p);
-		 Map<String, String> input = new HashMap<String, String>();
+		 Map<String, Object> input = new HashMap<String, Object>();
 		 input.put("username", p.getName());
 		 input.put("password", args[0]);
 		 
 		 JSONObject result;
 		 
 		 if (!dp.getBool(DPI.REGISTERED)){
-			 result = main.getWeb().sendPost("register", input);
+			 result = main.getWeb().sendPost("/api/register", input);
 			 main.s(p, result.get("success").toString().replace("true", "&aSuccess!").replace("false", "&cFailed to create account!"));
 			 if ((boolean) result.get("success")){
 				 dp.set(DPI.REGISTERED, true);

@@ -6,7 +6,8 @@ public enum ElyTask {
 	WATCHER("WATCHER"),
 	SPECTATE("SPECTATE"),
 	MMO_BLOCKS("MMO_BLOCKS"),
-	ANNOUNCER("ANNOUNCER");
+	ANNOUNCER("ANNOUNCER"),
+	WEBSITE("WEBSITE");
 	
 	ElyTask(String type){
 		taskType = type;
