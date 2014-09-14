@@ -18,6 +18,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.ChatColor;
 
 import com.github.lyokofirelyte.Divinity.DivinityUtils;
 import com.github.lyokofirelyte.Divinity.Commands.DivCommand;
@@ -196,6 +197,33 @@ public class ElyCommand {
 		}
 	}
 	
+	@DivCommand(aliases = {"list"}, desc = "List everyone online!", help = "/list", player = false)
+	public void onList(CommandSender cs, String[] args){
+		
+		JSONChatMessage msg = new JSONChatMessage("");
+		JSONChatExtra extra = new JSONChatExtra("");
+		String m = "";
+		boolean color = true;
+		
+		for (Player p : Bukkit.getOnlinePlayers()){
+			if (cs instanceof Player){
+				extra = new JSONChatExtra(main.AS((color ? "&3" : "&9") + ChatColor.stripColor(main.AS(p.getDisplayName())) + " "));
+				extra.setHoverEvent(JSONChatHoverEventType.SHOW_TEXT, main.AS("&7&o" + p.getName()));
+				extra.setClickEvent(JSONChatClickEventType.SUGGEST_COMMAND, "/tell " + p.getName() + " ");
+				msg.addExtra(extra);
+				color = !color;
+			} else {
+				m = m.equals("") ? p.getDisplayName() : m + "&8, " + p.getDisplayName();
+			}
+		}
+		
+		if (cs instanceof Player){
+			msg.sendToPlayer((Player)cs);
+		} else {
+			main.s(cs, m);
+		}
+	}
+	
 	@DivCommand(aliases = {"colors"}, desc = "View the colors", help = "/colors", player = false)
 	public void onColors(CommandSender cs, String[] args){
 		main.s(cs, "&aa &bb &cc &dd &ee &ff &00 &11 &22 &33 &44 &55 &66 &77 &88 &99 &7&ll &7&mm &7&nn &7&oo &7&rr");
@@ -363,13 +391,15 @@ public class ElyCommand {
 					
 				break;
 			
-				case "save":
+				case "save":					
 					
 					if (main.perms(p, "wa.staff.admin")){
 						try {
-							main.api.divManager.save();
+							main.autoSave.run();
 							main.onUnRegister();
-						} catch (IOException e) {
+							DivinityUtils.bc("Divinity has saved.");
+							DivinityUtils.bc("&7&o" + main.api.divManager.getAllUsers().size() + " users, " + main.api.divManager.getMap(DivinityManager.allianceDir).size() + " alliances, and " + main.api.divManager.getMap(DivinityManager.regionsDir).size() + " regions.");
+						} catch (Exception e) {
 							e.printStackTrace();
 						}
 					}
@@ -384,9 +414,20 @@ public class ElyCommand {
 							main.api.divManager.load(true);
 							main.api.divManager.load(false);
 							main.onRegister();
+							DivinityUtils.bc("Divinity has reloaded.");
+							DivinityUtils.bc("&7&o" + main.api.divManager.getAllUsers().size() + " users, " + main.api.divManager.getMap(DivinityManager.allianceDir).size() + " alliances, and " + main.api.divManager.getMap(DivinityManager.regionsDir).size() + " regions.");
 						} catch (Exception e) {
 							e.printStackTrace();
 						}
+					}
+					
+				break;
+				
+				case "backup":
+					
+					if (main.perms(p, "wa.staff.admin")){
+						 main.api.divManager.backup();
+						 main.s(p, "Backup Complete!");
 					}
 					
 				break;

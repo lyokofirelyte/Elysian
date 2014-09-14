@@ -1,14 +1,17 @@
 package com.github.lyokofirelyte.Elysian.MMO.Abilities;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.math3.util.Precision;
 import org.bukkit.Effect;
 import org.bukkit.Location;
 import org.bukkit.Sound;
 import org.bukkit.block.Block;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
 
@@ -49,6 +52,26 @@ public class TreeFeller extends ElyMMO {
 		}
 	}
 	
+	private boolean isNatural(Location l){
+		
+		String loc = l.toVector().getBlockX() + "," + l.toVector().getBlockZ();
+		int y = l.toVector().getBlockY();
+		float x = Precision.round(l.toVector().getBlockX(), -3);
+		float z = Precision.round(l.toVector().getBlockZ(), -3);
+			
+		File file = new File("./plugins/Divinity/logger/" + x + "," + z + "/" + loc + ".yml");
+			
+		if (!file.exists()){
+			return true;
+		}
+		
+		if (!YamlConfiguration.loadConfiguration(file).contains("History." + l.getWorld().getName() + "." + y)){
+			return true;
+		}
+		
+		return false;
+	}
+	
 	private void chop(Player p, DivinityPlayer dp, Location l){
 		
 		boolean skyOpen = true;
@@ -66,6 +89,13 @@ public class TreeFeller extends ElyMMO {
 					break;
 				}
 			} else if (isType(testLoc, "log") || isType(testLoc, "log")){
+				if (!isNatural(testLoc)){
+					dp.err("There are player-built logs in the way! Can't continue.");
+					dp.set(MMO.IS_TREE_FELLING, false);
+					dp.set(MMO.IS_CHOPPING, false);
+					dp.set(MMO.TREE_FELLER_CD, 0);
+					return;
+				}
 				List<Block> b = new ArrayList<Block>();
 				b.add(testLoc.getBlock());
 				blocks.put(i, b);

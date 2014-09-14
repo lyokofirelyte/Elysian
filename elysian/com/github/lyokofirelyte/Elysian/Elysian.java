@@ -48,8 +48,8 @@ import com.github.lyokofirelyte.Elysian.Events.ElyChat;
 import com.github.lyokofirelyte.Elysian.Events.ElyLogger;
 import com.github.lyokofirelyte.Elysian.Events.ElyMobs;
 import com.github.lyokofirelyte.Elysian.Events.ElyTP;
+import com.github.lyokofirelyte.Elysian.Games.Blink.Blink;
 import com.github.lyokofirelyte.Elysian.Games.Spleef.Spleef;
-import com.github.lyokofirelyte.Elysian.Games.Spleef.SpleefStorage;
 import com.github.lyokofirelyte.Elysian.Gui.GuiCloset;
 import com.github.lyokofirelyte.Elysian.MMO.ElyMMO;
 import com.sk89q.worldedit.bukkit.WorldEditPlugin;
@@ -77,7 +77,10 @@ public class Elysian extends DivinityAPI implements DivinityModule {
 	public ElySetup setup;
 	public ElyMMO mmo;
 	public ElyMMOCleanup cleanup;
+	public ElyAutoSave autoSave;
+	
 	public Spleef spleef;
+	public Blink blink;
 	
 	public DivInvManager invManager;
 	
@@ -85,6 +88,7 @@ public class Elysian extends DivinityAPI implements DivinityModule {
 	public Map<Location, List<List<String>>> queue = new HashMap<Location, List<List<String>>>();
 	public Map<Integer, GuiCloset> closets = new HashMap<>();
 	public List<String> numerals = new ArrayList<String>();
+	public Map<String, ElySave> saveClasses = new HashMap<String, ElySave>();
 
 	@Override
 	public void onEnable(){

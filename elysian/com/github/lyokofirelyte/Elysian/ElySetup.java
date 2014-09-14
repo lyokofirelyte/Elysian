@@ -1,8 +1,7 @@
 package com.github.lyokofirelyte.Elysian;
 
-
 import java.util.ArrayList;
-
+import java.util.HashMap;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.event.Listener;
@@ -12,7 +11,7 @@ import com.github.lyokofirelyte.Divinity.Divinity;
 import com.github.lyokofirelyte.Divinity.Manager.DivInvManager;
 import com.github.lyokofirelyte.Divinity.Manager.DivinityManager;
 import com.github.lyokofirelyte.Divinity.Storage.DPI;
-import com.github.lyokofirelyte.Divinity.Storage.DivinityGame;
+import com.github.lyokofirelyte.Divinity.Storage.DivGame;
 import com.github.lyokofirelyte.Divinity.Storage.DivinityStorage;
 import com.github.lyokofirelyte.Elysian.Commands.ElyAlliance;
 import com.github.lyokofirelyte.Elysian.Commands.ElyCommand;
@@ -33,6 +32,7 @@ import com.github.lyokofirelyte.Elysian.Commands.ElyToggle;
 import com.github.lyokofirelyte.Elysian.Commands.ElyWarps;
 import com.github.lyokofirelyte.Elysian.Events.ElyChannel;
 import com.github.lyokofirelyte.Elysian.Events.ElyChat;
+import com.github.lyokofirelyte.Elysian.Events.ElyGameMode;
 import com.github.lyokofirelyte.Elysian.Events.ElyJoinQuit;
 import com.github.lyokofirelyte.Elysian.Events.ElyLogger;
 import com.github.lyokofirelyte.Elysian.Events.ElyMessages;
@@ -40,10 +40,11 @@ import com.github.lyokofirelyte.Elysian.Events.ElyMobs;
 import com.github.lyokofirelyte.Elysian.Events.ElyMove;
 import com.github.lyokofirelyte.Elysian.Events.ElyScoreBoard;
 import com.github.lyokofirelyte.Elysian.Events.ElyTP;
+import com.github.lyokofirelyte.Elysian.Games.Blink.Blink;
+import com.github.lyokofirelyte.Elysian.Games.Blink.BlinkCommand;
 import com.github.lyokofirelyte.Elysian.Games.Spleef.Spleef;
 import com.github.lyokofirelyte.Elysian.Games.Spleef.SpleefData.SpleefDataType;
 import com.github.lyokofirelyte.Elysian.Games.Spleef.SpleefData.SpleefGameData;
-import com.github.lyokofirelyte.Elysian.Games.Spleef.SpleefData.SpleefPlayerData;
 import com.github.lyokofirelyte.Elysian.Games.Spleef.SpleefStorage;
 import com.github.lyokofirelyte.Elysian.Gui.GuiCloset;
 import com.github.lyokofirelyte.Elysian.Gui.GuiRoot;
@@ -90,7 +91,11 @@ public class ElySetup {
 		main.mmo.life = new LifeForce(main);
 		main.mmo.holy = new HolyMackerel(main);
 		main.mmo.patrols = new ElyPatrol(main);
+		main.autoSave = new ElyAutoSave(main);
 		main.spleef = new Spleef(main);
+		main.saveClasses.put("main.blink", new Blink(main));
+		
+		main.blink = (Blink) main.saveClasses.get("main.blink");
 		
 		closet();
 		listener();
@@ -99,8 +104,10 @@ public class ElySetup {
 		
 		main.numerals = new ArrayList<String>(YamlConfiguration.loadConfiguration(main.getResource("numerals.yml")).getStringList("Numerals"));
 		
-		main.api.divManager.enums.add(SpleefGameData.class);
-		
+		games(
+			main.blink
+		);
+
 		try {
 			main.api.divManager.load(false);
 		} catch (Exception e) {
@@ -113,6 +120,24 @@ public class ElySetup {
 				s.put(data, game.getStr(data));
 			}
 			main.spleef.module.data.put(game.name(), s);
+		}
+		
+		loads();
+	}
+
+	
+	private void loads(){
+		for (ElySave s : main.saveClasses.values()){
+			s.load();
+		}
+	}
+	
+	private void games(DivGame... games){
+		for (DivGame g : games){
+			if (!main.api.divManager.data.containsKey(g.toDivGame().getFullPath())){
+				main.api.divManager.data.put(g.toDivGame().getFullPath(), new HashMap<String, DivinityStorage>());
+			}
+			main.api.divManager.data.get(g.toDivGame().getFullPath()).put(g.toDivGame().name(), g.toDivGame());
 		}
 	}
 
@@ -130,6 +155,7 @@ public class ElySetup {
 			new ElyScoreBoard(main),
 			new ElyChannel(main),
 			new ElyMarkkit(main),
+			new ElyGameMode(main),
 			main.mobs,
 			main.staff,
 			main.logger,
@@ -140,7 +166,8 @@ public class ElySetup {
 			main.rings,
 			main.invManager,
 			main.mmo,
-			main.spleef.active
+			main.spleef.active,
+			main.blink.blinkCommand
 		);
 	}
 	
@@ -171,16 +198,18 @@ public class ElySetup {
 			main.mmo,
 			main.closets.get(0),
 			main.spleef.commandMain,
-			main.mmo.patrols
+			main.mmo.patrols,
+			main.blink.blinkCommand
 		);
 	}
 	
 	private void tasks(){
-		main.tasks.put(ElyTask.ANNOUNCER, Bukkit.getScheduler().scheduleSyncRepeatingTask(main, main.announcer, 0L, 1200000L));
-		main.tasks.put(ElyTask.MMO_BLOCKS, Bukkit.getScheduler().scheduleSyncRepeatingTask(main, main.cleanup, 0L, 21600000L));
+		main.tasks.put(ElyTask.ANNOUNCER, Bukkit.getScheduler().scheduleSyncRepeatingTask(main, main.announcer, 0L, 24000L));
+		main.tasks.put(ElyTask.MMO_BLOCKS, Bukkit.getScheduler().scheduleSyncRepeatingTask(main, main.cleanup, 0L, 432000L));
 		main.tasks.put(ElyTask.LOGGER, Bukkit.getScheduler().scheduleSyncRepeatingTask(main, main.logger, 300L, 300L));
 		main.tasks.put(ElyTask.WATCHER, Bukkit.getScheduler().scheduleSyncRepeatingTask(main, main.watcher, 500L, 500L));
 		main.tasks.put(ElyTask.WEBSITE, Bukkit.getScheduler().scheduleSyncRepeatingTask(main, main.api.web, 100L, 100L));
+		main.tasks.put(ElyTask.AUTO_SAVE, Bukkit.getScheduler().scheduleSyncRepeatingTask(main, main.autoSave, 24000L, 24000L));
 	}
 	
 	private void closet(){

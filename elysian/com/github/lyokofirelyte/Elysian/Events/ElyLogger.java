@@ -736,7 +736,7 @@ public class ElyLogger implements Listener, Runnable {
 			
 			switch (wut[0].toLowerCase()){
 			
-				case "diamond_ore": case "lapis_ore": case "redstone_ore": case "emerald_ore": case "gold_ore":
+				case "diamond_ore": case "lapis_ore": case "emerald_ore": case "gold_ore": case "spawner":
 					
 					Player p = main.getPlayer(player.substring(2));
 					

@@ -15,6 +15,8 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Monster;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Snowball;
+import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
@@ -109,6 +111,7 @@ public class SkyBlade extends ElyMMO {
 		
 		if (e.getLocation().getY() <= y+2 || e.isDead()){
 			main.api.cancelTask("track" + name);
+			mob.setLastDamageCause(new EntityDamageEvent(p, DamageCause.ENTITY_ATTACK, 1.0));
 			main.api.event(new EntityDeathEvent((LivingEntity) mob, Arrays.asList(new ItemStack(Material.MELON, 1))));
 			mob.remove();
 			main.fw(e.getWorld(), mob.getLocation(), Type.BALL_LARGE, Color.WHITE);
