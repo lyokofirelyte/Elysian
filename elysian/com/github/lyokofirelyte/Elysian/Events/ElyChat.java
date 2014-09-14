@@ -24,11 +24,13 @@ import com.github.lyokofirelyte.Divinity.JSON.JSONChatExtra;
 import com.github.lyokofirelyte.Divinity.JSON.JSONChatHoverEventType;
 import com.github.lyokofirelyte.Divinity.JSON.JSONChatMessage;
 import com.github.lyokofirelyte.Divinity.Manager.DivinityManager;
+import com.github.lyokofirelyte.Divinity.Manager.JSONManager.JSONClickType;
 import com.github.lyokofirelyte.Divinity.Storage.DPI;
 import com.github.lyokofirelyte.Divinity.Storage.DivinityPlayer;
 import com.github.lyokofirelyte.Divinity.Storage.DivinityStorage;
 import com.github.lyokofirelyte.Divinity.Storage.DivinitySystem;
 import com.github.lyokofirelyte.Elysian.Elysian;
+import com.google.common.collect.ImmutableMap;
 
 public class ElyChat implements Listener {
 	
@@ -52,7 +54,7 @@ public class ElyChat implements Listener {
 		return new String[]{s1, s2};
 	}
 	
-	@DivCommand(name = "PM", aliases = {"tell", "pm", "msg", "message", "t", "r"}, desc = "Private Message Command", help = "/tell <player> <message>", min = 2, player = false)
+	@DivCommand(name = "PM", aliases = {"tell", "pm", "msg", "message", "t", "r"}, desc = "Private Message Command", help = "/tell <player> <message>", min = 1, player = false)
 	public void onPrivateMessage(CommandSender cs, String[] args, String cmd){
 
 		DivinityStorage dp = cs instanceof Player ? main.api.divManager.getStorage(DivinityManager.dir, ((Player)cs).getUniqueId().toString()) : main.api.divManager.getStorage(DivinityManager.sysDir, "system");
@@ -67,10 +69,31 @@ public class ElyChat implements Listener {
 		if (main.doesPartialPlayerExist(sendTo) || sendTo.equals("console")){
 			if (sendTo.equals("console") || main.isOnline(sendTo)){
 				
+				String sendToMessage = main.AS("&3<- " + dp.getStr(DPI.DISPLAY_NAME) + "&f: " + main.matchDivPlayer(sendTo).getStr(DPI.PM_COLOR) + message);
+				String sendMeMessage = main.AS(("&3-> " + main.matchDivPlayer(sendTo).getStr(DPI.DISPLAY_NAME)) + "&f: " + dp.getStr(DPI.PM_COLOR) + message);
+				
 				if (!sendTo.equals("console")){	
-					main.getPlayer(sendTo).sendMessage(main.AS(("&3<- " + dp.getStr(DPI.DISPLAY_NAME) + "&f: " + main.matchDivPlayer(sendTo).getStr(DPI.PM_COLOR) + message)));
-					cs.sendMessage(main.AS(("&3-> " + main.matchDivPlayer(sendTo).getStr(DPI.DISPLAY_NAME)) + "&f: " + dp.getStr(DPI.PM_COLOR) + message));
+					
+					main.api.json.create("", ImmutableMap.of(		
+						sendToMessage, ImmutableMap.of(
+							JSONClickType.CLICK_SUGGEST, new String[]{
+								"/tell " + cs.getName() + " ",
+								"&7&oClick to message this person back!"
+							}
+						)
+					)).sendToPlayer(main.getPlayer(sendTo));
+					
+					main.api.json.create("", ImmutableMap.of(		
+							sendMeMessage, ImmutableMap.of(
+								JSONClickType.CLICK_SUGGEST, new String[]{
+									"/tell " + main.getPlayer(sendTo).getName() + " ",
+									"&7&oClick to message this person back!"
+								}
+							)
+						)).sendToPlayer((Player)cs);
+					
 					main.matchDivPlayer(sendTo).set(DPI.PREVIOUS_PM, dp.name());
+					
 				} else {
 					Bukkit.getConsoleSender().sendMessage(main.AS(("&3<- " + dp.getStr(DPI.DISPLAY_NAME) + "&f: " + message)));
 					cs.sendMessage(main.AS(("&3-> " + "&6Console" + "&f: " + dp.getStr(DPI.PM_COLOR) + message)));
@@ -150,7 +173,7 @@ public class ElyChat implements Listener {
 		e.setCancelled(true);
 		main.afkCheck(e.getPlayer());
 		
-		DivinityPlayer p = main.api.getDivPlayer(e.getPlayer());
+		final DivinityPlayer p = main.api.getDivPlayer(e.getPlayer());
 		
 		if (!main.silentPerms(e.getPlayer(), "wa.rank.settler")){
 			e.setMessage(ChatColor.stripColor(main.AS(e.getMessage())));
@@ -258,6 +281,12 @@ public class ElyChat implements Listener {
 					main.api.event(new DivinityPluginMessageEvent(p, "globalChat", new String[]{"&7" + e.getPlayer().getDisplayName() + "&f: &7&o" + e.getMessage()}));
 				}
 				
+				Map<String, Object> map = new HashMap<String, Object>();
+				map.put("user", ChatColor.stripColor(main.AS(p.getStr(DPI.DISPLAY_NAME))));
+				map.put("message", ChatColor.stripColor(main.AS(e.getMessage())));
+				map.put("type", "minecraft_insert");
+				String msg = (String) main.api.web.sendPost("/api/chat", map).get("message");
+				main.api.web.messages.add(msg);
 				Bukkit.getConsoleSender().sendMessage(main.AS(e.getPlayer().getDisplayName() + "&f: " + e.getMessage()));
 				
 			}}).start();

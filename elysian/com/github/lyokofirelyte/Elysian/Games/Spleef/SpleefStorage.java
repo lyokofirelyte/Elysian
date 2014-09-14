@@ -199,7 +199,7 @@ public class SpleefStorage extends HashMap<Enum<?>, Object> {
 		DivinityGame game = new DivinityGame("spleef", name, main.api);
 		
 		for (SpleefGameData data : SpleefGameData.values()){
-			game.stuff.put(data.s(), get(data));
+			game.set(data.s(), get(data));
 		}
 		
 		return game;

@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
@@ -42,16 +43,22 @@ public class ElyAlliance {
 		 DivinityPlayer dp = main.api.getDivPlayer(p);
 		 args[0] = ChatColor.stripColor(args[0]);
 		 
-		 if (!args[0].toLowerCase().startsWith(dp.name().substring(0, 3).toLowerCase())){
-			 main.s(p, "none", "You must at least use the first 3 letters of your name.");
-		 } else {
-			 if (args[0].length() > 11){
-				 args[0] = args[0].substring(0, 11);
+		 if (StringUtils.isAlphanumeric(args[0])){
+
+			 if (!args[0].toLowerCase().startsWith(dp.name().substring(0, 3).toLowerCase())){
+				 main.s(p, "none", "You must at least use the first 3 letters of your name.");
+			 } else {
+				 if (args[0].length() > 11){
+					 args[0] = args[0].substring(0, 11);
+				 }
+				 p.setDisplayName(nick(dp, ChatColor.stripColor(main.AS(args[0]))));
+				 dp.set(DPI.DISPLAY_NAME, (nick(dp, ChatColor.stripColor(main.AS(args[0])))));
+				 p.setPlayerListName(main.AS(dp.getStr(DPI.DISPLAY_NAME)));
+				 main.s(p, "none", "Display name changed to " + main.AS(p.getDisplayName()) + "&b.");
 			 }
-			 p.setDisplayName(nick(dp, args[0]));
-			 dp.set(DPI.DISPLAY_NAME, nick(dp, args[0]));
-			 p.setPlayerListName(main.AS(dp.getStr(DPI.DISPLAY_NAME)));
-			 main.s(p, "none", "Display name changed to " + main.AS(p.getDisplayName()) + "&b.");
+			 
+		 } else {
+			 dp.err("You can't have those characters in your name, sorry!");
 		 }
 	 }
 	 

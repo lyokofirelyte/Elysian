@@ -96,5 +96,7 @@ public class SuperBreaker extends ElyMMO {
 				i.addUnsafeEnchantment(e, ((Map<Enchantment, Integer>)dp.getRawInfo(MMO.SAVED_ENCHANTS)).get(e));
 			}
 		}
+		
+		dp.set(MMO.SAVED_ENCHANTS, "none");
 	}
 }

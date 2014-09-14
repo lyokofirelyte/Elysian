@@ -52,6 +52,12 @@ public class ElyStaff implements Listener {
 		 main = i;
 	 }
 	 
+	 @DivCommand(perm = "wa.staff.admin", aliases = {"backup"}, desc = "File Backup Command", help = "/backup", player = false)
+	 public void onBackup(CommandSender cs, String[] args){
+		 main.api.divManager.backup();
+		 main.s(cs, "Backup Complete!");
+	 }
+	 
 	 @DivCommand(perm = "wa.staff.admin", aliases = {"ts3auth"}, desc = "Set TS3Auth Info", help = "/ts3auth <user> <pass>", player = false, min = 2)
 	 public void onTS3Auth(CommandSender p, String[] args){
 		 
@@ -68,14 +74,14 @@ public class ElyStaff implements Listener {
 	 public void onRegister(Player p, String[] args){
 		 
 		 DivinityPlayer dp = main.api.getDivPlayer(p);
-		 Map<String, String> input = new HashMap<String, String>();
+		 Map<String, Object> input = new HashMap<String, Object>();
 		 input.put("username", p.getName());
 		 input.put("password", args[0]);
 		 
 		 JSONObject result;
 		 
 		 if (!dp.getBool(DPI.REGISTERED)){
-			 result = main.getWeb().sendPost("register", input);
+			 result = main.getWeb().sendPost("/api/register", input);
 			 main.s(p, result.get("success").toString().replace("true", "&aSuccess!").replace("false", "&cFailed to create account!"));
 			 if ((boolean) result.get("success")){
 				 dp.set(DPI.REGISTERED, true);
@@ -940,32 +946,15 @@ public class ElyStaff implements Listener {
 		}
 	}
 	
-	@DivCommand(perm = "wa.rank.townsman", aliases = {"ci"}, desc = "Clear Inventory (or restore inventory. Results may vary. TM)", help = "/ci [u]", player = true)
+	@DivCommand(perm = "wa.rank.townsman", aliases = {"ci"}, desc = "Clear Inventory (or restore inventory. Results may vary. TM)", help = "/ci [confirm]", player = true)
 	public void onCI(Player p, String[] args){
 		
-		DivinityPlayer dp = main.api.getDivPlayer(p);
-
 		if (args.length == 0){
-			if (p.getWorld().equals("world")){
-				dp.set(DPI.BACKUP_INVENTORY, p.getInventory().getContents());
-			}
-			p.getInventory().clear();
-			main.s(p, "&oInventory inceneration activated. Use /ci u to undo.");
-		} else if (dp.getStack(DPI.BACKUP_INVENTORY).size() > 0){
-			for (ItemStack i : dp.getStack(DPI.BACKUP_INVENTORY)){
-				if (i != null){
-					if (p.getInventory().firstEmpty() != -1){
-						p.getInventory().addItem(i);
-					} else {
-						p.getWorld().dropItem(p.getLocation(), i);
-					}
-				}
-			}
-			dp.set(DPI.BACKUP_INVENTORY, new ItemStack(){});
-			main.s(p, "&oInventory restoration completed");
+			main.s(p, "&cType /ci confirm to clear your inventory. &4This can't be reversed. We will not refund you.");
 		} else {
-			main.s(p, "&c&oNo backup inventory found.");
-		}		
+			p.getInventory().clear();
+			main.s(p, "&oInventory inceneration activated.");
+		}
 	}
 	
 	@SuppressWarnings("deprecation")

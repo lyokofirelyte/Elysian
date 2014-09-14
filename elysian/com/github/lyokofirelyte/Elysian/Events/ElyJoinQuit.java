@@ -38,8 +38,16 @@ public class ElyJoinQuit implements Listener {
 		pl.setPlayerListName(main.AS(p.getStr(DPI.DISPLAY_NAME)));
 		pl.setDisplayName(p.getStr(DPI.DISPLAY_NAME));
 		
-		DivinityUtils.customBC("&2+ " + pl.getDisplayName() + " &e&o(" + p.getStr(DPI.JOIN_MESSAGE) + "&e&o)");
-		main.mail.checkMail(e.getPlayer());
+		DivinityUtils.customBC("&2<+> " + pl.getDisplayName() + " &e&o(" + p.getStr(DPI.JOIN_MESSAGE) + "&e&o)");
+		pl.sendMessage("");
+		p.s("&3Welcome back! We're running Elysian & Divinity v1.1.");
+		
+		if (p.getList(DPI.MAIL).size() > 0){
+			p.s("You've got mail! /mail read or /mail clear.");
+		} else {
+			p.s("&7&oNo new messages.");
+		}
+		
 		defaultCheck(p);
 	}
 	
@@ -65,7 +73,7 @@ public class ElyJoinQuit implements Listener {
 			main.mmo.patrols.getPatrolWithPlayer(pl).getMembers().remove(pl.getName());
 		}
 		
-		DivinityUtils.customBC("&4- " + pl.getDisplayName() + " &e&o(" + p.getStr(DPI.QUIT_MESSAGE) + "&e&o)");
+		DivinityUtils.customBC("&4<-> " + pl.getDisplayName() + " &e&o(" + p.getStr(DPI.QUIT_MESSAGE) + "&e&o)");
 	}
 	
 	@EventHandler

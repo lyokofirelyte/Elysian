@@ -3,11 +3,12 @@ package com.github.lyokofirelyte.Elysian.Games.Spleef;
 import java.util.HashMap;
 
 import com.github.lyokofirelyte.Divinity.Manager.DivinityManager;
+import com.github.lyokofirelyte.Divinity.Storage.DivGame;
+import com.github.lyokofirelyte.Divinity.Storage.DivinityGame;
 import com.github.lyokofirelyte.Divinity.Storage.DivinityStorage;
 import com.github.lyokofirelyte.Elysian.Elysian;
-import com.github.lyokofirelyte.Elysian.Games.ElyGame;
 
-public class Spleef implements ElyGame {
+public class Spleef implements DivGame {
 
 	public Elysian main;
 	public SpleefModule module;
@@ -30,5 +31,14 @@ public class Spleef implements ElyGame {
 				main.api.divManager.data.get(DivinityManager.gamesDir + "spleef/").put(s.name(), s.toDivStorage());
 			}
 		}
+	}
+	
+	public DivinityGame toDivGame(String dataName){
+		return main.api.getDivGame("spleef", dataName);
+	}
+
+	@Override
+	public DivinityGame toDivGame() {
+		return null;
 	}
 }
