@@ -3,6 +3,7 @@ package com.github.lyokofirelyte.Elysian.Events;
 import java.util.ArrayList;
 
 import org.bukkit.GameMode;
+import org.bukkit.Material;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerGameModeChangeEvent;
@@ -40,12 +41,23 @@ public class ElyGameMode implements Listener {
 			}
 		}
 		
+		for (ItemStack i : e.getPlayer().getInventory().getArmorContents()){
+			if (i != null){
+				dp.getStack(dpi).add(new ItemStack(i));
+				i.setType(Material.AIR);
+			}
+		}
+		
 		e.getPlayer().getInventory().clear();
 		dpi = !creative ? DPI.CREATIVE_INVENTORY : DPI.SURVIVAL_INVENTORY;
 		
 		for (ItemStack i : dp.getStack(dpi)){
 			if (i != null){
-				e.getPlayer().getInventory().addItem(i);
+				if (e.getPlayer().getInventory().firstEmpty() != -1){
+					e.getPlayer().getInventory().addItem(i);
+				} else {
+					e.getPlayer().getWorld().dropItemNaturally(e.getPlayer().getLocation(), i);
+				}
 			}
 		}
 	}

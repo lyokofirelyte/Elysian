@@ -663,7 +663,7 @@ public class ElyMMO extends HashMap<Material, MXP> implements Listener {
 				dp.s("Your &6" + e.getSkill().s() + " &blevel is now &6" + (level+1) + "&b!");
 				main.fw(p.getWorld(), p.getLocation(), Type.BALL, main.api.divUtils.getRandomColor());
 				
-				if (level == 19 || level == 49 || level == 69 || level == 79 || level == 89 || level == 98){
+				if ((level+1) % 10 == 0){
 					DivinityUtils.bc(p.getDisplayName() + " &bhas reached &6" + e.getSkill().s() + " &blevel &6" + (level+1) + "&b!");
 				}
 				
