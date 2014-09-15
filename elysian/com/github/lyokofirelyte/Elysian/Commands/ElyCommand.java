@@ -1,5 +1,7 @@
 package com.github.lyokofirelyte.Elysian.Commands;
 
+import static com.github.lyokofirelyte.Elysian.Games.Spleef.SpleefModule.s;
+
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -18,7 +20,6 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.ChatColor;
 
 import com.github.lyokofirelyte.Divinity.DivinityUtils;
 import com.github.lyokofirelyte.Divinity.Commands.DivCommand;
@@ -165,9 +166,75 @@ public class ElyCommand {
 		main.invManager.displayGui(p, new GuiRoot(main));
 	}
 	
+	 @DivCommand(perm = "wa.member", aliases = {"poll"}, desc = "Polls!", help = "/poll help", player = false, min = 1)
+	 public void onPoll(CommandSender p, String[] args){
+		 if(args[0].equalsIgnoreCase("help")){
+		 for (String s : new String[]{
+					"/poll vote [yes/no]",
+					"/poll view",
+					"/poll set <what to vote for>"
+				}){
+					main.s(p, s);
+				}
+		 }else if(args[0].equalsIgnoreCase("vote") && args.length == 2){
+			 if(args[1].equalsIgnoreCase("yes")){
+				 if(main.api.getSystem().getList(DPI.YES_VOTE).contains(p.getName())){
+					 main.s(p, "You already voted yes!");
+					 return;
+				 }else if(main.api.getSystem().getList(DPI.NO_VOTE).contains(p.getName())){
+					 main.api.getSystem().getList(DPI.NO_VOTE).remove(p.getName());
+					 main.api.getSystem().getList(DPI.YES_VOTE).add(p.getName());
+				 }else{
+					 main.api.getSystem().getList(DPI.YES_VOTE).add(p.getName());
+				 }
+				 main.s(p, "Thanks for your vote, you voted yes.");
+			 }else if(args[1].equalsIgnoreCase("no")){
+				 if(main.api.getSystem().getList(DPI.NO_VOTE).contains(p.getName())){
+					 main.s(p, "You already voted no!");
+					 return;
+				 }else if(main.api.getSystem().getList(DPI.YES_VOTE).contains(p.getName())){
+					 main.api.getSystem().getList(DPI.YES_VOTE).remove(p.getName());
+					 main.api.getSystem().getList(DPI.NO_VOTE).add(p.getName());
+				 }else{
+					 main.api.getSystem().getList(DPI.NO_VOTE).add(p.getName());
+				 }
+				 main.s(p, "Thanks for your vote, you voted no.");
+			 }else{
+				 main.s(p, "/poll help");
+			 }
+		 }else if(args[0].equalsIgnoreCase("set")){
+			 if(main.perms(p, "wa.staff.admin")){
+				 StringBuilder message = new StringBuilder();
+				 for(int i = 0; i < args.length; i++){
+					 if(i >=1){
+						 message.append(args[i] + " ");
+					 }
+				 }
+				 main.api.getSystem().set(DPI.VOTE_MESSAGE, message.toString());
+				 main.api.getSystem().set(DPI.YES_VOTE, null);
+				 main.api.getSystem().set(DPI.NO_VOTE, null);
+				 main.s(p, "Created vote!");
+			 }
+		 }else if(args[0].equalsIgnoreCase("view")){
+			 main.s(p, "Current voting for: " + main.api.getSystem().getStr(DPI.VOTE_MESSAGE));
+			 main.s(p, "Players who voted yes: ");
+			 for(String s : main.api.getSystem().getList(DPI.YES_VOTE)){
+				 main.s(p, s);
+			 }
+			 main.s(p, "Players who voted no: ");
+			 for(String s : main.api.getSystem().getList(DPI.NO_VOTE)){
+				 main.s(p, s);
+			 }
+			 if(main.api.getSystem().getList(DPI.YES_VOTE).size() + main.api.getSystem().getList(DPI.NO_VOTE).size() != 0){
+				 main.s(p, "Yes: " + main.api.getSystem().getList(DPI.YES_VOTE).size() / (main.api.getSystem().getList(DPI.YES_VOTE).size() + main.api.getSystem().getList(DPI.NO_VOTE).size()) * 100 + "%");
+				 main.s(p, "No: " + main.api.getSystem().getList(DPI.NO_VOTE).size() / (main.api.getSystem().getList(DPI.YES_VOTE).size() + main.api.getSystem().getList(DPI.NO_VOTE).size()) * 100 + "%");
+			 }
+		 }
+	 }
+	 
 	@DivCommand(aliases = {"bio"}, desc = "Modify your hover-over description", help = "/bio <message>", player = true, min = 1)
 	public void onBio(Player p, String[] args){
-		
+	
 		DivinityPlayer dp = main.api.getDivPlayer(p);
 		dp.set(DPI.PLAYER_DESC, "&7&o" + main.AS(main.api.divUtils.createString(args, 0)));
 		main.s(p, "Updated!");
@@ -194,33 +261,6 @@ public class ElyCommand {
 			DivinityUtils.bc(p.getDisplayName() + " has spawned an enderdragon in the end!");
 		} else {
 			main.s(p, "&c&oActive cooldown. &6" + ((system.getLong(DPI.ENDERDRAGON_CD) - System.currentTimeMillis())/1000)/60 + " &c&ominutes remain.");
-		}
-	}
-	
-	@DivCommand(aliases = {"list"}, desc = "List everyone online!", help = "/list", player = false)
-	public void onList(CommandSender cs, String[] args){
-		
-		JSONChatMessage msg = new JSONChatMessage("");
-		JSONChatExtra extra = new JSONChatExtra("");
-		String m = "";
-		boolean color = true;
-		
-		for (Player p : Bukkit.getOnlinePlayers()){
-			if (cs instanceof Player){
-				extra = new JSONChatExtra(main.AS((color ? "&3" : "&9") + ChatColor.stripColor(main.AS(p.getDisplayName())) + " "));
-				extra.setHoverEvent(JSONChatHoverEventType.SHOW_TEXT, main.AS("&7&o" + p.getName()));
-				extra.setClickEvent(JSONChatClickEventType.SUGGEST_COMMAND, "/tell " + p.getName() + " ");
-				msg.addExtra(extra);
-				color = !color;
-			} else {
-				m = m.equals("") ? p.getDisplayName() : m + "&8, " + p.getDisplayName();
-			}
-		}
-		
-		if (cs instanceof Player){
-			msg.sendToPlayer((Player)cs);
-		} else {
-			main.s(cs, m);
 		}
 	}
 	
@@ -391,15 +431,13 @@ public class ElyCommand {
 					
 				break;
 			
-				case "save":					
+				case "save":
 					
 					if (main.perms(p, "wa.staff.admin")){
 						try {
-							main.autoSave.run();
+							main.api.divManager.save();
 							main.onUnRegister();
-							DivinityUtils.bc("Divinity has saved.");
-							DivinityUtils.bc("&7&o" + main.api.divManager.getAllUsers().size() + " users, " + main.api.divManager.getMap(DivinityManager.allianceDir).size() + " alliances, and " + main.api.divManager.getMap(DivinityManager.regionsDir).size() + " regions.");
-						} catch (Exception e) {
+						} catch (IOException e) {
 							e.printStackTrace();
 						}
 					}
@@ -414,20 +452,9 @@ public class ElyCommand {
 							main.api.divManager.load(true);
 							main.api.divManager.load(false);
 							main.onRegister();
-							DivinityUtils.bc("Divinity has reloaded.");
-							DivinityUtils.bc("&7&o" + main.api.divManager.getAllUsers().size() + " users, " + main.api.divManager.getMap(DivinityManager.allianceDir).size() + " alliances, and " + main.api.divManager.getMap(DivinityManager.regionsDir).size() + " regions.");
 						} catch (Exception e) {
 							e.printStackTrace();
 						}
-					}
-					
-				break;
-				
-				case "backup":
-					
-					if (main.perms(p, "wa.staff.admin")){
-						 main.api.divManager.backup();
-						 main.s(p, "Backup Complete!");
 					}
 					
 				break;
