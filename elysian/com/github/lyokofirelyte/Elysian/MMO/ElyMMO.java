@@ -16,7 +16,9 @@ import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Item;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Projectile;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -27,6 +29,7 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.entity.EntityDeathEvent;
+import org.bukkit.event.entity.PotionSplashEvent;
 import org.bukkit.event.inventory.CraftItemEvent;
 import org.bukkit.event.player.PlayerFishEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
@@ -34,9 +37,13 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 
 import com.github.lyokofirelyte.Divinity.DivinityUtils;
 import com.github.lyokofirelyte.Divinity.Commands.DivCommand;
+import com.github.lyokofirelyte.Divinity.Events.DivinityTeleportEvent;
+import com.github.lyokofirelyte.Divinity.Events.ScoreboardUpdateEvent;
 import com.github.lyokofirelyte.Divinity.Events.SkillExpGainEvent;
 import com.github.lyokofirelyte.Divinity.JSON.JSONChatExtra;
 import com.github.lyokofirelyte.Divinity.JSON.JSONChatHoverEventType;
@@ -49,6 +56,7 @@ import com.github.lyokofirelyte.Elysian.Elysian;
 import com.github.lyokofirelyte.Elysian.MMO.Abilities.HolyMackerel;
 import com.github.lyokofirelyte.Elysian.MMO.Abilities.LifeForce;
 import com.github.lyokofirelyte.Elysian.MMO.Abilities.SkyBlade;
+import com.github.lyokofirelyte.Elysian.MMO.Abilities.SoulSplit;
 import com.github.lyokofirelyte.Elysian.MMO.Abilities.SuperBreaker;
 import com.github.lyokofirelyte.Elysian.MMO.Abilities.TreeFeller;
 
@@ -63,6 +71,7 @@ public class ElyMMO extends HashMap<Material, MXP> implements Listener {
 	public LifeForce life;
 	public HolyMackerel holy;
 	public ElyPatrol patrols;
+	public SoulSplit soulSplit;
 	
 	public Map<String, List<Item>> noPickup = new HashMap<>();
 	
@@ -78,8 +87,7 @@ public class ElyMMO extends HashMap<Material, MXP> implements Listener {
 		sm(Material.LEAVES, ElySkill.WOODCUTTING, 168, 30);
 		sm(Material.LEAVES_2, ElySkill.WOODCUTTING, 200, 45);
 		
-		//changed the second number from 200 to 0
-		sm(Material.RAW_FISH, ElySkill.FISHERMAN, 0, 0);
+		sm(Material.RAW_FISH, ElySkill.FISHERMAN, 200, 0);
 		
 		sm(Material.STONE, ElySkill.MINING, 15, 0);
 		sm(Material.NETHERRACK, ElySkill.MINING, 15, 0);
@@ -125,11 +133,11 @@ public class ElyMMO extends HashMap<Material, MXP> implements Listener {
 		sm(Material.VINE, ElySkill.FARMING, 300, 97);
 		sm(Material.WATER_LILY, ElySkill.FARMING, 325, 98);
 		
-		sm(Material.ARROW, ElySkill.CRAFTING, 5, 0);
-		sm(Material.STICK, ElySkill.CRAFTING, 5, 0);
-		sm(Material.WORKBENCH, ElySkill.CRAFTING, 10, 0);
-		sm(Material.FURNACE, ElySkill.CRAFTING, 15, 5);
-		sm(Material.WOOD, ElySkill.CRAFTING, 20, 10);
+		sm(Material.ARROW, ElySkill.CRAFTING, 15, 0);
+		sm(Material.STICK, ElySkill.CRAFTING, 15, 0);
+		sm(Material.WORKBENCH, ElySkill.CRAFTING, 20, 0);
+		sm(Material.FURNACE, ElySkill.CRAFTING, 25, 5);
+		sm(Material.WOOD, ElySkill.CRAFTING, 30, 10);
 		sm(Material.COBBLESTONE_STAIRS, ElySkill.CRAFTING, 33, 20);
 		sm(Material.MELON_BLOCK, ElySkill.CRAFTING, 50, 25);
 		sm(Material.IRON_BLOCK, ElySkill.CRAFTING, 65, 27);
@@ -144,6 +152,8 @@ public class ElyMMO extends HashMap<Material, MXP> implements Listener {
 		sm(Material.ANVIL, ElySkill.CRAFTING, 350, 85);
 		sm(Material.BEACON, ElySkill.CRAFTING, 375, 90);
 		
+		tool(Material.BOW, ElySkill.ARCHERY, 0);
+
 		tool(Material.WOOD_SWORD, ElySkill.ATTACK, 0);
 		tool(Material.STONE_SWORD, ElySkill.ATTACK, 15);
 		tool(Material.IRON_SWORD, ElySkill.ATTACK, 25);
@@ -262,6 +272,15 @@ public class ElyMMO extends HashMap<Material, MXP> implements Listener {
 	@EventHandler (ignoreCancelled = true, priority = EventPriority.MONITOR)
 	public void onMob(EntityDamageByEntityEvent e){
 		
+		if (e.getEntity() instanceof Player == false && e.getDamager() instanceof Projectile){
+			Projectile pro = (Projectile) e.getDamager();
+			if (pro.getShooter() instanceof Player){
+				DivinityPlayer dp = main.api.getDivPlayer((Player)pro.getShooter());
+				e.setDamage(e.getDamage() + (e.getDamage()*((dp.getLevel(ElySkill.ARCHERY)*.4)/100)));
+				main.api.event(new SkillExpGainEvent(((Player)pro.getShooter()), ElySkill.ARCHERY, Integer.parseInt(Math.round(e.getDamage()*5) + "")));
+			}
+		}
+		
 		if (e.getEntity() instanceof Player == false && e.getDamager() instanceof Player){
 			
 			Player p = (Player) e.getDamager();
@@ -271,7 +290,7 @@ public class ElyMMO extends HashMap<Material, MXP> implements Listener {
 				
 				switch (p.getItemInHand().getType()){
 				
-					case STICK: 
+					case STICK: case FENCE:
 						main.api.event(new SkillExpGainEvent(p, ElySkill.FENCING, Integer.parseInt(Math.round(e.getDamage()*7) + "")));
 						e.setDamage(e.getDamage() + (e.getDamage()*((dp.getLevel(ElySkill.FENCING)*.8)/100)));
 					break;
@@ -288,11 +307,39 @@ public class ElyMMO extends HashMap<Material, MXP> implements Listener {
 				main.api.event(new SkillExpGainEvent(p, ElySkill.ATTACK, Integer.parseInt(Math.round(e.getDamage()*3) + "")));
 			}
 			
+			if (dp.getBool(MMO.IS_SOUL_SPLITTING)){
+				main.api.event(new SkillExpGainEvent(p, ElySkill.VAMPYRISM, Integer.parseInt(Math.round(e.getDamage()*7) + "")));
+				p.addPotionEffect(new PotionEffect(PotionEffectType.ABSORPTION, 99999, dp.getInt(MMO.VAMP_MULT)));
+				e.setDamage(e.getDamage()*5);
+				if (dp.getInt(MMO.VAMP_MULT) < 5){
+					dp.set(MMO.VAMP_MULT, dp.getInt(MMO.VAMP_MULT)+1);
+				}
+			} else {
+				if (new Random().nextInt(100) <= dp.getLevel(ElySkill.VAMPYRISM)*0.2){
+					if (p.getHealth() < 20){
+						if (e.getDamage() + p.getHealth() > 20){
+							p.setHealth(20);
+						} else {
+							p.setHealth(p.getHealth() + (e.getDamage()/2));
+						}
+					}
+				}
+			}
+			
 		} else if (e.getEntity() instanceof Player && e.getDamager() instanceof Player == false){
 			
-			DivinityPlayer dp = main.api.getDivPlayer((Player) e.getEntity());
-			main.api.event(new SkillExpGainEvent((Player)e.getEntity(), ElySkill.RESISTANCE, Integer.parseInt(Math.round(e.getDamage()*7) + "")));
-			e.setDamage(e.getDamage() - (e.getDamage()*((dp.getLevel(ElySkill.RESISTANCE)*.4)/100)));
+			Player p = (Player) e.getEntity();
+			DivinityPlayer dp = main.api.getDivPlayer(p);
+			main.api.event(new SkillExpGainEvent(p, ElySkill.RESISTANCE, Integer.parseInt(Math.round(e.getDamage()*7) + "")));
+			
+			if (dp.getBool(MMO.IS_SOUL_SPLITTING)){
+				p.setFoodLevel(20);
+				p.setSaturation(20);
+				e.setDamage(0);
+				main.api.event(new SkillExpGainEvent(p, ElySkill.VAMPYRISM, Integer.parseInt(Math.round(e.getDamage()*5) + "")));
+			} else {	
+				e.setDamage(e.getDamage() - (e.getDamage()*((dp.getLevel(ElySkill.RESISTANCE)*.4)/100)));
+			}
 		}
 	}
 	
@@ -332,7 +379,7 @@ public class ElyMMO extends HashMap<Material, MXP> implements Listener {
 			case DIGGING: return "&6It's like mining except with dirt and snow.";
 			case ARCHERY: return "&6Shoot stuff with a bow.";
 			case CRAFTING: return "&6Craft some items to increase this level.";
-			case VAMPYRISM: return "&6I'm still coming up with ideas for this one.";
+			case VAMPYRISM: return "&6Collect blood by fighting monsters - and unleash the power of the night!";
 			case RESISTANCE: return "&6Take a lot of damage - it'll make you take less as you level!";
 			case ENDURANCE: return "&6JUMP OFF OF CLIFFS, BUT DON'T DIE!\n&6This decreases fall damage as you level.";
 			case BUILDING: return "&6You just place stuff. Pretty easy. What, you want a medal or something?";
@@ -355,7 +402,7 @@ public class ElyMMO extends HashMap<Material, MXP> implements Listener {
 			case DIGGING: return "&6Level 10: &6TURBO DRILL (right-click spade)\n&7&oEvery level decreases cooldown by 1 second.";
 			case ARCHERY: return "&6---- PERK COMING SOON ----";
 			case CRAFTING: return "&60.2% chance per level to craft an extra item.\n&7&o2 hour cooldown on success.";
-			case VAMPYRISM: return "&6I'm still coming up with ideas for this one.\n&7&o2spooky4me";
+			case VAMPYRISM: return "&a0.2% per level to heal half of what you hit\n&60.5 extra seconds to soul split per level.\n&7&oEach level makes it harder to fill your blood meter.\n&bDuring soul split:\n&bFood regain on damage taken\n&bHealth increase on damage given\n&6&oVampyire vial recipie:\n&a3x flesh\n&aredstone, apple, redstone\n&ax3 spider eye";
 			case RESISTANCE: return "&60.4% less damage taken per level.";
 			case ENDURANCE: return "&60.4% less fall damage taken per level.";
 			case BUILDING: return "&6You literally get nothing for leveling this skill. Nothing.";
@@ -692,6 +739,51 @@ public class ElyMMO extends HashMap<Material, MXP> implements Listener {
 					}
 				}
 			}
+			
+			if (dp.getInt(MMO.VAMP_BAR) < 100 && !dp.getBool(MMO.IS_SOUL_SPLITTING)){
+				dp.set(MMO.VAMP_BAR, dp.getInt(MMO.VAMP_BAR)+2);
+				main.api.event(new ScoreboardUpdateEvent(p));
+				if (dp.getInt(MMO.VAMP_BAR) == 100){
+					dp.s("You're ready to unleash the power of the night!");
+					dp.s("You'll need a vampyre vial though...");
+				}
+			}
+		}
+	}
+	
+	@EventHandler
+	public void onSplash(PotionSplashEvent e){
+		
+		ItemStack i = e.getPotion().getItem();
+		
+		if (i.hasItemMeta() && i.getItemMeta().hasLore() && i.getItemMeta().getLore().contains(main.AS("&c&oDrink up!"))){
+			for (LivingEntity ent : e.getAffectedEntities()){
+				if (ent instanceof Player){
+					DivinityPlayer dp = main.api.getDivPlayer((Player)ent);
+					if (dp.getInt(MMO.VAMP_BAR) >= 100){
+						soulSplit.start((Player)ent, dp);
+					} else {
+						dp.err("SoulSplit is not ready!");
+						e.setCancelled(true);
+					}
+				}
+			}
+		} else if (i.hasItemMeta() && i.getItemMeta().hasLore() && i.getItemMeta().getLore().contains(main.AS("&9&oOh I wonder where you'll go..."))){
+			for (LivingEntity ent : e.getAffectedEntities()){
+				if (ent instanceof Player){
+					Location l = ent.getLocation();
+					Random rand = new Random();
+					int x = rand.nextInt(2) == 1 ? l.getBlockX() + rand.nextInt(15) : l.getBlockX() - rand.nextInt(15);
+					int z = rand.nextInt(2) == 1 ? l.getBlockZ() + rand.nextInt(15) : l.getBlockZ() - rand.nextInt(15);
+					for (int ii = l.getBlockY(); ii < 256; ii++){
+						if (new Location(l.getWorld(), x, ii, z).getBlock().getType().equals(Material.AIR)){
+							main.api.event(new DivinityTeleportEvent((Player)ent, new Location(l.getWorld(), x, ii, z, l.getYaw(), l.getPitch())));
+							break;
+						}
+					}
+				}
+			}
+			e.setCancelled(true);
 		}
 	}
 	
@@ -759,6 +851,8 @@ public class ElyMMO extends HashMap<Material, MXP> implements Listener {
 				if (isHolding(p, "sapling") && dp.getLevel(ElySkill.FARMING) >= 10){
 					life.r(p, dp);
 				}
+				
+				if (isHolding(p, ""))
 
 				/*if (isHolding(p, "FISHERMAN") && dp.getLevel(ElySkill.FISHERMAN) >= 10){
 					holy.l(p, dp, p.getLocation());

@@ -12,6 +12,7 @@ import com.github.lyokofirelyte.Divinity.Storage.DPI;
 import com.github.lyokofirelyte.Divinity.Storage.DivinityPlayer;
 import com.github.lyokofirelyte.Divinity.Storage.ElySkill;
 import com.github.lyokofirelyte.Elysian.Elysian;
+import com.github.lyokofirelyte.Elysian.MMO.MMO;
 
 public class ElyJoinQuit implements Listener {
 	
@@ -49,6 +50,10 @@ public class ElyJoinQuit implements Listener {
 		}
 		
 		defaultCheck(p);
+		
+		if (p.getBool(MMO.IS_SOUL_SPLITTING)){
+			main.mmo.soulSplit.stop(pl, p);
+		}
 	}
 	
 	@EventHandler

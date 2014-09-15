@@ -1,15 +1,22 @@
 package com.github.lyokofirelyte.Elysian;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.event.Listener;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.ShapedRecipe;
+import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.potion.Potion;
+import org.bukkit.potion.PotionType;
 
 import com.github.lyokofirelyte.Divinity.Divinity;
 import com.github.lyokofirelyte.Divinity.Manager.DivInvManager;
 import com.github.lyokofirelyte.Divinity.Manager.DivinityManager;
+import com.github.lyokofirelyte.Divinity.Manager.RecipeHandler;
 import com.github.lyokofirelyte.Divinity.Storage.DPI;
 import com.github.lyokofirelyte.Divinity.Storage.DivGame;
 import com.github.lyokofirelyte.Divinity.Storage.DivinityStorage;
@@ -53,6 +60,7 @@ import com.github.lyokofirelyte.Elysian.MMO.ElyPatrol;
 import com.github.lyokofirelyte.Elysian.MMO.Abilities.HolyMackerel;
 import com.github.lyokofirelyte.Elysian.MMO.Abilities.LifeForce;
 import com.github.lyokofirelyte.Elysian.MMO.Abilities.SkyBlade;
+import com.github.lyokofirelyte.Elysian.MMO.Abilities.SoulSplit;
 import com.github.lyokofirelyte.Elysian.MMO.Abilities.SuperBreaker;
 import com.github.lyokofirelyte.Elysian.MMO.Abilities.TreeFeller;
 import com.sk89q.worldedit.bukkit.WorldEditPlugin;
@@ -91,6 +99,7 @@ public class ElySetup {
 		main.mmo.life = new LifeForce(main);
 		main.mmo.holy = new HolyMackerel(main);
 		main.mmo.patrols = new ElyPatrol(main);
+		main.mmo.soulSplit = new SoulSplit(main);
 		main.autoSave = new ElyAutoSave(main);
 		main.spleef = new Spleef(main);
 		main.saveClasses.put("main.blink", new Blink(main));
@@ -101,6 +110,7 @@ public class ElySetup {
 		listener();
 		commands();
 		tasks();
+		rec();
 		
 		main.numerals = new ArrayList<String>(YamlConfiguration.loadConfiguration(main.getResource("numerals.yml")).getStringList("Numerals"));
 		
@@ -230,5 +240,50 @@ public class ElySetup {
 				}
 			}
 		}
+	}
+	
+	private void rec(){
+		
+		Potion splash = new Potion(PotionType.INSTANT_HEAL, 1);//poison 1
+		splash.setSplash(true);
+		 
+		ItemStack i = splash.toItemStack(1);
+		ItemMeta meta = i.getItemMeta();
+		meta.setDisplayName(main.AS("&4&oVAMPYRE VIAL"));
+		meta.setLore(Arrays.asList(main.AS("&c&oDrink up!")));
+		i.setItemMeta(meta);
+
+		ShapedRecipe r = new ShapedRecipe(i).shape(
+			"000",
+			"yay",
+			"zzz"
+		);
+		
+		RecipeHandler rh = new RecipeHandler(r);
+		rh.setIngredient('0', new ItemStack(Material.ROTTEN_FLESH));
+		rh.setIngredient('y', new ItemStack(Material.REDSTONE));
+		rh.setIngredient('a', new ItemStack(Material.APPLE));
+		rh.setIngredient('z', new ItemStack(Material.SPIDER_EYE));
+		main.getServer().addRecipe(rh.getShapedRecipe());
+		
+		
+		splash = new Potion(PotionType.POISON, 1);//poison 1
+		splash.setSplash(true);
+		 
+		i = splash.toItemStack(1);
+		meta = i.getItemMeta();
+		meta.setDisplayName(main.AS("&b&oFLASH!"));
+		meta.setLore(Arrays.asList(main.AS("&9&oOh I wonder where you'll go...")));
+		i.setItemMeta(meta);
+
+		r = new ShapedRecipe(i).shape(
+			"fff",
+			"fff",
+			"fff"
+		);
+		
+		rh = new RecipeHandler(r);
+		rh.setIngredient('f', new ItemStack(Material.FEATHER));
+		main.getServer().addRecipe(rh.getShapedRecipe());
 	}
 }

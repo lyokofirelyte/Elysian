@@ -15,6 +15,7 @@ import com.github.lyokofirelyte.Divinity.Storage.DPI;
 import com.github.lyokofirelyte.Divinity.Storage.DivinityPlayer;
 import com.github.lyokofirelyte.Divinity.Storage.DivinitySystem;
 import com.github.lyokofirelyte.Elysian.Elysian;
+import com.github.lyokofirelyte.Elysian.MMO.MMO;
 
 public class ElyScoreBoard implements Listener {
 	
@@ -43,6 +44,7 @@ public class ElyScoreBoard implements Listener {
 			"§3Shinies: ",
 			"§9Online: ",
 			"§3Exp: ",
+			"§4Blood: ",
 			"§5/root"
 		};
 		
@@ -50,6 +52,7 @@ public class ElyScoreBoard implements Listener {
 			dp.getInt(DPI.BALANCE),
 			Bukkit.getOnlinePlayers().length,
 			dp.getInt(DPI.EXP),
+			dp.getInt(MMO.VAMP_BAR),
 			0
 		};
 		
