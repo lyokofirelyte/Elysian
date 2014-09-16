@@ -28,6 +28,7 @@ import com.github.lyokofirelyte.Divinity.JSON.JSONChatExtra;
 import com.github.lyokofirelyte.Divinity.JSON.JSONChatHoverEventType;
 import com.github.lyokofirelyte.Divinity.JSON.JSONChatMessage;
 import com.github.lyokofirelyte.Divinity.Manager.DivinityManager;
+import com.github.lyokofirelyte.Divinity.Manager.ParticleEffect;
 import com.github.lyokofirelyte.Divinity.Storage.DAI;
 import com.github.lyokofirelyte.Divinity.Storage.DPI;
 import com.github.lyokofirelyte.Divinity.Storage.DivinityPlayer;
@@ -79,6 +80,107 @@ public class ElyCommand {
 	
 	private String[] s(String arg, String arg1){
 		return new String[]{arg, arg1};
+	}
+	
+	@DivCommand(perm = "wa.staff.admin", aliases = {"effects"}, desc = "Effects Command", help = "/effects help", player = true)
+	public void onEffects(Player p, String[] args){
+		
+		DivinitySystem ds = main.api.getSystem();
+		
+		if (args.length == 0){
+			
+			for (String s : new String[]{
+				"/effects add <name> <effName> <OSX> <OSY> <OSZ> <speed> <amount> <range> <cycleTime> [x,y,z]",
+				"/effects rem <name>",
+				"/effects stop <name>",
+				"/effects list",
+				"/effects playonce <effName> <OSX> <OSY> <OSZ> <speed> <amount> <range> [x,y,z]",
+				"/effects effectlist",
+				"/effects locktoplayer <name> <player>"
+			}){
+				main.s(p, s);
+			}
+			
+		} else {
+			
+			switch (args[0]){
+			
+				case "locktoplayer":
+					
+					main.s(p, "Coming soon...");
+					
+				break;
+			
+				case "playonce":
+					
+					try {
+						ds.playEffect(ParticleEffect.fromName(args[1]), Integer.parseInt(args[2]), Integer.parseInt(args[3]), 
+							Integer.parseInt(args[4]), Integer.parseInt(args[5]), Integer.parseInt(args[6]),
+							args.length == 9 ? new Location(p.getWorld(), Integer.parseInt(args[10].split(",")[0]), 
+								Integer.parseInt(args[8].split(",")[1]),
+								Integer.parseInt(args[8].split(",")[2])) : 
+								p.getLocation(),
+							Integer.parseInt(args[7]));
+					} catch (Exception e){
+						main.s(p, "&c&oInvalid inputs!");
+					}
+					
+				break;
+				
+				case "add":
+					
+					try {
+						ds.addEffect(args[1], ParticleEffect.fromName(args[2]), Integer.parseInt(args[3]), Integer.parseInt(args[4]), 
+							Integer.parseInt(args[5]), Integer.parseInt(args[6]), Integer.parseInt(args[7]),
+							args.length == 11 ? new Location(p.getWorld(), Integer.parseInt(args[10].split(",")[0]), 
+								Integer.parseInt(args[10].split(",")[1]),
+								Integer.parseInt(args[10].split(",")[2])) : 
+								p.getLocation(),
+							Integer.parseInt(args[8]), Long.parseLong(args[9]));
+						main.s(p, "Added! :D");
+					} catch (Exception e){
+						main.s(p, "&c&oInvalid inputs!");
+					}
+					
+				break;
+				
+				case "rem":
+					
+					if (args.length == 2 && ds.contains("Effects." + args[1])){
+						ds.remEffect(args[1]);
+						main.s(p, "Removed.");
+					} else {
+						main.s(p, "Not found!");
+					}
+					
+				break;
+				
+				case "stop":
+					
+					if (args.length == 2){
+						ds.cancelEffect(args[1]);
+						main.s(p, "Cancelled!");
+					}
+					
+				break;
+				
+				case "list":
+					
+					for (String s : ds.getConfigurationSection("Effects").getKeys(false)){
+						main.s(p, s);
+					}
+					
+				break;
+				
+				case "effectlist":
+					
+					for (ParticleEffect e : ParticleEffect.values()){
+						main.s(p, e.toString());
+					}
+					
+				break;
+			}
+		}
 	}
 	
 	@DivCommand(perm = "wa.rank.dweller", aliases = {"notepad"}, desc = "Notepad Management System", help = "/notepad", player = true)

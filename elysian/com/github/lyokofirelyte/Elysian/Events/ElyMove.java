@@ -40,6 +40,10 @@ public class ElyMove implements Listener {
 			Vector themV = e.getPlayer().getLocation().toVector();
 			you.setVelocity(themV.subtract(you.getLocation().toVector()).normalize());
 		}
+		
+		if (!dp.getStr(DPI.HOLO_ID).equals("none")){
+			dp.updateHologram();
+		}
 	}
 	
 	@EventHandler (ignoreCancelled = false)

@@ -383,8 +383,14 @@ public class ElyProtect implements Listener {
 	}
 	
 	@SuppressWarnings("deprecation")
-	@DivCommand(aliases = {"protect", "pro"}, desc = "Elysian World Protection Command", help = "/pro help", perm = "wa.staff.mod2", player = true, min = 1)
+	@DivCommand(aliases = {"protect", "pro"}, desc = "Elysian World Protection Command", help = "/pro help", player = true, min = 1)
 	public void onProtect(final Player p, String[] args){
+		
+		if (!args[0].equals("info")){
+			if (!main.perms(p, "wa.staff.mod2")){
+				return;
+			}
+		}
 		
 		switch (args[0]){
 		

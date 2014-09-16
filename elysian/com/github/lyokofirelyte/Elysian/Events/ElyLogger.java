@@ -129,7 +129,7 @@ public class ElyLogger implements Listener, Runnable {
 			List<String> failedNames = new ArrayList<String>();
 			String failLine = "";
 			
-			if (!dp.getList(DPI.OWNED_CHESTS).contains(loc) && !main.silentPerms(e.getPlayer(), "wa.staff.mod2") && !names.get(0).equals("view")){
+			if (!dp.getList(DPI.OWNED_CHESTS).contains(loc) && !main.silentPerms(e.getPlayer(), "wa.staff.mod2") && !dp.getStr(DPI.CHEST_MODE).equals("view")){
 				main.s(e.getPlayer(), "none", "&c&oThat is not yours to modify!");
 				return;
 			}
@@ -152,6 +152,14 @@ public class ElyLogger implements Listener, Runnable {
 					main.s(e.getPlayer(), " ", users.replaceAll(" ", "&b, &3"));
 					dp.set(DPI.CHEST_MODE, "none");
 					dp.set(DPI.CHEST_NAMES, new ArrayList<String>());
+					return;
+				} else if (s.equals("release")){
+					for (DivinityStorage d : main.api.divManager.getAllUsers()){
+						if (d.getList(DPI.OWNED_CHESTS).contains(loc)){
+							d.getList(DPI.OWNED_CHESTS).remove(loc);
+						}
+					}
+					main.s(e.getPlayer(), "Released to the public!");
 					return;
 				}
 			}
@@ -264,6 +272,7 @@ public class ElyLogger implements Listener, Runnable {
 			case "help":
 				main.s(p, "none", "/chest add/remove player1 player2 player3 etc");
 				main.s(p, "none", "/chest view");
+				main.s(p, "none", "/chest release");
 				main.s(p, "none", "/chest cancel");
 			break;
 			
@@ -272,6 +281,14 @@ public class ElyLogger implements Listener, Runnable {
 				dp.getList(DPI.CHEST_NAMES).add("view");
 				main.s(p, "none", "Left-click on a storage unit to view the owners.");
 				p.setGameMode(GameMode.SURVIVAL);
+			break;
+			
+			case "release":
+				
+				dp.set(DPI.CHEST_MODE, args[0]);
+				dp.getList(DPI.CHEST_NAMES).add("release");
+				main.s(p, "Left-click a chest to make it public.");
+				
 			break;
 			
 			case "cancel":

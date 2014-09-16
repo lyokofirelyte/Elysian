@@ -190,6 +190,11 @@ public class ElyMobs implements Listener {
 		
 		dp.set(DPI.IN_COMBAT, false);
 		
+		switch (e.getEntity().getWorld().getName()){
+			case "world_the_end": case "world": case "world_nether": break;
+			default: return;
+		}
+		
 		for (ItemStack i : p.getInventory().getContents()){
 			if (i != null && !i.getType().equals(Material.AIR)){
 				dp.getStack(DPI.DEATH_CHEST_INV).add(i);

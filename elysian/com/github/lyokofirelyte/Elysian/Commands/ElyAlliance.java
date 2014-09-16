@@ -244,6 +244,7 @@ public class ElyAlliance {
 						region.set(DRF.BLOCK_PLACE, true);
 						region.set(DRF.FIRE_SPREAD, true);
 						region.set(DRF.TNT_EXPLODE, true);
+						region.set(DRF.INTERACT, true);
 						region.getList(DRI.PERMS).add("wa.alliance." + args[0].toLowerCase());
 						region.getList(DRI.PERMS).add("wa.staff.admin");
 		 				

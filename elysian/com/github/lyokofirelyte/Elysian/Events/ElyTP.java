@@ -14,6 +14,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.util.Vector;
 
 import com.github.lyokofirelyte.Divinity.Events.DivinityTeleportEvent;
+import com.github.lyokofirelyte.Divinity.Manager.ParticleEffect;
 import com.github.lyokofirelyte.Divinity.Storage.DPI;
 import com.github.lyokofirelyte.Divinity.Storage.DivinityPlayer;
 import com.github.lyokofirelyte.Elysian.Elysian;
@@ -80,9 +81,7 @@ public class ElyTP implements Listener {
 	
 	private void effects(Player p){
 		if (!main.api.getDivPlayer(p).getBool(DPI.VANISHED)){
-			for (Location l : main.api.divUtils.circle(p.getLocation(), 4, 4, true, true, 0)){
-				p.getWorld().playEffect(l, Effect.ENDER_SIGNAL, 0);
-			}
+			main.api.getSystem().playEffect(ParticleEffect.RED_DUST, 2, 2, 2, 1, 20000, p.getLocation(), 16);
 		}
 	}
 }

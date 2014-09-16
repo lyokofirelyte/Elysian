@@ -44,10 +44,11 @@ public class ElyGameMode implements Listener {
 		for (ItemStack i : e.getPlayer().getInventory().getArmorContents()){
 			if (i != null){
 				dp.getStack(dpi).add(new ItemStack(i));
-				i.setType(Material.AIR);
 			}
 		}
 		
+		ItemStack air = new ItemStack(Material.AIR);
+		e.getPlayer().getInventory().setArmorContents(new ItemStack[]{air, air, air, air});
 		e.getPlayer().getInventory().clear();
 		dpi = !creative ? DPI.CREATIVE_INVENTORY : DPI.SURVIVAL_INVENTORY;
 		

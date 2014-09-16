@@ -1,11 +1,15 @@
 package com.github.lyokofirelyte.Elysian.Commands;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.bukkit.Bukkit;
-import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import com.dsh105.holoapi.HoloAPI;
+import com.dsh105.holoapi.api.Hologram;
+import com.dsh105.holoapi.api.HologramFactory;
+import com.github.lyokofirelyte.Divinity.DivinityUtils;
 import com.github.lyokofirelyte.Divinity.Commands.DivCommand;
 import com.github.lyokofirelyte.Divinity.Storage.DPI;
 import com.github.lyokofirelyte.Divinity.Storage.DivinityPlayer;
@@ -29,8 +33,8 @@ public class ElyMail {
 		"/mail clear"
 	 };
 	 
-	 @DivCommand(aliases = {"mail"}, desc = "Elysian Mail Command", help = "/mail help", player = false, min = 1)
-	 public void onMail(CommandSender p, String[] args){
+	 @DivCommand(aliases = {"mail"}, desc = "Elysian Mail Command", help = "/mail help", player = true, min = 1)
+	 public void onMail(Player p, String[] args){
 		 
 		 
 		 String msg = args.length >= 3 ? args[2] : "";
@@ -153,55 +157,66 @@ public class ElyMail {
 		  }
 	 }
 	 
-	 public void checkMail(CommandSender p){
+	 public void checkMail(Player p){
 		 
-		 DivinityStorage reading = null;
+		 DivinityPlayer reading = main.api.getDivPlayer(p);
  		  
- 		  if (p instanceof Player){
- 			  reading = main.api.getDivPlayer((Player)p);
- 		  } else {
- 			  reading = main.api.getSystem();
- 		  }
- 		  
- 		  if (reading.getList(DPI.MAIL).size() > 0){
+		 if (reading.getList(DPI.MAIL).size() > 0){
  			  
-	  		  main.s(p, "none", "Reading mail &6(" + reading.getList(DPI.MAIL).size() + ")");
+			 main.s(p, "none", "Reading mail &6(" + reading.getList(DPI.MAIL).size() + ")");
+			 main.s(p, "The preview will end in 15 seconds. Clear mail with /mail clear.");
+			 int x = 1;
+			 
+			 List<String> oldMails = new ArrayList<String>(reading.getList(DPI.MAIL));
+			 String[] mails = new String[oldMails.size()+1];
+			 
+			 mails[0] = "&3\u2744 Viewing Mail \u2744";
+			 
+			 for (int i = 1; i <= oldMails.size(); i++){
+				 mails[i] = "&aloading...";
+			 }
+			 
+	    	 reading.tempHologram(300L, mails);
 	  		  
- 			  for (String s : reading.getList(DPI.MAIL)){
+			 for (String s : reading.getList(DPI.MAIL)){
  				  
- 				  String[] split = s.split("%SPLIT%");
+				 String[] split = s.split("%SPLIT%");
+				 String newLine = "";
  				  
- 				  switch (split[0]){
+				 switch (split[0]){
  				  
-	  				  case "personal":
-	  					  
-	  					  main.s(p, "none", "&6" + split[1] + " &7-> &6you&f: &7" + split[2]);
-	  					  
-	  				  break;
-	  				  
-	  				  case "wa.staff.intern":
-	  					  
-	  					  main.s(p, "none", "&6" + split[1] + " &7-> &cstaff&f: &7" + split[2]);
-	  					  
-	  				  break;
-	  				  
-	  				  case "wa.member":
-	  					  
-	  					  main.s(p, "none", "&6" + split[1] + " &7-> &2global&f: &7" + split[2]);
-	  					  
-	  				  break;
-	  				  
-	  				  default:
-	  					  
-	  					  if (s.startsWith("wa.alliance")){
-	  						  main.s(p, "none", "&6" + split[1] + " &7-> &3alliance&f: &7" + split[2]);
-	  					  }
-	  					  
-	  				  break;
- 				  }
- 			  }
- 		  } else {
- 			  main.s(p, "none", "&c&oYou have no mail.");
- 		  }
+					 case "personal":
+		  					  
+						 newLine = "&6" + split[1] + " &7-> &6you&f: &7" + split[2];
+		  					  
+					 break;
+		  				  
+					 case "wa.staff.intern":
+		  					  
+						 newLine = "&6" + split[1] + " &7-> &cstaff&f: &7" + split[2];
+		  					  
+					 break;
+		  				  
+					 case "wa.member":
+		  					  
+						 newLine = "&6" + split[1] + " &7-> &2global&f: &7" + split[2];
+		  					  
+					 break;
+		  				  
+					 default:
+		  					  
+						 if (s.startsWith("wa.alliance")){
+							 newLine = "&6" + split[1] + " &7-> &3alliance&f: &7" + split[2];
+						 }
+		  					  
+					 break;
+				 }
+				 
+				 reading.getHologram().updateLine(x, main.AS(newLine));
+				 x++;
+			 }
+		 } else {
+			 main.s(p, "none", "&c&oYou have no mail.");
+		 }
 	 }
 }	

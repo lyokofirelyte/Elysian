@@ -151,9 +151,9 @@ public class Blink implements DivGame, ElySave {
 				createGame(game);
 				for (String slot : dg.getConfigurationSection("Games." + game).getKeys(false)){
 					String path = "Games." + game + "." + slot + ".";
-					getGame(game).addSlot(dg.getInt(slot), dg.getInt(path + "Purchase"), dg.getInt(path + "Payout"), new Location(Bukkit.getWorld(dg.getString(path + "World")), dg.getInt(path + "X"), dg.getInt(path + "Y"), dg.getInt(path + "Z")));
-					getGame(game).getSlot(dg.getInt(slot)).setPlayer(dg.getString(path + "Player"));
-					getGame(game).getSlot(dg.getInt(slot)).setInUse(dg.getBoolean(path + "IsInUse"));
+					getGame(game).addSlot(Integer.parseInt(slot), dg.getInt(path + "Purchase"), dg.getInt(path + "Payout"), new Location(Bukkit.getWorld(dg.getString(path + "World")), dg.getInt(path + "X"), dg.getInt(path + "Y"), dg.getInt(path + "Z")));
+					getGame(game).getSlot(Integer.parseInt(slot)).setPlayer(dg.getString(path + "Player"));
+					getGame(game).getSlot(Integer.parseInt(slot)).setInUse(dg.getBoolean(path + "IsInUse"));
 				}
 			}
 		}
@@ -178,7 +178,6 @@ public class Blink implements DivGame, ElySave {
 				dg.set(path + "X", l.getBlockX());
 				dg.set(path + "Y", l.getBlockY());
 				dg.set(path + "Z", l.getBlockZ());
-				System.out.println("Added..");
 			}
 		}
 	}
