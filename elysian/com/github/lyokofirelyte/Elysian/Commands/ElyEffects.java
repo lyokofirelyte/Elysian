@@ -7,7 +7,7 @@ import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
 import com.github.lyokofirelyte.Divinity.Commands.DivCommand;
-import com.github.lyokofirelyte.Divinity.Manager.DivRocket;
+import com.github.lyokofirelyte.Divinity.PublicUtils.DivRocket;
 import com.github.lyokofirelyte.Divinity.Storage.DPI;
 import com.github.lyokofirelyte.Divinity.Storage.DivinityPlayer;
 import com.github.lyokofirelyte.Elysian.Elysian;

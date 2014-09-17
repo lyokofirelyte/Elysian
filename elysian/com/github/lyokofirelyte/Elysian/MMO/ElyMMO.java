@@ -16,11 +16,17 @@ import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Arrow;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Fish;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Monster;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
+import org.bukkit.entity.SmallFireball;
+import org.bukkit.entity.Snowball;
+import org.bukkit.entity.ThrownPotion;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -41,8 +47,11 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.potion.Potion;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+import org.bukkit.potion.PotionType;
+import org.bukkit.util.BlockIterator;
 
 import com.github.lyokofirelyte.Divinity.DivinityUtils;
 import com.github.lyokofirelyte.Divinity.Commands.DivCommand;
@@ -52,7 +61,7 @@ import com.github.lyokofirelyte.Divinity.Events.SkillExpGainEvent;
 import com.github.lyokofirelyte.Divinity.JSON.JSONChatExtra;
 import com.github.lyokofirelyte.Divinity.JSON.JSONChatHoverEventType;
 import com.github.lyokofirelyte.Divinity.JSON.JSONChatMessage;
-import com.github.lyokofirelyte.Divinity.Manager.ParticleEffect;
+import com.github.lyokofirelyte.Divinity.PublicUtils.ParticleEffect;
 import com.github.lyokofirelyte.Divinity.Storage.DPI;
 import com.github.lyokofirelyte.Divinity.Storage.DivinityPlayer;
 import com.github.lyokofirelyte.Divinity.Storage.DivinityStorage;
@@ -80,6 +89,7 @@ public class ElyMMO extends HashMap<Material, MXP> implements Listener {
 	
 	public Map<String, List<Item>> noPickup = new HashMap<>();
 	public Map<Arrow, String> arrows = new HashMap<>();
+	public Map<SmallFireball, String> potions = new HashMap<>();
 	
 	public ElyMMO(Elysian i) {
 		main = i;
@@ -638,6 +648,7 @@ public class ElyMMO extends HashMap<Material, MXP> implements Listener {
 			if (arrows.containsKey((Arrow)e.getEntity())){
 				main.api.getSystem().playEffect(ParticleEffect.SPELL, 0, 0, 0, 1, 1000, e.getEntity().getLocation(), 16);
 				main.api.cancelTask(arrows.get((Arrow)e.getEntity()));
+				arrows.remove((Arrow)e.getEntity());
 			}
 		}
 	}
@@ -751,7 +762,6 @@ public class ElyMMO extends HashMap<Material, MXP> implements Listener {
 				
 				if ((level+1) % 10 == 0){
 					DivinityUtils.bc(p.getDisplayName() + " &bhas reached &6" + e.getSkill().s() + " &blevel &6" + (level+1) + "&b!");
-					dp.tempHologram(100L, new String[]{"&3Milestone Reached! &6" + (level+1) + " " + e.getSkill().s() + "&3!"});
 				}
 				
 				if (level == 98){
@@ -859,6 +869,14 @@ public class ElyMMO extends HashMap<Material, MXP> implements Listener {
 		}
 	}
 	
+	public void laser(Player p, SmallFireball snowball){
+		if (!snowball.isDead()){
+			ParticleEffect.RED_DUST.display(0, 0, 0, 0, 300, snowball.getLocation(), 16);
+		} else {
+			main.api.cancelTask(potions.get(snowball));
+		}
+	}
+	
 	@EventHandler (priority = EventPriority.MONITOR)
 	public void onInteract(PlayerInteractEvent e){
 		
@@ -869,6 +887,26 @@ public class ElyMMO extends HashMap<Material, MXP> implements Listener {
 		Player p = e.getPlayer();
 		DivinityPlayer dp = main.api.getDivPlayer(p);
 		Block b = e.getClickedBlock() != null ? e.getClickedBlock() : null;
+		
+		/*if (e.getAction() == Action.RIGHT_CLICK_AIR && p.getItemInHand().getType().equals(Material.STICK)){
+			
+			/*Location eyeLocation = p.getLocation();
+			eyeLocation.setY(eyeLocation.getY() + 1.5);
+			Location frontLocation = eyeLocation.add(eyeLocation.getDirection());
+			
+			SmallFireball potion = (SmallFireball) p.getWorld().spawnEntity(frontLocation, EntityType.SMALL_FIREBALL);
+			potion.setShooter(p);
+			potion.setVelocity(p.getLocation().getDirection().multiply(1.5));
+			String taskName = "laser" + p.getName() + p.getLocation().getYaw() + new Random().nextInt(1000);
+			potions.put(potion, taskName);
+			main.api.repeat(this, "laser", 0L, 1L, taskName, p, potion);
+			ParticleEffect.SPELL.display(2, 2, 2, 0, 20000, p.getLocation(), 16);
+			
+			for (Entity ee : p.getNearbyEntities(5D, 5D, 5D)){
+				ee.setVelocity(p.getLocation().getDirection().multiply(-2));
+			}
+			
+		}*/
 		
 		switch (e.getAction()){
 		

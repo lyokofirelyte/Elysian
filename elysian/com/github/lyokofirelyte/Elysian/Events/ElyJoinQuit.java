@@ -56,7 +56,8 @@ public class ElyJoinQuit implements Listener {
 			main.mmo.soulSplit.stop(pl, p);
 		}
 		
-		p.tempHologram(100L, msg);
+		p.s(msg[0]);
+		p.s(msg[1]);
 	}
 	
 	@EventHandler
@@ -83,6 +84,7 @@ public class ElyJoinQuit implements Listener {
 		
 		DivinityUtils.customBC("&4<-> " + pl.getDisplayName() + " &e&o(" + p.getStr(DPI.QUIT_MESSAGE) + "&e&o)");
 		p.remHologram();
+		p.clearEffects();
 	}
 	
 	@EventHandler

@@ -28,7 +28,8 @@ import com.github.lyokofirelyte.Divinity.JSON.JSONChatExtra;
 import com.github.lyokofirelyte.Divinity.JSON.JSONChatHoverEventType;
 import com.github.lyokofirelyte.Divinity.JSON.JSONChatMessage;
 import com.github.lyokofirelyte.Divinity.Manager.DivinityManager;
-import com.github.lyokofirelyte.Divinity.Manager.ParticleEffect;
+import com.github.lyokofirelyte.Divinity.PublicUtils.Direction;
+import com.github.lyokofirelyte.Divinity.PublicUtils.ParticleEffect;
 import com.github.lyokofirelyte.Divinity.Storage.DAI;
 import com.github.lyokofirelyte.Divinity.Storage.DPI;
 import com.github.lyokofirelyte.Divinity.Storage.DivinityPlayer;
@@ -96,7 +97,9 @@ public class ElyCommand {
 				"/effects list",
 				"/effects playonce <effName> <OSX> <OSY> <OSZ> <speed> <amount> <range> [x,y,z]",
 				"/effects effectlist",
-				"/effects locktoplayer <name> <player>"
+				"/effects locktoplayer <player> <name> <effName> <OSX> <OSY> <OSZ> <speed> <amount> <range> <cycleTime>",
+				"/effects draw <word> <effName> <direction> <cycleTime>",
+				"/effects clearplayer <name>"
 			}){
 				main.s(p, s);
 			}
@@ -104,10 +107,42 @@ public class ElyCommand {
 		} else {
 			
 			switch (args[0]){
+				
+				case "draw":
+					
+					try {
+						ds.addLetterEffect(args[1], ParticleEffect.fromName(args[2]), DivinityUtils.getCardinalMove(p), Direction.getDirection(args[3]), Long.parseLong(args[4]));
+						main.s(p, "Added!");
+					} catch (Exception e){
+						main.s(p, "Invalid inputs!");
+					}
+					
+				break;
 			
 				case "locktoplayer":
 					
-					main.s(p, "Coming soon...");
+					if (main.doesPartialPlayerExist(args[1]) && main.isOnline(args[1])){
+						
+						try {
+							DivinityPlayer dp = main.matchDivPlayer(args[1]);
+							dp.lockEffect(args[2], ParticleEffect.fromName(args[3]), Integer.parseInt(args[4]), Integer.parseInt(args[5]), Integer.parseInt(args[6]),
+								Integer.parseInt(args[7]), Integer.parseInt(args[8]), Integer.parseInt(args[9]), Long.parseLong(args[10]));
+							main.s(p, "Added!");
+						} catch (Exception e){
+							main.s(p, "Invalid args!");
+						}
+						
+					} else {
+						main.s(p, "Player not found.");
+					}
+					
+				break;
+				
+				case "clearplayer":
+					
+					if (main.isOnline(args[1])){
+						main.matchDivPlayer(args[1]).clearEffects();
+					}
 					
 				break;
 			
@@ -146,7 +181,7 @@ public class ElyCommand {
 				
 				case "rem":
 					
-					if (args.length == 2 && ds.contains("Effects." + args[1])){
+					if (args.length == 2 && (ds.contains("Effects." + args[1])) || (ds.contains("LetterEffects." + args[1]))){
 						ds.remEffect(args[1]);
 						main.s(p, "Removed.");
 					} else {
@@ -167,6 +202,10 @@ public class ElyCommand {
 				case "list":
 					
 					for (String s : ds.getConfigurationSection("Effects").getKeys(false)){
+						main.s(p, s);
+					}
+					
+					for (String s : ds.getConfigurationSection("LetterEffects").getKeys(false)){
 						main.s(p, s);
 					}
 					

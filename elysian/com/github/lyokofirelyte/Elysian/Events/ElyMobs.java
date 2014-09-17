@@ -279,7 +279,7 @@ public class ElyMobs implements Listener {
 		dp.set(DPI.MOB_MONEY, dp.getInt(DPI.MOB_MONEY) + (superRandom == 500 ? 1000 : 0));
 	}
 	
-	@DivCommand(aliases = {"exp", "xp"}, help = "/exp <take> <amount>", desc = "Elysian EXP Storing System", player = true)
+	@DivCommand(aliases = {"exp", "xp"}, help = "/exp <take, store> <amount>", desc = "Elysian EXP Storing System", player = true)
 	public void onExp(Player p, String[] args){
 		
 		DivinityPlayer dp = main.api.getDivPlayer(p);
@@ -299,6 +299,17 @@ public class ElyMobs implements Listener {
 					dp.set(DPI.EXP_DEPOSIT, false);
 				} else {
 					main.s(p, "&c&oNot enough stored xp!");
+				}
+				
+			} else if (args[0].equals("store")){
+				
+				if (p.getTotalExperience() >= amt){
+					int restore = new Integer(p.getTotalExperience() - amt);
+					dp.set(DPI.EXP, dp.getInt(DPI.EXP) + amt);
+					p.setTotalExperience(0);
+					p.giveExp(restore);
+				} else {
+					dp.err("Not enough xp!");
 				}
 				
 			} else {

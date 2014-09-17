@@ -164,20 +164,7 @@ public class ElyMail {
 		 if (reading.getList(DPI.MAIL).size() > 0){
  			  
 			 main.s(p, "none", "Reading mail &6(" + reading.getList(DPI.MAIL).size() + ")");
-			 main.s(p, "The preview will end in 15 seconds. Clear mail with /mail clear.");
-			 int x = 1;
-			 
-			 List<String> oldMails = new ArrayList<String>(reading.getList(DPI.MAIL));
-			 String[] mails = new String[oldMails.size()+1];
-			 
-			 mails[0] = "&3\u2744 Viewing Mail \u2744";
-			 
-			 for (int i = 1; i <= oldMails.size(); i++){
-				 mails[i] = "&aloading...";
-			 }
-			 
-	    	 reading.tempHologram(300L, mails);
-	  		  
+
 			 for (String s : reading.getList(DPI.MAIL)){
  				  
 				 String[] split = s.split("%SPLIT%");
@@ -212,8 +199,7 @@ public class ElyMail {
 					 break;
 				 }
 				 
-				 reading.getHologram().updateLine(x, main.AS(newLine));
-				 x++;
+				 main.s(p, newLine);
 			 }
 		 } else {
 			 main.s(p, "none", "&c&oYou have no mail.");
