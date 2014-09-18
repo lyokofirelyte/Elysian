@@ -3,11 +3,11 @@ package com.github.lyokofirelyte.Elysian.MMO;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
+import net.minecraft.util.gnu.trove.map.hash.THashMap;
 import net.minecraft.util.org.apache.commons.lang3.StringUtils;
 
 import org.bukkit.FireworkEffect.Type;
@@ -16,17 +16,11 @@ import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Arrow;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Fish;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Monster;
 import org.bukkit.entity.Player;
-import org.bukkit.entity.Projectile;
 import org.bukkit.entity.SmallFireball;
-import org.bukkit.entity.Snowball;
-import org.bukkit.entity.ThrownPotion;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -37,9 +31,7 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.entity.EntityDeathEvent;
-import org.bukkit.event.entity.EntityShootBowEvent;
 import org.bukkit.event.entity.PotionSplashEvent;
-import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.event.inventory.CraftItemEvent;
 import org.bukkit.event.player.PlayerFishEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
@@ -47,11 +39,8 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.potion.Potion;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
-import org.bukkit.potion.PotionType;
-import org.bukkit.util.BlockIterator;
 
 import com.github.lyokofirelyte.Divinity.DivinityUtils;
 import com.github.lyokofirelyte.Divinity.Commands.DivCommand;
@@ -73,8 +62,10 @@ import com.github.lyokofirelyte.Elysian.MMO.Abilities.SkyBlade;
 import com.github.lyokofirelyte.Elysian.MMO.Abilities.SoulSplit;
 import com.github.lyokofirelyte.Elysian.MMO.Abilities.SuperBreaker;
 import com.github.lyokofirelyte.Elysian.MMO.Abilities.TreeFeller;
+import com.github.lyokofirelyte.Elysian.MMO.Magics.SpellEvents;
+import com.github.lyokofirelyte.Elysian.MMO.Magics.SpellTasks;
 
-public class ElyMMO extends HashMap<Material, MXP> implements Listener {
+public class ElyMMO extends THashMap<Material, MXP> implements Listener {
 	
 	private static final long serialVersionUID = 1L;
 	
@@ -86,10 +77,11 @@ public class ElyMMO extends HashMap<Material, MXP> implements Listener {
 	public HolyMackerel holy;
 	public ElyPatrol patrols;
 	public SoulSplit soulSplit;
+	public SpellEvents spellEvents;
+	public SpellTasks spellTasks;
 	
-	public Map<String, List<Item>> noPickup = new HashMap<>();
-	public Map<Arrow, String> arrows = new HashMap<>();
-	public Map<SmallFireball, String> potions = new HashMap<>();
+	public Map<String, List<Item>> noPickup = new THashMap<>();
+	public Map<SmallFireball, String> potions = new THashMap<>();
 	
 	public ElyMMO(Elysian i) {
 		main = i;
@@ -238,7 +230,7 @@ public class ElyMMO extends HashMap<Material, MXP> implements Listener {
 	
 	private Map<Material, Integer> getTools(ElySkill skill){
 		
-		Map<Material, Integer> map = new HashMap<>();
+		Map<Material, Integer> map = new THashMap<>();
 		
 		for (MXP m : values()){
 			for (Material mat : m.toolReqs.keySet()){
@@ -402,6 +394,8 @@ public class ElyMMO extends HashMap<Material, MXP> implements Listener {
 			case FARMING: return "&6The best skill to get 99 in. Tear down crops.";
 			case PATROL: return "&6Hunt or skill with a group of people and share the XP!";
 			case FISHERMAN: return "&6Just fish stuff! :)";
+			case SOLAR_MAGICS: return "&6Destructive spells!";
+			case LUNAR_MAGICS: return "&6Group-based healing & help skills!";
 		}
 	}
 	
@@ -425,6 +419,8 @@ public class ElyMMO extends HashMap<Material, MXP> implements Listener {
 			case FARMING: return "&bLevel 10: &6LIFE FORCE (right-click sapling)\n&7&oPlants a random tree.\n&7&oEvery level decreases cooldown by 1 second.";
 			case PATROL: return "&6More Shop Options";
 			case FISHERMAN: return "&bLevel 10: &6HOLY MACKEREL! (right-click rod)\n&7&oWhip up a crazy fish-storm!\n&7&oThe cooldown for this does not change as you level.";
+			case SOLAR_MAGICS: return "&aStuff.";
+			case LUNAR_MAGICS: return "&aStuff.";
 		}
 	}
 	
@@ -518,7 +514,7 @@ public class ElyMMO extends HashMap<Material, MXP> implements Listener {
 			return;
 		}
 		
-		Map<Integer, List<DivinityStorage>> players = new HashMap<>();
+		Map<Integer, List<DivinityStorage>> players = new THashMap<>();
 		
 		for (DivinityStorage dp : main.api.divManager.getAllUsers()){
 			
@@ -630,34 +626,6 @@ public class ElyMMO extends HashMap<Material, MXP> implements Listener {
 					main.api.event(new SkillExpGainEvent(p, skills.get(i), get(e.getBlock().getType()).getXP(skills.get(i))));
 				}
 			}
-		}
-	}
-	
-	@EventHandler
-	public void onBow(EntityShootBowEvent e){
-		if (e.getProjectile() instanceof Arrow){
-			Arrow pro = (Arrow) e.getProjectile();
-			arrows.put(pro, "arrowTrack" + pro.getLocation().getX());
-			main.api.repeat(this, "trackArrow", 0L, 1L, "arrowTrack" + pro.getLocation().getX(), pro.getLocation().getX() + "", pro);
-		}
-	}
-	
-	@EventHandler
-	public void onBowHit(ProjectileHitEvent e){
-		if (e.getEntity() instanceof Arrow){
-			if (arrows.containsKey((Arrow)e.getEntity())){
-				main.api.getSystem().playEffect(ParticleEffect.SPELL, 0, 0, 0, 1, 1000, e.getEntity().getLocation(), 16);
-				main.api.cancelTask(arrows.get((Arrow)e.getEntity()));
-				arrows.remove((Arrow)e.getEntity());
-			}
-		}
-	}
-	
-	public void trackArrow(String taskName, Arrow arrow){
-		if (!arrow.isDead()){
-			ParticleEffect.FIREWORKS_SPARK.display(1, 0, 1, 2, 30, arrow.getLocation(), 16);
-		} else {
-			main.api.cancelTask("arrowTrack" + taskName);
 		}
 	}
 	

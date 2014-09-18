@@ -6,9 +6,6 @@ import java.util.List;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
-import com.dsh105.holoapi.HoloAPI;
-import com.dsh105.holoapi.api.Hologram;
-import com.dsh105.holoapi.api.HologramFactory;
 import com.github.lyokofirelyte.Divinity.DivinityUtils;
 import com.github.lyokofirelyte.Divinity.Commands.DivCommand;
 import com.github.lyokofirelyte.Divinity.Storage.DPI;

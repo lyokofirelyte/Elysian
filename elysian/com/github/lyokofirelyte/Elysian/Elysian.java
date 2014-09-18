@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import net.minecraft.util.gnu.trove.map.hash.THashMap;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Color;
@@ -88,11 +90,12 @@ public class Elysian extends DivinityAPI implements DivinityModule {
 	
 	public DivInvManager invManager;
 	
-	public Map<ElyTask, Integer> tasks = new HashMap<ElyTask, Integer>();
-	public Map<Location, List<List<String>>> queue = new HashMap<Location, List<List<String>>>();
-	public Map<Integer, GuiCloset> closets = new HashMap<>();
+	public Map<ElyTask, Integer> tasks = new THashMap<ElyTask, Integer>();
+	public Map<Location, List<List<String>>> queue = new THashMap<Location, List<List<String>>>();
+	public Map<Integer, GuiCloset> closets = new THashMap<>();
 	public List<String> numerals = new ArrayList<String>();
-	public Map<String, ElySave> saveClasses = new HashMap<String, ElySave>();
+	public Map<String, ElySave> saveClasses = new THashMap<String, ElySave>();
+	public Map<Object, String> spellTasks = new THashMap<Object, String>();
 
 	@Override
 	public void onEnable(){

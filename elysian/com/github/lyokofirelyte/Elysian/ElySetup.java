@@ -3,6 +3,7 @@ package com.github.lyokofirelyte.Elysian;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -64,6 +65,7 @@ import com.github.lyokofirelyte.Elysian.MMO.Abilities.SkyBlade;
 import com.github.lyokofirelyte.Elysian.MMO.Abilities.SoulSplit;
 import com.github.lyokofirelyte.Elysian.MMO.Abilities.SuperBreaker;
 import com.github.lyokofirelyte.Elysian.MMO.Abilities.TreeFeller;
+import com.github.lyokofirelyte.Elysian.MMO.Magics.SpellEvents;
 import com.sk89q.worldedit.bukkit.WorldEditPlugin;
 
 public class ElySetup {
@@ -101,6 +103,8 @@ public class ElySetup {
 		main.mmo.holy = new HolyMackerel(main);
 		main.mmo.patrols = new ElyPatrol(main);
 		main.mmo.soulSplit = new SoulSplit(main);
+		main.mmo.spellEvents = new SpellEvents(main);
+		main.mmo.spellTasks = new SpellTasks(main);
 		main.autoSave = new ElyAutoSave(main);
 		main.spleef = new Spleef(main);
 		main.saveClasses.put("main.blink", new Blink(main));
@@ -183,6 +187,7 @@ public class ElySetup {
 			main.rings,
 			main.invManager,
 			main.mmo,
+			main.mmo.spellEvents,
 			main.spleef.active,
 			main.blink.blinkCommand,
 			main.teamPVP.active,

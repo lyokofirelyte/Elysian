@@ -8,15 +8,10 @@
 	<name>Elysian</name>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<bukkit>1.7.8-R0.1-SNAPSHOT</bukkit>
-		<craftbukkit>1.7.8-R0.1-SNAPSHOT</craftbukkit>
+		<bukkit>1.7.10-R0.1</bukkit>
+		<craftbukkit>1.7.10-R0.1</craftbukkit>
 	</properties>
 	<dependencies>
-		<dependency>
-			<groupId>com.github.lyokofirelyte</groupId>
-			<artifactId>Divinity</artifactId>
-			<version>1.0</version>
-		</dependency>
 		<dependency>
 			<groupId>com.sk89q</groupId>
 			<artifactId>WorldEdit</artifactId>
@@ -25,12 +20,12 @@
 		<dependency>
 			<groupId>org.bukkit</groupId>
 			<artifactId>bukkit</artifactId>
-			<version>${bukkit}</version>
+			<version>1.7.10</version>
 		</dependency>
 		<dependency>
 			<groupId>org.bukkit</groupId>
  			<artifactId>craftbukkit</artifactId>
- 			<version>${craftbukkit}</version>
+ 			<version>1.7.10</version>
  		</dependency>
 		<dependency>
 			<groupId>org.apache.commons</groupId>
@@ -44,10 +39,6 @@
 		</dependency>
 	</dependencies>
 	<repositories>
-		<repository>
-			<id>bukkit-repo</id>
-			<url>http://repo.bukkit.org/content/repositories/snapshots/</url>
-		</repository>
 		<repository>
 			<id>confuser-repo</id>
 			<url>http://ci.frostcast.net/plugin/repository/everything</url>
