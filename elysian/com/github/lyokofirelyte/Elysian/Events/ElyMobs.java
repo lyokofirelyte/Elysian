@@ -31,6 +31,7 @@ import com.github.lyokofirelyte.Divinity.Events.DivinityChannelEvent;
 import com.github.lyokofirelyte.Divinity.Storage.DPI;
 import com.github.lyokofirelyte.Divinity.Storage.DivinityPlayer;
 import com.github.lyokofirelyte.Elysian.Elysian;
+import com.github.lyokofirelyte.Elysian.Games.TeamPVP.TeamPVPData.TeamPVPGame;
 
 public class ElyMobs implements Listener {
 	
@@ -60,6 +61,12 @@ public class ElyMobs implements Listener {
 		} else if (e.getEntity() instanceof Player){
 			
 			Player p = (Player)e.getEntity();
+			
+			for (TeamPVPGame game : main.teamPVP.values()){
+				if (game.hasPlayer(p.getName())){
+					return;
+				}
+			}
 			
 			if (e.getDamager() instanceof Player){
 				
@@ -113,6 +120,12 @@ public class ElyMobs implements Listener {
 				
 				Player dead = (Player)e.getEntity();
 				Map<String, String> replacements = new HashMap<String, String>();
+				
+				for (TeamPVPGame game : main.teamPVP.values()){
+					if (game.hasPlayer(dead.getName())){
+						return;
+					}
+				}
 				
 				DivinityPlayer killer = main.api.getDivPlayer((Player)e.getEntity().getKiller());
 				DivinityPlayer deadDP = main.api.getDivPlayer((Player)e.getEntity());
@@ -169,6 +182,12 @@ public class ElyMobs implements Listener {
 	public void onPlayerDeath(PlayerDeathEvent e){
 		
 		e.setDeathMessage(null);
+		
+		for (TeamPVPGame game : main.teamPVP.values()){
+			if (game.hasPlayer(e.getEntity().getName())){
+				return;
+			}
+		}
 		
 		if (e.getEntity().getKiller() != null && e.getEntity().getKiller() instanceof Player){
 			if (!((Player)e.getEntity()).equals((Player)e.getEntity().getKiller())){

@@ -1,9 +1,8 @@
 package com.github.lyokofirelyte.Elysian.Games.Spleef;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+import net.minecraft.util.gnu.trove.map.hash.THashMap;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -17,9 +16,8 @@ import com.github.lyokofirelyte.Elysian.Games.Spleef.SpleefData.SpleefDataType;
 import com.github.lyokofirelyte.Elysian.Games.Spleef.SpleefData.SpleefGame;
 import com.github.lyokofirelyte.Elysian.Games.Spleef.SpleefData.SpleefGameData;
 import com.github.lyokofirelyte.Elysian.Games.Spleef.SpleefData.SpleefPlayer;
-import com.github.lyokofirelyte.Elysian.Games.Spleef.SpleefData.SpleefSystem;
 
-public class SpleefStorage extends HashMap<Enum<?>, Object> {
+public class SpleefStorage extends THashMap<Enum<?>, Object> {
 	
 	private static final long serialVersionUID = 1L;
 	

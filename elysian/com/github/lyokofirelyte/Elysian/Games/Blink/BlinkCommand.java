@@ -1,10 +1,11 @@
 package com.github.lyokofirelyte.Elysian.Games.Blink;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+
+import net.minecraft.util.gnu.trove.map.hash.THashMap;
 
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -36,7 +37,7 @@ public class BlinkCommand implements Listener {
 		main = blink.main;
 	}
 	
-	private Map<String, BlinkInfo> playerInfo = new HashMap<String, BlinkInfo>();
+	private Map<String, BlinkInfo> playerInfo = new THashMap<String, BlinkInfo>();
 	
 	@DivCommand(perm = "wa.staff.admin", aliases = {"blink"}, help = "/blink", desc = "Blink Setup Command", player = true)
 	public void onBlink(Player p, final String[] args){

@@ -33,10 +33,18 @@ public class ElyScoreBoard implements Listener {
 		DivinitySystem system = main.api.getSystem();
 		boolean a = false;
 		
+		if (dp.getBool(DPI.IN_GAME)){
+			return;
+		}
+		
 		if (e.isCancelled() || (!dp.getBool(DPI.SCOREBOARD_TOGGLE) && !e.getReason().equals("required"))){
 			if (!dp.getBool(DPI.SCOREBOARD_TOGGLE)){
 				p.setScoreboard(Bukkit.getScoreboardManager().getNewScoreboard());
 			}
+			return;
+		}
+		
+		if (e.getReason().contains("game")){
 			return;
 		}
 		

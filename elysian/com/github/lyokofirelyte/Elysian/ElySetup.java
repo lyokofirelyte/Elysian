@@ -48,11 +48,12 @@ import com.github.lyokofirelyte.Elysian.Events.ElyMove;
 import com.github.lyokofirelyte.Elysian.Events.ElyScoreBoard;
 import com.github.lyokofirelyte.Elysian.Events.ElyTP;
 import com.github.lyokofirelyte.Elysian.Games.Blink.Blink;
-import com.github.lyokofirelyte.Elysian.Games.Blink.BlinkCommand;
+import com.github.lyokofirelyte.Elysian.Games.Gotcha.Gotcha;
 import com.github.lyokofirelyte.Elysian.Games.Spleef.Spleef;
 import com.github.lyokofirelyte.Elysian.Games.Spleef.SpleefData.SpleefDataType;
 import com.github.lyokofirelyte.Elysian.Games.Spleef.SpleefData.SpleefGameData;
 import com.github.lyokofirelyte.Elysian.Games.Spleef.SpleefStorage;
+import com.github.lyokofirelyte.Elysian.Games.TeamPVP.TeamPVP;
 import com.github.lyokofirelyte.Elysian.Gui.GuiCloset;
 import com.github.lyokofirelyte.Elysian.Gui.GuiRoot;
 import com.github.lyokofirelyte.Elysian.MMO.ElyMMO;
@@ -103,8 +104,12 @@ public class ElySetup {
 		main.autoSave = new ElyAutoSave(main);
 		main.spleef = new Spleef(main);
 		main.saveClasses.put("main.blink", new Blink(main));
+		main.saveClasses.put("main.teampvp", new TeamPVP(main));
+		main.saveClasses.put("main.gotcha", new Gotcha(main));
 		
 		main.blink = (Blink) main.saveClasses.get("main.blink");
+		main.teamPVP = (TeamPVP) main.saveClasses.get("main.teampvp");
+		main.gotcha = (Gotcha) main.saveClasses.get("main.gotcha");
 		
 		closet();
 		listener();
@@ -115,7 +120,9 @@ public class ElySetup {
 		main.numerals = new ArrayList<String>(YamlConfiguration.loadConfiguration(main.getResource("numerals.yml")).getStringList("Numerals"));
 		
 		games(
-			main.blink
+			main.blink,
+			main.teamPVP,
+			main.gotcha
 		);
 
 		try {
@@ -177,7 +184,9 @@ public class ElySetup {
 			main.invManager,
 			main.mmo,
 			main.spleef.active,
-			main.blink.blinkCommand
+			main.blink.blinkCommand,
+			main.teamPVP.active,
+			main.gotcha.active
 		);
 	}
 	
@@ -209,7 +218,9 @@ public class ElySetup {
 			main.closets.get(0),
 			main.spleef.commandMain,
 			main.mmo.patrols,
-			main.blink.blinkCommand
+			main.blink.blinkCommand,
+			main.teamPVP.command,
+			main.gotcha.command
 		);
 	}
 	

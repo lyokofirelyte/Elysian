@@ -3,6 +3,8 @@ package com.github.lyokofirelyte.Elysian.Games.Blink;
 import java.util.HashMap;
 import java.util.Map;
 
+import net.minecraft.util.gnu.trove.map.hash.THashMap;
+
 import org.bukkit.block.Sign;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -16,7 +18,7 @@ import com.github.lyokofirelyte.Elysian.Elysian;
 public class Blink implements DivGame, ElySave {
 
 	protected Elysian main;
-	public Map<String, BlinkGame> games = new HashMap<String, BlinkGame>();
+	public Map<String, BlinkGame> games = new THashMap<String, BlinkGame>();
 	public BlinkCommand blinkCommand;
 	
 	public Blink(Elysian i){
