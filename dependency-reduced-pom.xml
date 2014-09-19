@@ -49,21 +49,15 @@
   </build>
   <repositories>
     <repository>
-      <id>bukkit-repo</id>
-      <url>http://repo.bukkit.org/content/repositories/snapshots/</url>
-    </repository>
-    <repository>
       <id>confuser-repo</id>
       <url>http://ci.frostcast.net/plugin/repository/everything</url>
     </repository>
+    <repository>
+      <id>bukkit-repo</id>
+      <url>http://repo.bukkit.org/content/repositories/snapshots/</url>
+    </repository>
   </repositories>
   <dependencies>
-    <dependency>
-      <groupId>com.github.lyokofirelyte</groupId>
-      <artifactId>Divinity</artifactId>
-      <version>1.0</version>
-      <scope>compile</scope>
-    </dependency>
     <dependency>
       <groupId>com.sk89q</groupId>
       <artifactId>WorldEdit</artifactId>

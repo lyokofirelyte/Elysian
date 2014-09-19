@@ -8,8 +8,8 @@
 	<name>Elysian</name>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<bukkit>1.7.10-R0.1</bukkit>
-		<craftbukkit>1.7.10-R0.1</craftbukkit>
+		<bukkit>1.7.8-R0.1-SNAPSHOT</bukkit>
+		<craftbukkit>1.7.8-R0.1-SNAPSHOT</craftbukkit>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -20,12 +20,12 @@
 		<dependency>
 			<groupId>org.bukkit</groupId>
 			<artifactId>bukkit</artifactId>
-			<version>1.7.10</version>
+			<version>${bukkit}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.bukkit</groupId>
  			<artifactId>craftbukkit</artifactId>
- 			<version>1.7.10</version>
+ 			<version>${craftbukkit}</version>
  		</dependency>
 		<dependency>
 			<groupId>org.apache.commons</groupId>
@@ -42,6 +42,10 @@
 		<repository>
 			<id>confuser-repo</id>
 			<url>http://ci.frostcast.net/plugin/repository/everything</url>
+		</repository>
+		<repository>
+			<id>bukkit-repo</id>
+			<url>http://repo.bukkit.org/content/repositories/snapshots/</url>
 		</repository>
 	</repositories>
 	<build>

@@ -234,7 +234,7 @@ public class ElyAlliance {
 		 				alliance.getList(DAI.MEMBERS).add(leader.uuid().toString());
 
 		 				Bukkit.getPlayer(leader.uuid()).performCommand("nick " + ChatColor.stripColor(main.AS(Bukkit.getPlayer(leader.uuid()).getDisplayName())));
-		 				leader.set(DPI.DISPLAY_NAME, p.getDisplayName());
+		 				leader.set(DPI.DISPLAY_NAME, Bukkit.getPlayer(leader.uuid()).getDisplayName());
 		 				
 		 				DivinityRegion region = main.api.getDivRegion(args[1].toLowerCase());
 		 				
@@ -245,7 +245,7 @@ public class ElyAlliance {
 						region.set(DRF.FIRE_SPREAD, true);
 						region.set(DRF.TNT_EXPLODE, true);
 						region.set(DRF.INTERACT, true);
-						region.getList(DRI.PERMS).add("wa.alliance." + args[0].toLowerCase());
+						region.getList(DRI.PERMS).add("wa.alliance." + args[1].toLowerCase());
 						region.getList(DRI.PERMS).add("wa.staff.admin");
 		 				
 		 				DivinityUtils.bc(main.coloredAllianceName(args[1].toLowerCase()) + " &bhas been formed!");

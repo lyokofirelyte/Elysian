@@ -70,14 +70,6 @@ public class GotchaActive implements Listener {
 		}
 	}
 	
-	@EventHandler (priority = EventPriority.LOWEST)
-	public void onXp(SkillExpGainEvent e){
-		
-		if (main.api.getDivPlayer(e.getPlayer()).getBool(DPI.IN_GAME)){
-			e.setCancelled(true);
-		}
-	}
-	
 	@EventHandler
 	public void onHit(ProjectileHitEvent e){
 		
@@ -126,7 +118,7 @@ public class GotchaActive implements Listener {
 				
 				SmallFireball fireball = (SmallFireball) p.getWorld().spawnEntity(frontLocation, EntityType.SMALL_FIREBALL);
 				fireball.setShooter(p);
-				fireball.setVelocity(p.getLocation().getDirection().multiply(1.4));
+				fireball.setVelocity(p.getLocation().getDirection().multiply(2.1));
 				
 				String taskName = "gotchaLaser" + p.getName() + new Random().nextInt(1000);
 				
@@ -138,9 +130,11 @@ public class GotchaActive implements Listener {
 	
 	public void gotchaLaser(SmallFireball ball){
 		if (!ball.isDead()){
-			ParticleEffect.RED_DUST.display(0, 0, 0, 1, 300, ball.getLocation(), 30);
+			ParticleEffect.DRIP_WATER.display(0, 0, 0, 1, 100, ball.getLocation(), 30);
+			ParticleEffect.RED_DUST.display(0, 0, 0, 1, 50, ball.getLocation(), 30);
 		} else {
 			main.api.cancelTask(root.tasks.get(ball));
+			root.tasks.remove(ball);
 		}
 	}
 	

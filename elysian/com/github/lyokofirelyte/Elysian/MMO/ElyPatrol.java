@@ -94,7 +94,20 @@ public class ElyPatrol extends ElyMMO {
 	}
 	
 	public boolean doesPatrolExistWithPlayer(Player p){
-		return getPatrolWithPlayer(p) != null;
+		
+		if (patrols.size() <= 0){
+			return false;
+		}
+		
+		for (Patrol patrol : patrols.values()){
+			for (String player : patrol.getMembers()){
+				if (player.equals(p.getName())){
+					return true;
+				}
+			}
+		}
+		
+		return false;
 	}
 	
 	public Collection<Patrol> getAllPatrols(){

@@ -1,6 +1,7 @@
 package com.github.lyokofirelyte.Elysian.Games.Gotcha;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -9,8 +10,11 @@ import java.util.Random;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.entity.Player;
 import org.bukkit.entity.SmallFireball;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.scoreboard.DisplaySlot;
 
 import net.minecraft.util.gnu.trove.map.hash.THashMap;
 
@@ -103,7 +107,23 @@ public class Gotcha extends THashMap<String, GotchaGame> implements DivGame, Ely
 				}
 				
 				public void resetCooldown(DivinityPlayer dp){
-					cooldowns.put(dp, System.currentTimeMillis() + 4000L);
+					
+					final Player p = Bukkit.getPlayer(dp.uuid());
+					cooldowns.put(dp, System.currentTimeMillis() + 2000L);
+					
+					if (p.getItemInHand().getType().equals(Material.DIAMOND_HOE)){
+						
+						final ItemMeta im = p.getItemInHand().getItemMeta();
+						im.setDisplayName(main.AS("&c&oCooldown..."));
+						p.getItemInHand().setItemMeta(im);
+						
+						Bukkit.getScheduler().scheduleSyncDelayedTask(main, new Runnable(){ public void run(){
+							if (p.getItemInHand().getType().equals(Material.DIAMOND_HOE)){
+								im.setDisplayName(main.AS("&a&oReady!"));
+								p.getItemInHand().setItemMeta(im);
+							}
+						}}, 40L);
+					}
 				}
 				
 				public void setInProgress(boolean a){
@@ -145,13 +165,17 @@ public class Gotcha extends THashMap<String, GotchaGame> implements DivGame, Ely
 					if (in){
 						
 						for (int i = 0; i < players.size(); i++){
-							main.api.event(new DivinityTeleportEvent(Bukkit.getPlayer(players.get(i).uuid()), (spawnPoints.size() > i ? spawnPoints.get(i) : getRandomSpawnPoint())));
+							if (Bukkit.getPlayer(players.get(i).uuid()) != null){
+								main.api.event(new DivinityTeleportEvent(Bukkit.getPlayer(players.get(i).uuid()), (spawnPoints.size() > i ? spawnPoints.get(i) : getRandomSpawnPoint())));
+							}
 						}
 						
 					} else {
 						
 						for (DivinityPlayer dp : players){
-							main.api.event(new DivinityTeleportEvent(Bukkit.getPlayer(dp.uuid()), getLobby()));
+							if (Bukkit.getPlayer(dp.uuid()) != null){
+								main.api.event(new DivinityTeleportEvent(Bukkit.getPlayer(dp.uuid()), getLobby()));
+							}
 						}
 					}
 				}
@@ -206,6 +230,7 @@ public class Gotcha extends THashMap<String, GotchaGame> implements DivGame, Ely
 						dp.set(DPI.IN_GAME, false);
 						Bukkit.getPlayer(dp.uuid()).getInventory().clear();
 						Bukkit.getPlayer(dp.uuid()).setWalkSpeed(0.2F);
+						Bukkit.getPlayer(dp.uuid()).getScoreboard().getObjective(DisplaySlot.SIDEBAR).unregister();
 						main.api.cancelTask("gotchaScore" + dp.name());
 					}
 					
@@ -219,9 +244,15 @@ public class Gotcha extends THashMap<String, GotchaGame> implements DivGame, Ely
 						
 						tpAll(true);
 						
+						ItemStack i = new ItemStack(Material.DIAMOND_HOE);
+						ItemMeta im = i.getItemMeta();
+						im.setDisplayName(main.AS("&a&oReady!"));
+						im.setLore(Arrays.asList(main.AS("&d&oGotcha! Laser Weapon")));
+						i.setItemMeta(im);
+						
 						for (DivinityPlayer dp : players){
 							dp.set(DPI.IN_GAME, true);
-							Bukkit.getPlayer(dp.uuid()).getInventory().addItem(new ItemStack(Material.DIAMOND_HOE));
+							Bukkit.getPlayer(dp.uuid()).getInventory().addItem(i);
 							Bukkit.getPlayer(dp.uuid()).setWalkSpeed(0.4F);
 							main.api.repeat(main.api, "event", 20L, 0L, "gotchaScore" + dp.name(), new ScoreboardUpdateEvent(Bukkit.getPlayer(dp.uuid()), "gameGotcha"));
 						}

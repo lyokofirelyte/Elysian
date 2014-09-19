@@ -7,6 +7,7 @@ import java.util.HashMap;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.event.Listener;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.ShapedRecipe;
@@ -65,7 +66,9 @@ import com.github.lyokofirelyte.Elysian.MMO.Abilities.SkyBlade;
 import com.github.lyokofirelyte.Elysian.MMO.Abilities.SoulSplit;
 import com.github.lyokofirelyte.Elysian.MMO.Abilities.SuperBreaker;
 import com.github.lyokofirelyte.Elysian.MMO.Abilities.TreeFeller;
+import com.github.lyokofirelyte.Elysian.MMO.Magics.SpellCommand;
 import com.github.lyokofirelyte.Elysian.MMO.Magics.SpellEvents;
+import com.github.lyokofirelyte.Elysian.MMO.Magics.SpellTasks;
 import com.sk89q.worldedit.bukkit.WorldEditPlugin;
 
 public class ElySetup {
@@ -207,6 +210,7 @@ public class ElySetup {
 			new ElyWarps(main),
 			new ElySpectate(main),
 			new ElyNewMember(main),
+			new SpellCommand(main),
 			main.mail,
 			main.logger,
 			main.staff,
@@ -300,6 +304,19 @@ public class ElySetup {
 		
 		rh = new RecipeHandler(r);
 		rh.setIngredient('f', new ItemStack(Material.FEATHER));
+		main.getServer().addRecipe(rh.getShapedRecipe());
+		
+		
+		i = DivInvManager.createItem("SUPERCOBBLE", new String[] {"&6&oConsumed by magic spells"}, Enchantment.DURABILITY, 10, Material.COBBLESTONE, 9);
+
+		r = new ShapedRecipe(i).shape(
+			"fff",
+			"fff",
+			"fff"
+		);
+		
+		rh = new RecipeHandler(r);
+		rh.setIngredient('f', new ItemStack(Material.COBBLESTONE));
 		main.getServer().addRecipe(rh.getShapedRecipe());
 	}
 }

@@ -16,6 +16,7 @@ import org.bukkit.Material;
 import org.bukkit.entity.ItemFrame;
 import org.bukkit.entity.Painting;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.SmallFireball;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -168,7 +169,7 @@ public class ElyProtect implements Listener {
 			Player p = (Player)e.getEntity();
 			String result = isInAnyRegion(p.getLocation());
 			
-			if (hasFlag(result, DRF.TAKE_DAMAGE)){
+			if (hasFlag(result, DRF.TAKE_DAMAGE) || e.getDamager() instanceof SmallFireball){
 				e.setCancelled(true);
 			}
 			

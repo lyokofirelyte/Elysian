@@ -19,6 +19,7 @@ import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Fish;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Monster;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.SmallFireball;
 import org.bukkit.event.EventHandler;
@@ -280,7 +281,7 @@ public class ElyMMO extends THashMap<Material, MXP> implements Listener {
 	@EventHandler (ignoreCancelled = true, priority = EventPriority.MONITOR)
 	public void onMob(EntityDamageByEntityEvent e){
 		
-		if (e.getEntity() instanceof Player == false && e.getDamager() instanceof Arrow){
+		if (e.getEntity() instanceof Monster && e.getDamager() instanceof Arrow){
 			Arrow pro = (Arrow) e.getDamager();
 			if (pro.getShooter() instanceof Player){
 				DivinityPlayer dp = main.api.getDivPlayer((Player)pro.getShooter());
@@ -394,8 +395,8 @@ public class ElyMMO extends THashMap<Material, MXP> implements Listener {
 			case FARMING: return "&6The best skill to get 99 in. Tear down crops.";
 			case PATROL: return "&6Hunt or skill with a group of people and share the XP!";
 			case FISHERMAN: return "&6Just fish stuff! :)";
-			case SOLAR_MAGICS: return "&6Destructive spells!";
-			case LUNAR_MAGICS: return "&6Group-based healing & help skills!";
+			case SOLAR: return "&6Destructive spells!";
+			case LUNAR: return "&6Group-based healing & help skills!";
 		}
 	}
 	
@@ -419,8 +420,8 @@ public class ElyMMO extends THashMap<Material, MXP> implements Listener {
 			case FARMING: return "&bLevel 10: &6LIFE FORCE (right-click sapling)\n&7&oPlants a random tree.\n&7&oEvery level decreases cooldown by 1 second.";
 			case PATROL: return "&6More Shop Options";
 			case FISHERMAN: return "&bLevel 10: &6HOLY MACKEREL! (right-click rod)\n&7&oWhip up a crazy fish-storm!\n&7&oThe cooldown for this does not change as you level.";
-			case SOLAR_MAGICS: return "&aStuff.";
-			case LUNAR_MAGICS: return "&aStuff.";
+			case SOLAR: return "&6Level up for new spells!\n&3&o0.4% damage increase per level";
+			case LUNAR: return "&6Level up for new spells!";
 		}
 	}
 	
@@ -658,7 +659,7 @@ public class ElyMMO extends THashMap<Material, MXP> implements Listener {
 	}
 	
 	//lvl xp xp_needed
-	@EventHandler (priority = EventPriority.MONITOR)
+	@EventHandler (ignoreCancelled = true, priority = EventPriority.MONITOR)
 	public void onXp(SkillExpGainEvent e){
 		
 		if (e.getXp() == 0 || e.isCancelled() || (!e.getPlayer().getWorld().getName().equals("world") && !e.getPlayer().getWorld().getName().equals("world_nether") && !e.getPlayer().getWorld().getName().equals("world_the_end"))){
@@ -667,28 +668,35 @@ public class ElyMMO extends THashMap<Material, MXP> implements Listener {
 		
 		Player p = e.getPlayer();
 		DivinityPlayer dp = main.api.getDivPlayer(p);
+		
+		if (dp.getBool(DPI.IN_GAME)){
+			return;
+		}
+		
 		e.setXp(dp.getBool(DPI.IGNORE_XP) ? e.getXp() : e.getXp()*2); // Added for balancing - current curve way too high.
 		
 		String[] results = dp.getStr(e.getSkill()).split(" ");
 		int level = Integer.parseInt(results[0]);
 		
 		if (!dp.getBool(DPI.IGNORE_XP) && !dp.getBool(DPI.SHARE_XP)){
-			if (patrols.doesPatrolExistWithPlayer(p)){
-				for (String member : patrols.getPatrolWithPlayer(p).getMembers()){
-					if (!member.equals(p.getName())){
-						Location l = main.getPlayer(member).getLocation();
-						Location l2 = e.getPlayer().getLocation();
-						if (l.getWorld().getName().equals(l2.getWorld().getName()) && (l.getBlockX() >= l2.getBlockX()-50 && l.getBlockX() <= l2.getBlockX()+50)){
-							if (l.getBlockZ() >= l2.getBlockZ()-50 && l.getBlockZ() <= l2.getBlockZ()+50){
-								if (l.getBlockY() >= l2.getBlockY()-50 && l.getBlockY() <= l2.getBlockY()+50){
-									main.matchDivPlayer(member).set(DPI.IGNORE_XP, true);
-									main.api.event(new SkillExpGainEvent(main.getPlayer(member), e.getSkill(), Math.round(e.getXp()/5)));
+			try {
+				if (patrols.doesPatrolExistWithPlayer(p)){
+					for (String member : patrols.getPatrolWithPlayer(p).getMembers()){
+						if (!member.equals(p.getName())){
+							Location l = main.getPlayer(member).getLocation();
+							Location l2 = e.getPlayer().getLocation();
+							if (l.getWorld().getName().equals(l2.getWorld().getName()) && (l.getBlockX() >= l2.getBlockX()-50 && l.getBlockX() <= l2.getBlockX()+50)){
+								if (l.getBlockZ() >= l2.getBlockZ()-50 && l.getBlockZ() <= l2.getBlockZ()+50){
+									if (l.getBlockY() >= l2.getBlockY()-50 && l.getBlockY() <= l2.getBlockY()+50){
+										main.matchDivPlayer(member).set(DPI.IGNORE_XP, true);
+										main.api.event(new SkillExpGainEvent(main.getPlayer(member), e.getSkill(), Math.round(e.getXp()/5)));
+									}
 								}
 							}
 						}
 					}
 				}
-			}
+			} catch (Exception ee){}
 		}
 		
 		dp.set(DPI.IGNORE_XP, false);

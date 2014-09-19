@@ -13,9 +13,17 @@ public class SpellTasks extends ElyMMO {
 		super(i);
 	}
 	
+	public void kersplash(Elysian main, SmallFireball fireball){
+		if (!fireball.isDead()){
+			ParticleEffect.SPLASH.display(1, 1, 1, 1, 300, fireball.getLocation(), 30);
+		} else {
+			main.api.cancelTask(main.spellTasks.get(fireball));
+		}
+	}
+	
 	public void fireball(Elysian main, SmallFireball fireball){
 		if (!fireball.isDead()){
-			ParticleEffect.RED_DUST.display(0, 0, 0, 1, 300, fireball.getLocation(), 30);
+			ParticleEffect.RED_DUST.display(0, 0, 0, 0, 200, fireball.getLocation(), 30);
 		} else {
 			main.api.cancelTask(main.spellTasks.get(fireball));
 		}
