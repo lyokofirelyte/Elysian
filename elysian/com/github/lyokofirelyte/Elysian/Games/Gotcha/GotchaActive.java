@@ -94,6 +94,7 @@ public class GotchaActive implements Listener {
 							v.getWorld().playSound(v.getLocation(), Sound.EXPLODE, 15F, 15F);
 							game.addPoint(shooter);
 							main.api.event(new DivinityTeleportEvent(Bukkit.getPlayer(victim.uuid()), game.getRandomSpawnPoint()));
+							game.msg("&6&oKill-Feed&f: " + shooter.getStr(DPI.DISPLAY_NAME) + " &7&o" + GotchaWords.generate() + "'d &7" + victim.getStr(DPI.DISPLAY_NAME));
 							break;
 						}
 					}
@@ -118,7 +119,7 @@ public class GotchaActive implements Listener {
 				
 				SmallFireball fireball = (SmallFireball) p.getWorld().spawnEntity(frontLocation, EntityType.SMALL_FIREBALL);
 				fireball.setShooter(p);
-				fireball.setVelocity(p.getLocation().getDirection().multiply(2.1));
+				fireball.setVelocity(p.getLocation().getDirection().multiply(2.2));
 				
 				String taskName = "gotchaLaser" + p.getName() + new Random().nextInt(1000);
 				

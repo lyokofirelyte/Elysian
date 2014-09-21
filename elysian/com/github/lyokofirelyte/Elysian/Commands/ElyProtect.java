@@ -112,7 +112,7 @@ public class ElyProtect implements Listener {
 			Player p = (Player) e.getEntity();
 			String result = isInAnyRegion(e.getEntity().getLocation());
 			
-			if (hasFlag(result, DRF.TAKE_DAMAGE)){
+			if (hasFlag(result, DRF.TAKE_DAMAGE) || main.api.getDivPlayer(p).getBool(DPI.IN_GAME)){
 				if(e.getFoodLevel() < p.getFoodLevel()){
 					e.setCancelled(true);
 				}

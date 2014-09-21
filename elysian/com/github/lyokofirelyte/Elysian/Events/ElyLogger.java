@@ -482,7 +482,7 @@ public class ElyLogger implements Listener, Runnable {
 					
 				break;
 				
-				case "rollback": ///log rollback <radius> 5m/5h [player]
+				case "rollback": //log rollback <radius> 5m/5h [player]
 					
 					main.api.getSystem().set(DPI.ROLLBACK_IN_PROGRESS, true);
 					

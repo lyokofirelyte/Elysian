@@ -74,6 +74,7 @@ public enum Spell {
 			
 			if (toRemove != null){
 				shooter.getInventory().removeItem(toRemove);
+				shooter.updateInventory();
 			}
 			
 			if (cont && found){

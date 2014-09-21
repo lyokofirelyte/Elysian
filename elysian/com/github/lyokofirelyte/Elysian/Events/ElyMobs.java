@@ -320,7 +320,7 @@ public class ElyMobs implements Listener {
 					main.s(p, "&c&oNot enough stored xp!");
 				}
 				
-			} else if (args[0].equals("store")){
+			/*} else if (args[0].equals("store")){
 				
 				if (p.getTotalExperience() >= amt){
 					int restore = new Integer(p.getTotalExperience() - amt);
@@ -329,7 +329,7 @@ public class ElyMobs implements Listener {
 					p.giveExp(restore);
 				} else {
 					dp.err("Not enough xp!");
-				}
+				}*/
 				
 			} else {
 				main.s(p, main.help("exp", this));

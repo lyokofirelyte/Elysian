@@ -142,7 +142,6 @@ public class Gotcha extends THashMap<String, GotchaGame> implements DivGame, Ely
 					dp.set(DPI.IN_GAME, true);
 					
 					if (players.size() >= 3){
-						inProgress = true;
 						start();
 					}
 				}
@@ -243,6 +242,7 @@ public class Gotcha extends THashMap<String, GotchaGame> implements DivGame, Ely
 					if (players.size() > 0){
 						
 						tpAll(true);
+						setInProgress(true);
 						
 						ItemStack i = new ItemStack(Material.DIAMOND_HOE);
 						ItemMeta im = i.getItemMeta();

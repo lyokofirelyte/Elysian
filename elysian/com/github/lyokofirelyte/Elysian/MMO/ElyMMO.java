@@ -864,26 +864,6 @@ public class ElyMMO extends THashMap<Material, MXP> implements Listener {
 		DivinityPlayer dp = main.api.getDivPlayer(p);
 		Block b = e.getClickedBlock() != null ? e.getClickedBlock() : null;
 		
-		/*if (e.getAction() == Action.RIGHT_CLICK_AIR && p.getItemInHand().getType().equals(Material.STICK)){
-			
-			/*Location eyeLocation = p.getLocation();
-			eyeLocation.setY(eyeLocation.getY() + 1.5);
-			Location frontLocation = eyeLocation.add(eyeLocation.getDirection());
-			
-			SmallFireball potion = (SmallFireball) p.getWorld().spawnEntity(frontLocation, EntityType.SMALL_FIREBALL);
-			potion.setShooter(p);
-			potion.setVelocity(p.getLocation().getDirection().multiply(1.5));
-			String taskName = "laser" + p.getName() + p.getLocation().getYaw() + new Random().nextInt(1000);
-			potions.put(potion, taskName);
-			main.api.repeat(this, "laser", 0L, 1L, taskName, p, potion);
-			ParticleEffect.SPELL.display(2, 2, 2, 0, 20000, p.getLocation(), 16);
-			
-			for (Entity ee : p.getNearbyEntities(5D, 5D, 5D)){
-				ee.setVelocity(p.getLocation().getDirection().multiply(-2));
-			}
-			
-		}*/
-		
 		switch (e.getAction()){
 		
 			default: break;
