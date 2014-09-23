@@ -77,6 +77,7 @@ public class ElyMMO extends THashMap<Material, MXP> implements Listener {
 	public LifeForce life;
 	public HolyMackerel holy;
 	public ElyPatrol patrols;
+	public ElyAutoRepair repair;
 	public SoulSplit soulSplit;
 	public SpellEvents spellEvents;
 	public SpellTasks spellTasks;

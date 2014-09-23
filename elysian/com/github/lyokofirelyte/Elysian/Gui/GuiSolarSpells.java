@@ -20,7 +20,10 @@ public class GuiSolarSpells extends DivGui {
 	
 	ItemStack[] stacks = new ItemStack[]{
 		createItem("&cFire Blast", new String[] { "&6&oA simple blast of fire.", "&8&oLevel 0" }, Enchantment.DURABILITY, 0, Material.STICK),
-		createItem("&bKersplash", new String[] { "&6&oA simple blast of water.", "&8&oLevel 5" }, Enchantment.DURABILITY, 0, Material.STICK)
+		createItem("&bKersplash", new String[] { "&6&oA simple blast of water.", "&8&oLevel 5" }, Enchantment.DURABILITY, 0, Material.STICK),
+		createItem("&3Rapid Fire", new String[] { "&6&oA simple quickly-fired... fireball.", "&8&oLevel 10" }, Enchantment.DURABILITY, 0, Material.STICK),
+		createItem("&2Earth Bound", new String[] { "&6&oChuck chunks of dirt into your foes!", "&8&oLevel 15" }, Enchantment.DURABILITY, 0, Material.STICK),
+		createItem("&bDiamond Blitz", new String[] { "&6&oKill your foes... with style!", "&8&oLevel 20" }, Enchantment.DURABILITY, 0, Material.STICK)
 	};
 	
 	public GuiSolarSpells(Elysian main){

@@ -26,6 +26,7 @@ public class SoulSplit extends ElyMMO {
 		p.setWalkSpeed(0.8F);
 		p.setPlayerTime(18000L, false);
 		p.addPotionEffect(new PotionEffect(PotionEffectType.NIGHT_VISION, 99999, 10));
+		p.addPotionEffect(new PotionEffect(PotionEffectType.JUMP, 99999, 2));
 		dp.s("You feel one with the night!");
 		main.api.schedule(this, "stop", 400L + (dp.getLevel(ElySkill.VAMPYRISM)*10L), "vamp" + p.getName(), p, dp);
 		main.api.repeat(this, "effects", 0L, 1L, "vampEffects" + p.getName(), p);
@@ -37,6 +38,7 @@ public class SoulSplit extends ElyMMO {
 			p.setWalkSpeed(0.2F);
 			p.resetPlayerTime();
 			p.removePotionEffect(PotionEffectType.NIGHT_VISION);
+			p.removePotionEffect(PotionEffectType.JUMP);
 			dp.s("&oYou feel your powers wear off...");
 			main.api.cancelTask("vampEffects" + p.getName());
 		}

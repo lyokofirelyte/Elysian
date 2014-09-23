@@ -28,6 +28,7 @@ import org.bukkit.util.Vector;
 import com.github.lyokofirelyte.Divinity.DivinityUtils;
 import com.github.lyokofirelyte.Divinity.Commands.DivCommand;
 import com.github.lyokofirelyte.Divinity.Events.DivinityChannelEvent;
+import com.github.lyokofirelyte.Divinity.Events.DivinityTeleportEvent;
 import com.github.lyokofirelyte.Divinity.Storage.DPI;
 import com.github.lyokofirelyte.Divinity.Storage.DivinityPlayer;
 import com.github.lyokofirelyte.Elysian.Elysian;
@@ -271,6 +272,13 @@ public class ElyMobs implements Listener {
 					}
 				}
 				main.s(e.getPlayer(), "This duel was safe. Inventory restored.");
+			}
+		}
+		
+		if (!dp.getBool(DPI.IN_GAME) && e.getPlayer().getBedSpawnLocation() == null){
+			if (dp.getList(DPI.HOME).size() > 0){
+				String[] h = dp.getList(DPI.HOME).get(0).split(" ");
+				main.api.event(new DivinityTeleportEvent(e.getPlayer(), h[1], h[2], h[3], h[4], h[5], h[6]));
 			}
 		}
 	}

@@ -58,6 +58,7 @@ import com.github.lyokofirelyte.Elysian.Games.Spleef.SpleefStorage;
 import com.github.lyokofirelyte.Elysian.Games.TeamPVP.TeamPVP;
 import com.github.lyokofirelyte.Elysian.Gui.GuiCloset;
 import com.github.lyokofirelyte.Elysian.Gui.GuiRoot;
+import com.github.lyokofirelyte.Elysian.MMO.ElyAutoRepair;
 import com.github.lyokofirelyte.Elysian.MMO.ElyMMO;
 import com.github.lyokofirelyte.Elysian.MMO.ElyPatrol;
 import com.github.lyokofirelyte.Elysian.MMO.Abilities.HolyMackerel;
@@ -108,6 +109,7 @@ public class ElySetup {
 		main.mmo.soulSplit = new SoulSplit(main);
 		main.mmo.spellEvents = new SpellEvents(main);
 		main.mmo.spellTasks = new SpellTasks(main);
+		main.mmo.repair = new ElyAutoRepair(main);
 		main.autoSave = new ElyAutoSave(main);
 		main.spleef = new Spleef(main);
 		main.saveClasses.put("main.blink", new Blink(main));
@@ -191,6 +193,7 @@ public class ElySetup {
 			main.invManager,
 			main.mmo,
 			main.mmo.spellEvents,
+			main.mmo.repair,
 			main.spleef.active,
 			main.blink.blinkCommand,
 			main.teamPVP.active,
@@ -224,6 +227,7 @@ public class ElySetup {
 			main.pro,
 			main.rings,
 			main.mmo,
+			main.mmo.repair,
 			main.closets.get(0),
 			main.spleef.commandMain,
 			main.mmo.patrols,

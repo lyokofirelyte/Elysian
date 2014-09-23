@@ -28,7 +28,6 @@ public class ElyAutoSave implements Runnable {
 		
 		for (Player p : Bukkit.getOnlinePlayers()){
 			if (main.api.getDivPlayer(p).getBool(MMO.IS_MINING) || main.api.getDivPlayer(p).getBool(MMO.IS_DIGGING)){
-				main.api.event(new DivinityChannelEvent("&6System", "wa.staff.intern", "&c&oOh! &4\u2744", "&4&oAuto-save failed. Someone was superbreaking. Save again later!", "&c"));
 				return;
 			}
 		}

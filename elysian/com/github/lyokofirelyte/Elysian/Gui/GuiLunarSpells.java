@@ -20,6 +20,7 @@ public class GuiLunarSpells extends DivGui {
 	
 	ItemStack[] stacks = new ItemStack[]{
 		createItem("&aDeflect", new String[] { "&6&oPush back mobs near you.", "&8&oLevel 0" }, Enchantment.DURABILITY, 10, Material.FEATHER),
+		createItem("&9Renewal", new String[] { "&6&oHeal you and those around you with a healing beam.", "&8&oLevel 10" }, Enchantment.DURABILITY, 10, Material.FEATHER)
 	};
 	
 	public GuiLunarSpells(Elysian main){

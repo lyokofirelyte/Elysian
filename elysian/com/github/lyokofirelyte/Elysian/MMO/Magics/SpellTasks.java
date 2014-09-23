@@ -1,9 +1,21 @@
 package com.github.lyokofirelyte.Elysian.MMO.Magics;
 
-import org.bukkit.entity.Arrow;
-import org.bukkit.entity.SmallFireball;
+import java.util.ArrayList;
+import java.util.List;
 
+import org.bukkit.Material;
+import org.bukkit.entity.Arrow;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.FallingBlock;
+import org.bukkit.entity.Monster;
+import org.bukkit.entity.Player;
+import org.bukkit.entity.SmallFireball;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
+
+import com.github.lyokofirelyte.Divinity.Events.SkillExpGainEvent;
 import com.github.lyokofirelyte.Divinity.PublicUtils.ParticleEffect;
+import com.github.lyokofirelyte.Divinity.Storage.ElySkill;
 import com.github.lyokofirelyte.Elysian.Elysian;
 import com.github.lyokofirelyte.Elysian.MMO.ElyMMO;
 
@@ -11,6 +23,44 @@ public class SpellTasks extends ElyMMO {
 
 	public SpellTasks(Elysian i) {
 		super(i);
+	}
+	
+	public void earthBound(Elysian main, FallingBlock fireball, Player p){
+		if (!fireball.isDead()){
+			ParticleEffect.SLIME.display(1, 1, 1, 1, 300, fireball.getLocation(), 30);
+			for (Entity e : fireball.getNearbyEntities(2D, 2D, 2D)){
+				if (e instanceof Monster){
+					((Monster) e).damage(5 + (0.4*main.api.getDivPlayer(p).getLevel(ElySkill.SOLAR)));
+					main.api.event(new SkillExpGainEvent(p, ElySkill.SOLAR, 65));
+					ParticleEffect.CLOUD.display(1, 1, 1, 0, 1000, e.getLocation(), 30);
+				}
+			}
+		} else {
+			main.api.cancelTask(main.spellTasks.get(fireball));
+		}
+	}
+	
+	public void diamondBlitz(Elysian main, FallingBlock fireball, Player p){
+		if (!fireball.isDead()){
+			ParticleEffect.displayBlockCrack(Material.DIAMOND_BLOCK.getId(), (byte) 0, 1, 1, 1, 300, fireball.getLocation(), 30);
+			for (Entity e : fireball.getNearbyEntities(2D, 2D, 2D)){
+				if (e instanceof Monster){
+					((Monster) e).damage(6 + (0.4*main.api.getDivPlayer(p).getLevel(ElySkill.SOLAR)));
+					main.api.event(new SkillExpGainEvent(p, ElySkill.SOLAR, 80));
+					ParticleEffect.CLOUD.display(1, 1, 1, 0, 1000, e.getLocation(), 30);
+				}
+			}
+		} else {
+			main.api.cancelTask(main.spellTasks.get(fireball));
+		}
+	}
+	
+	public void rapidFire(Elysian main, SmallFireball fireball){
+		if (!fireball.isDead()){
+			ParticleEffect.LAVA.display(1, 1, 1, 1, 300, fireball.getLocation(), 30);
+		} else {
+			main.api.cancelTask(main.spellTasks.get(fireball));
+		}
 	}
 	
 	public void kersplash(Elysian main, SmallFireball fireball){
@@ -35,5 +85,37 @@ public class SpellTasks extends ElyMMO {
 		} else {
 			main.api.cancelTask(main.spellTasks.get(arrow));
 		}
+	}
+	
+	public void renewal(Elysian main, Player p){
+		
+		if (p.isOnline()){
+			
+			List<Entity> ents = new ArrayList<Entity>(p.getNearbyEntities(5D, 5D, 5D));
+			ents.add(p);
+			
+			for (Entity e : ents){
+				if (e instanceof Player){
+					Player them = (Player) e;
+					if (them.getHealth() < them.getMaxHealth()){
+						main.api.event(new SkillExpGainEvent(p, ElySkill.LUNAR, 50));
+						if (them.getHealth() < them.getMaxHealth() - 2){
+							them.setHealth(them.getHealth() + 2);
+						} else {
+							them.setHealth(them.getMaxHealth());
+						}
+					}
+				}
+			}
+			
+		} else {
+			cancelRenewal(main, p);
+		}
+	}
+	
+	public void cancelRenewal(Elysian main, Player p){
+		main.api.getSystem().remEffect("renewal" + p.getName());
+		main.api.getSystem().remEffect("renewal2" + p.getName());
+		main.api.cancelTask("renewal3" + p.getName());
 	}
 }

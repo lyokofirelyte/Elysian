@@ -129,7 +129,7 @@ public class ElyLogger implements Listener, Runnable {
 			List<String> failedNames = new ArrayList<String>();
 			String failLine = "";
 			
-			if (!dp.getList(DPI.OWNED_CHESTS).contains(loc) && !main.silentPerms(e.getPlayer(), "wa.staff.mod2") && !dp.getStr(DPI.CHEST_MODE).equals("view")){
+			if (!dp.getList(DPI.OWNED_CHESTS).contains(loc) && !main.silentPerms(e.getPlayer(), "wa.staff.mod2") && !dp.getStr(DPI.CHEST_MODE).equals("view") && !dp.getStr(DPI.CHEST_MODE).equals("release")){
 				main.s(e.getPlayer(), "none", "&c&oThat is not yours to modify!");
 				return;
 			}
@@ -272,6 +272,7 @@ public class ElyLogger implements Listener, Runnable {
 			case "help":
 				main.s(p, "none", "/chest add/remove player1 player2 player3 etc");
 				main.s(p, "none", "/chest view");
+				main.s(p, "none", "/chest massrelease <radius>");
 				main.s(p, "none", "/chest release");
 				main.s(p, "none", "/chest cancel");
 			break;
@@ -288,6 +289,32 @@ public class ElyLogger implements Listener, Runnable {
 				dp.set(DPI.CHEST_MODE, args[0]);
 				dp.getList(DPI.CHEST_NAMES).add("release");
 				main.s(p, "Left-click a chest to make it public.");
+				
+			break;
+			
+			case "massrelease":
+				
+				if (main.perms(p, "wa.staff.admin")){
+					if (args.length == 2 && main.api.divUtils.isInteger(args[1])){
+						String released = "";
+						int radius = Integer.parseInt(args[1]) <= 20 ? Integer.parseInt(args[1]) : 5;
+						for (Location l : main.api.divUtils.circle(p.getLocation(), radius, radius, false, false, 0)){
+							if (protectedMats.contains(l.getBlock().getType())){
+								String loc = l.getWorld().getName() + " " + l.toVector().getBlockX() + " " + l.toVector().getBlockY() + " " + l.toVector().getBlockZ();
+								for (DivinityStorage div : main.api.divManager.getAllUsers()){
+									if (div.getList(DPI.OWNED_CHESTS).contains(loc)){
+										div.getList(DPI.OWNED_CHESTS).remove(loc);
+										released = released.equals("") ? div.getStr(DPI.DISPLAY_NAME) : released + "&6, " + div.getStr(DPI.DISPLAY_NAME);
+									}
+								}
+							}
+						}
+						dp.s("Released the following chests: ");
+						dp.s(released.equals("") ? "&7&oNone found!" : released);
+					} else {
+						dp.err("Invalid args! /chest massrelease <radius>");
+					}
+				}
 				
 			break;
 			

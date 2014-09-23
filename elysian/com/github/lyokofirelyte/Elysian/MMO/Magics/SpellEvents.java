@@ -13,11 +13,9 @@ import org.bukkit.ChatColor;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockIgniteEvent;
 import org.bukkit.event.block.BlockIgniteEvent.IgniteCause;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
+import org.bukkit.event.entity.EntityChangeBlockEvent;
 import org.bukkit.event.entity.EntityShootBowEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
-import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 
 import com.github.lyokofirelyte.Divinity.Events.SkillExpGainEvent;
@@ -33,23 +31,20 @@ public class SpellEvents extends ElyMMO implements Listener {
 	}
 	
 	@EventHandler
-	public void onDrop(PlayerDropItemEvent e){
-		if (e.getItemDrop().getItemStack().hasItemMeta()){
-			if (e.getItemDrop().getItemStack().getItemMeta().hasLore()){
-				try {
-					if (e.getItemDrop().getItemStack().getItemMeta().getLore().get(1).contains("Level")){
-						e.setCancelled(true);
-					}
-				} catch (Exception ee){}
-			}
-		}
-	}
-	
-	@EventHandler
 	public void onIgnite(BlockIgniteEvent e){
 		
 		if (e.getCause() == IgniteCause.FIREBALL){
 			e.setCancelled(true);
+		}
+	}
+	
+	@EventHandler
+	public void onChange(EntityChangeBlockEvent e){
+		if (main.spellTasks.containsKey(e.getEntity())){
+			e.setCancelled(true);
+			try {
+				e.getEntity().remove();
+			} catch (Exception ee){}
 		}
 	}
 
@@ -82,6 +77,14 @@ public class SpellEvents extends ElyMMO implements Listener {
 						
 					break;
 					
+					case "RAPID_FIRE":
+						
+						ParticleEffect.MAGIC_CRIT.display(1, 1, 1, 0, 1000, pro.getLocation(), 30);
+						xp = 50;
+						dmg = 5;
+						
+					break;
+					
 					case "NORMAL_ARROW":
 						
 						ParticleEffect.SPELL.display(0, 0, 0, 1, 1000, pro.getLocation(), 30);
@@ -95,11 +98,11 @@ public class SpellEvents extends ElyMMO implements Listener {
 				
 				switch (main.spellTasks.get(pro).split("%")[0]){
 				
-					case "FIRE_BLAST": case "KERSPLASH":
+					case "FIRE_BLAST": case "KERSPLASH": case "RAPID_FIRE":
 						
 						for (Entity ent : pro.getNearbyEntities(2D, 2D, 2D)){
 							if (ent instanceof Monster){
-								main.api.event(new EntityDamageByEntityEvent(ent, ent, DamageCause.ENTITY_ATTACK, dmg));
+								((Monster) ent).damage(dmg);
 								main.api.event(new SkillExpGainEvent((Player) pro.getShooter(), ElySkill.SOLAR, xp));
 							}
 						}
