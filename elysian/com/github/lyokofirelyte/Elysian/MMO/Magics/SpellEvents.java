@@ -22,12 +22,13 @@ import com.github.lyokofirelyte.Divinity.Events.SkillExpGainEvent;
 import com.github.lyokofirelyte.Divinity.PublicUtils.ParticleEffect;
 import com.github.lyokofirelyte.Divinity.Storage.ElySkill;
 import com.github.lyokofirelyte.Elysian.Elysian;
-import com.github.lyokofirelyte.Elysian.MMO.ElyMMO;
 
-public class SpellEvents extends ElyMMO implements Listener {
+public class SpellEvents implements Listener {
+	
+	private Elysian main;
 
 	public SpellEvents(Elysian i) {
-		super(i);
+		main = i;
 	}
 	
 	@EventHandler

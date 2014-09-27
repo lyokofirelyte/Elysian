@@ -8,10 +8,12 @@ import com.github.lyokofirelyte.Elysian.Gui.GuiLunarSpells;
 import com.github.lyokofirelyte.Elysian.Gui.GuiSolarSpells;
 import com.github.lyokofirelyte.Elysian.MMO.ElyMMO;
 
-public class SpellCommand extends ElyMMO {
+public class SpellCommand {
+	
+	private Elysian main;
 
 	public SpellCommand(Elysian i) {
-		super(i);
+		main = i;
 	}
 
 	@DivCommand(aliases = {"solar"}, desc = "Open the solar spellbook", help = "/solar", player = true)

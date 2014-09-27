@@ -260,7 +260,7 @@ public class ElyStaff implements Listener {
 		 s.update();
 	 }
 	 
-	 @DivCommand(perm = "wa.staff.mod", aliases = {"chestview"}, desc = "Chest Lookup / View Command", help = "/chestview <player>, /chestview lookup <player> <item>", player = true, min = 1)
+	 @DivCommand(perm = "wa.staff.mod2", aliases = {"chestview"}, desc = "Chest Lookup / View Command", help = "/chestview <player>, /chestview lookup <player> <item>", player = true, min = 1)
 	 public void onChestView(Player p, String[] args){
 		 
 		 if (args.length != 1 && args.length != 3){

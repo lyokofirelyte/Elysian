@@ -39,6 +39,7 @@ import com.github.lyokofirelyte.Elysian.Commands.ElySpectate;
 import com.github.lyokofirelyte.Elysian.Commands.ElyStaff;
 import com.github.lyokofirelyte.Elysian.Commands.ElyToggle;
 import com.github.lyokofirelyte.Elysian.Commands.ElyWarps;
+import com.github.lyokofirelyte.Elysian.Commands.ElyWealth;
 import com.github.lyokofirelyte.Elysian.Events.ElyChannel;
 import com.github.lyokofirelyte.Elysian.Events.ElyChat;
 import com.github.lyokofirelyte.Elysian.Events.ElyGameMode;
@@ -112,6 +113,7 @@ public class ElySetup {
 		main.mmo.repair = new ElyAutoRepair(main);
 		main.autoSave = new ElyAutoSave(main);
 		main.spleef = new Spleef(main);
+		main.wealth = new ElyWealth(main);
 		main.saveClasses.put("main.blink", new Blink(main));
 		main.saveClasses.put("main.teampvp", new TeamPVP(main));
 		main.saveClasses.put("main.gotcha", new Gotcha(main));
@@ -233,7 +235,8 @@ public class ElySetup {
 			main.mmo.patrols,
 			main.blink.blinkCommand,
 			main.teamPVP.command,
-			main.gotcha.command
+			main.gotcha.command,
+			main.wealth
 		);
 	}
 	

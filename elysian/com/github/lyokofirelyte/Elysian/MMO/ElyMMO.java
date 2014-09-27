@@ -205,12 +205,6 @@ public class ElyMMO extends THashMap<Material, MXP> implements Listener {
 		tool(Material.IRON_SPADE, ElySkill.DIGGING, 25);
 		tool(Material.GOLD_SPADE, ElySkill.DIGGING, 30);
 		tool(Material.DIAMOND_SPADE, ElySkill.DIGGING, 45);
-		
-		tool(Material.LEATHER_HELMET, ElySkill.RESISTANCE, 0);
-		tool(Material.CHAINMAIL_HELMET, ElySkill.RESISTANCE, 15);
-		tool(Material.IRON_HELMET, ElySkill.RESISTANCE, 25);
-		tool(Material.GOLD_HELMET, ElySkill.RESISTANCE, 30);
-		tool(Material.DIAMOND_HELMET, ElySkill.RESISTANCE, 45);
 	}
 	
 	private void tool(Material tool, ElySkill skill, int level){

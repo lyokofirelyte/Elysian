@@ -10,19 +10,18 @@ import org.bukkit.entity.FallingBlock;
 import org.bukkit.entity.Monster;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.SmallFireball;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
-
 import com.github.lyokofirelyte.Divinity.Events.SkillExpGainEvent;
 import com.github.lyokofirelyte.Divinity.PublicUtils.ParticleEffect;
 import com.github.lyokofirelyte.Divinity.Storage.ElySkill;
 import com.github.lyokofirelyte.Elysian.Elysian;
 import com.github.lyokofirelyte.Elysian.MMO.ElyMMO;
 
-public class SpellTasks extends ElyMMO {
+public class SpellTasks {
 
+	private Elysian main;
+	
 	public SpellTasks(Elysian i) {
-		super(i);
+		main = i;
 	}
 	
 	public void earthBound(Elysian main, FallingBlock fireball, Player p){

@@ -14,6 +14,7 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Monster;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Projectile;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityCreatePortalEvent;
@@ -77,9 +78,20 @@ public class ElyMobs implements Listener {
 					e.setCancelled(true);
 				}
 				
-			} else {
-				main.api.getDivPlayer((Player)e.getEntity()).set(DPI.IN_COMBAT, true);
+			} else if (e.getDamager() instanceof Projectile){
+				
+				Projectile proj = (Projectile) e.getDamager();
+				
+				if (proj.getShooter() instanceof Player){
+					Player damager = (Player) proj.getShooter();
+					if (!main.api.getDivPlayer(damager).getStr(DPI.DUEL_PARTNER).equals(p.getName())){
+						e.setCancelled(true);
+					}
+					
+				}
 			}
+			
+			main.api.getDivPlayer(p).set(DPI.IN_COMBAT, true);
 		}
 	}
 	
@@ -158,22 +170,6 @@ public class ElyMobs implements Listener {
 				killer.set(DPI.DUEL_PARTNER, "none");
 				deadDP.set(DPI.DUEL_PARTNER, "killed");
 				
-				for (ItemStack i : dead.getInventory().getContents()){
-					if (i != null){
-						deadDP.getStack(DPI.BACKUP_INVENTORY).add(i);
-					}
-				}
-				for (ItemStack i : dead.getInventory().getArmorContents()){
-					if (i != null){
-						deadDP.getStack(DPI.BACKUP_INVENTORY).add(i);
-					}
-				}
-				
-				if (killer.getBool(DPI.IS_DUEL_SAFE)){
-					e.setDroppedExp(0);
-					e.getDrops().clear();
-				}
-				
 				DivinityUtils.bc(dead.getDisplayName() + " &e&owas brutally murdered in a duel with " + killer.getStr(DPI.DISPLAY_NAME));
 			}
 		}
@@ -186,12 +182,6 @@ public class ElyMobs implements Listener {
 		
 		for (TeamPVPGame game : main.teamPVP.values()){
 			if (game.hasPlayer(e.getEntity().getName())){
-				return;
-			}
-		}
-		
-		if (e.getEntity().getKiller() != null && e.getEntity().getKiller() instanceof Player){
-			if (!((Player)e.getEntity()).equals((Player)e.getEntity().getKiller())){
 				return;
 			}
 		}

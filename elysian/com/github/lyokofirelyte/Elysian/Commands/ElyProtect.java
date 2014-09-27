@@ -141,7 +141,7 @@ public class ElyProtect implements Listener {
 		Location l = e.getClickedBlock() != null ? e.getClickedBlock().getLocation() : e.getPlayer().getLocation();
 		
 		if (hasFlag(result, DRF.INTERACT)){
-			if (!hasRegionPerms(p, result)){
+			if (!e.getAction().toString().contains("AIR") && !hasRegionPerms(p, result)){
 				e.setCancelled(true);
 			}
 		}

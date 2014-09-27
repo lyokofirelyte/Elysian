@@ -46,6 +46,7 @@ import com.github.lyokofirelyte.Elysian.Commands.ElyProtect;
 import com.github.lyokofirelyte.Elysian.Commands.ElyRings;
 import com.github.lyokofirelyte.Elysian.Commands.ElySpaceship;
 import com.github.lyokofirelyte.Elysian.Commands.ElyStaff;
+import com.github.lyokofirelyte.Elysian.Commands.ElyWealth;
 import com.github.lyokofirelyte.Elysian.Events.ElyChat;
 import com.github.lyokofirelyte.Elysian.Events.ElyLogger;
 import com.github.lyokofirelyte.Elysian.Events.ElyMobs;
@@ -82,6 +83,7 @@ public class Elysian extends DivinityAPI implements DivinityModule {
 	public ElyMMO mmo;
 	public ElyMMOCleanup cleanup;
 	public ElyAutoSave autoSave;
+	public ElyWealth wealth;
 	
 	public Spleef spleef;
 	public Blink blink;

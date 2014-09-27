@@ -135,7 +135,7 @@ public class ElyLogger implements Listener, Runnable {
 			}
 			
 			for (String s : names){
-				if (!main.doesPartialPlayerExist(s) && !s.equals("view")){
+				if (!main.doesPartialPlayerExist(s) && !s.equals("view") && !s.equals("release")){
 					failedNames.add(s);
 				} else if (dp.getStr(DPI.CHEST_MODE).equals("add") && main.matchDivPlayer(s).getList(DPI.OWNED_CHESTS).contains(loc)){
 					failedNames.add(s);
@@ -289,6 +289,7 @@ public class ElyLogger implements Listener, Runnable {
 				dp.set(DPI.CHEST_MODE, args[0]);
 				dp.getList(DPI.CHEST_NAMES).add("release");
 				main.s(p, "Left-click a chest to make it public.");
+				p.setGameMode(GameMode.SURVIVAL);
 				
 			break;
 			
@@ -357,7 +358,11 @@ public class ElyLogger implements Listener, Runnable {
 					}
 				}
 			} else {
-				dp.getList(DPI.OWNED_CHESTS).remove(loc);
+				for (DivinityStorage DP : main.api.divManager.getAllUsers()){
+					if (DP.getList(DPI.OWNED_CHESTS).contains(loc)){
+						DP.getList(DPI.OWNED_CHESTS).remove(loc);
+					}
+				}
 			}
 		}
 		

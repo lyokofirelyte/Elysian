@@ -43,7 +43,7 @@ public class ElyAlliance {
 		 DivinityPlayer dp = main.api.getDivPlayer(p);
 		 args[0] = ChatColor.stripColor(args[0]);
 		 
-		 if (StringUtils.isAlphanumeric(args[0])){
+		 if (StringUtils.isAlphanumeric(args[0]) || !StringUtils.isAlphanumeric(p.getName())){
 
 			 if (!args[0].toLowerCase().startsWith(dp.name().substring(0, 3).toLowerCase())){
 				 main.s(p, "none", "You must at least use the first 3 letters of your name.");
@@ -72,7 +72,7 @@ public class ElyAlliance {
 		 }
 	 }
 	 
-	 @DivCommand(aliases = {"a", "alliance"}, desc = "Elysian Alliance Command", help = "/a help", player = true, min = 1)
+	 @DivCommand(aliases = {"a", "alliance"}, desc = "Elysian Alliance Command", help = "/a -help", player = true, min = 1)
 	 public void onAllianceCommand(Player p, String[] args){
 		 
 		 DivinityPlayer dp = main.api.getDivPlayer(p);
@@ -80,7 +80,7 @@ public class ElyAlliance {
 		 
 		 switch (args[0]){
 		 	
-		 	case "help":
+		 	case "-help":
 				 
 		 		String[] help = new String[] {
 		 			"/a -list",
@@ -420,7 +420,7 @@ public class ElyAlliance {
 		 				main.s(p, "Invite sent!");
 		 				if (main.isOnline(args[1])){
 		 					main.s(main.getPlayer(args[1]), p.getDisplayName() + " &bhas invited you to join " + main.coloredAllianceName(dp.getStr(DPI.ALLIANCE_NAME)).toUpperCase() + "&b.");
-		 					main.s(main.getPlayer(args[1]), "Type &6/a accept &bor &6/a deny&b.");
+		 					main.s(main.getPlayer(args[1]), "Type &6/a -accept &bor &6/a -deny&b.");
 		 				}
 		 			} else {
 		 				main.s(p, "&c&oOnly the leader can do this.");

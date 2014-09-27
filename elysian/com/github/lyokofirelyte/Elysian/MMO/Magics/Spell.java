@@ -115,6 +115,7 @@ public enum Spell {
 					case "EARTH_BOUND":
 						
 						FallingBlock b = shooter.getWorld().spawnFallingBlock(frontLocation, Material.DIRT.getId(), (byte) 0);
+						b.setDropItem(false);
 						b.setVelocity(shooter.getLocation().getDirection().multiply(1.4));
 						main.spellTasks.put(b, type + "%" + new Random().nextInt(1000));
 						main.api.repeat(main.mmo.spellTasks, "earthBound", 0L, 1L, main.spellTasks.get(b), main, b, shooter);
@@ -124,6 +125,7 @@ public enum Spell {
 					case "DIAMOND_BLITZ":
 						
 						b = shooter.getWorld().spawnFallingBlock(frontLocation, Material.DIAMOND_BLOCK.getId(), (byte) 0);
+						b.setDropItem(false);
 						b.setVelocity(shooter.getLocation().getDirection().multiply(1.4));
 						main.spellTasks.put(b, type + "%" + new Random().nextInt(1000));
 						main.api.repeat(main.mmo.spellTasks, "diamondBlitz", 0L, 1L, main.spellTasks.get(b), main, b, shooter);

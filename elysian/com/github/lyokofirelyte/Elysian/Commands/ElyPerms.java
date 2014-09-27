@@ -53,7 +53,7 @@ public class ElyPerms {
 	 
 	 private void fillMap(){
 		 rankNames.put("member", "&7 % App % 2 % Build, Community Access, /sethome, /bal top");
-		 rankNames.put("dweller", "&1 % 5k % 2.25 % /notepad, /seen, /suicide");
+		 rankNames.put("dweller", "&1 % 5k % 2.25 % /notepad, /seen, /suicide, /wealth");
 		 rankNames.put("settler", "&e % 10k % 2.5 % chat formatting, sign color");
 		 rankNames.put("villager", "&6 % 15k % 2.75 % disposal sign, /hat, /chestplate, /leggings, /boots");
 		 rankNames.put("townsman", "&5 % 30k % 3 % 2nd home, /ci, mine n dash");

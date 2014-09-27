@@ -25,10 +25,12 @@ import com.github.lyokofirelyte.Divinity.Storage.DPI;
 import com.github.lyokofirelyte.Divinity.Storage.DivinityPlayer;
 import com.github.lyokofirelyte.Elysian.Elysian;
 
-public class ElyAutoRepair extends ElyMMO implements Listener {
+public class ElyAutoRepair implements Listener {
+	
+	Elysian main;
 
 	public ElyAutoRepair(Elysian i) {
-		super(i);
+		main = i;
 		enchants.put(Enchantment.DAMAGE_ALL, 1);
 		enchants.put(Enchantment.LURE, 2);
 		enchants.put(Enchantment.DAMAGE_ARTHROPODS, 2);
@@ -49,7 +51,7 @@ public class ElyAutoRepair extends ElyMMO implements Listener {
 	Map<Enchantment, Integer> enchants = new THashMap<>();
 	
 	@EventHandler
-	public void onBreak(BlockBreakEvent e){
+	public void onBreakBlock(BlockBreakEvent e){
 		repair(main.api.getDivPlayer(e.getPlayer()), e.getPlayer().getItemInHand());
 	}
 	

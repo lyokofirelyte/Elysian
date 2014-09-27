@@ -3,11 +3,13 @@ package com.github.lyokofirelyte.Elysian.MMO;
 import java.util.HashMap;
 import java.util.Map;
 
+import net.minecraft.util.gnu.trove.map.hash.THashMap;
+
 import org.bukkit.Material;
 
 import com.github.lyokofirelyte.Divinity.Storage.ElySkill;
 
-public class MXP extends HashMap<ElySkill, Integer[]>{
+public class MXP extends THashMap<ElySkill, Integer[]>{
 
 	private static final long serialVersionUID = 1L;
 	private Material material;
