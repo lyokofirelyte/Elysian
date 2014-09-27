@@ -90,8 +90,19 @@ public class ElyMarkkit implements Listener {
 			if(forSale.contains(e.getRawSlot())){
 				for(int i : buyCartPlayerShop){
 					if(e.getInventory().getItem(i) == null){
-						ItemStack clicked = e.getCurrentItem();
+						ItemStack clicked = new ItemStack(e.getCurrentItem().getType());
 						clicked.setAmount(1);
+						e.getInventory().setItem(i, clicked);
+						return;
+					}else if(e.getInventory().getItem(i).getType() == e.getCurrentItem().getType() && e.getInventory().getItem(i).getAmount() == 64 && i + 1 < 44){
+						ItemStack clicked = new ItemStack(e.getCurrentItem().getType());
+						clicked.setAmount(1);
+						e.getInventory().setItem(i + 1, clicked);
+						return;
+					}else if(e.getInventory().getItem(i).getType() == e.getCurrentItem().getType()){
+					
+						ItemStack clicked = new ItemStack(e.getCurrentItem().getType());
+						clicked.setAmount(e.getInventory().getItem(i).getAmount() + 1);
 						e.getInventory().setItem(i, clicked);
 						return;
 					}
