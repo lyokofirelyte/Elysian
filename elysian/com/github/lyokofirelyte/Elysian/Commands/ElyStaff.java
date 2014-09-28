@@ -7,6 +7,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import net.minecraft.util.com.google.common.collect.Lists;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
@@ -56,6 +58,46 @@ public class ElyStaff implements Listener {
 	 public void onBackup(CommandSender cs, String[] args){
 		 main.api.divManager.backup();
 		 main.s(cs, "Backup Complete!");
+	 }
+	 
+	 @DivCommand(perm = "wa.staff.mod2", aliases = {"markkit"}, desc = "Lookup command", help = "/markkit <player> <page>", player = false, min = 2)
+	 public void onMarkkit(CommandSender cs, String[] args){
+		 if(main.doesPartialPlayerExist(args[0])){
+			 if(main.api.divUtils.isInteger(args[1])){
+				 
+				 main.s(cs, "&3Looking up player &6" + args[0] + "&3!");
+				 
+				 int page = Integer.parseInt(args[1]);
+				 
+				 DivinityPlayer dp = main.api.getDivPlayer(main.getPlayer(args[0]));
+				 
+				 List<String> logList = dp.getList(DPI.MARKKIT_LOG);
+				 List<String> log = Lists.reverse(logList);
+				 List<String> result = new ArrayList<String>();
+//				 for(int i = 0; i < 20; i++){
+//						 main.s(cs, "&b" + log.get(i));
+//				 }
+				 if(page != 0){
+					 for(int i = 20 * page; i < 20 * page * 2; i++){
+						 try{
+							 result.add(log.get(i));
+						 }catch(Exception e){}
+					 }
+				 }else{
+					 for(int i = 0; i < 20; i++){
+						 try{
+							 result.add(log.get(i));
+						 }catch(Exception e){}					 
+					}
+				 }
+				 
+				 main.s(cs, Lists.reverse(result));
+			 }else{
+				 main.s(cs, "That is not a number!");
+			 }
+		 }else{
+			 main.s(cs, "Could find player " + args[0]);
+		 }
 	 }
 	 
 	 @DivCommand(perm = "wa.staff.admin", aliases = {"ts3auth"}, desc = "Set TS3Auth Info", help = "/ts3auth <user> <pass>", player = false, min = 2)

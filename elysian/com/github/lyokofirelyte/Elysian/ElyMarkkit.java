@@ -1,6 +1,7 @@
 package com.github.lyokofirelyte.Elysian;
 
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
@@ -83,6 +84,8 @@ public class ElyMarkkit implements Listener {
 		List<Integer> itemSlot = Arrays.asList(4, 13, 22, 31, 40, 49);
 		List<Integer> buyCartPlayerShop = Arrays.asList(36, 37, 38, 39, 40, 41, 42, 43);
 		List<Integer> forSale = Arrays.asList(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26);
+		
+		
 		if(e.getInventory().getName().contains("Playershop")){
 			e.setCancelled(true);
 			String clicker = e.getWhoClicked().getName();
@@ -118,15 +121,16 @@ public class ElyMarkkit implements Listener {
 						
 					}
 				}
-				
+				//check if he has enough money todo!
 				DivinityPlayer dp = main.api.getDivPlayer(p);
 				dp.set(DPI.BALANCE, dp.getInt(DPI.BALANCE) - total);
 				
 				if(main.doesPartialPlayerExist(e.getInventory().getItem(44).getItemMeta().getDisplayName().split(" ")[0])){
-				DivinityPlayer dp2 = main.matchDivPlayer(e.getInventory().getItem(44).getItemMeta().getDisplayName().split(" ")[0]);
+					DivinityPlayer dp2 = main.matchDivPlayer(e.getInventory().getItem(44).getItemMeta().getDisplayName().split(" ")[0]);
 					dp.set(DPI.BALANCE, dp.getInt(DPI.BALANCE) + total);
 				}
-
+				
+				main.s(p, total + " shinies were taken from your account!");
 				
 			}else if(e.getInventory().getItem(e.getRawSlot()) != null && buyCartPlayerShop.contains(e.getRawSlot())){
 				e.getInventory().setItem(e.getRawSlot(), new ItemStack(Material.AIR));
@@ -241,6 +245,8 @@ public class ElyMarkkit implements Listener {
 			case 46:
 					//sell button
 				int itemCount = 0;
+				int totalAmount = 0;
+				Material mat = Material.AIR;
 				for(Integer i : sellCart){
 					if(e.getInventory().getItem(i) != null){
 						itemCount = itemCount + e.getInventory().getItem(i).getAmount();
@@ -249,12 +255,22 @@ public class ElyMarkkit implements Listener {
 						if(totalPrice.get(e.getWhoClicked().getName()) == null){
 							totalPrice.put(e.getWhoClicked().getName(), 0);
 						}
+						
+						totalAmount = totalAmount + e.getInventory().getItem(i).getAmount();
+						mat = e.getInventory().getItem(i).getType();
+						
 						totalPrice.put(e.getWhoClicked().getName(), totalPrice.get(e.getWhoClicked().getName()) + currentPrice);
 						e.getInventory().setItem(i, new ItemStack(Material.AIR));
 					}
 				}
-					
+				
 				DivinityPlayer dp = main.api.getDivPlayer(p);
+				
+				if(totalAmount > 0){
+					Date d = new Date();
+					dp.getList(DPI.MARKKIT_LOG).add(d.getDate() + "/" + d.getMonth() + " " + d.getHours() + ":" + d.getMinutes() + " &bSold &6" + totalAmount + "&b of &6" + mat.name() + " &bworth &6" + totalPrice.get(e.getWhoClicked().getName()) + " &bshinies");
+				}
+				
 				dp.set(DPI.BALANCE, dp.getInt(DPI.BALANCE) + totalPrice.get(e.getWhoClicked().getName()));
 				main.s((Player)e.getWhoClicked(), totalPrice.get(e.getWhoClicked().getName()) + " was added to your account!");
 				totalPrice.put(e.getWhoClicked().getName(), 0);
@@ -264,6 +280,7 @@ public class ElyMarkkit implements Listener {
 				}else{
 					main.markkitYaml.set("Items." + name + ".isSellDoubled", false);
 				}
+
 				loadMarkkitInventory((Player)e.getWhoClicked(), name);
 			break;
 					
@@ -384,7 +401,11 @@ public class ElyMarkkit implements Listener {
 				
 				if (e.getClickedBlock().getState() instanceof Sign){
 					Sign sign = (Sign) e.getClickedBlock().getState();
-					if (sign.getLine(0).equals(main.AS("&dWC &5Markkit"))){
+					
+					if (sign.getLine(0).equals(main.AS("&dWC &5Markkit")) || sign.getLine(0).equals(main.AS("&bEly &3Markkit"))){
+						if(sign.getLine(0).equals(main.AS("&dWC &5Markkit"))){
+							sign.setLine(0, main.AS("&bEly &3Markkit"));
+						}
 						
 						if (e.getPlayer().getItemInHand() != null && e.getPlayer().getItemInHand().getType() != Material.AIR){
 							main.s(e.getPlayer(), "You must use your hand to activate the sign.");

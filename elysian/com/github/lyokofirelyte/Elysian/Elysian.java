@@ -252,6 +252,12 @@ public class Elysian extends DivinityAPI implements DivinityModule {
 		api.event(new DivinityPluginMessageEvent(s, type));
 	}
 	
+	public void s(CommandSender s, List<String> type){
+		for(String str : type){
+			api.event(new DivinityPluginMessageEvent(s, str));
+		}
+	}
+	
 	public void s(CommandSender s, String type, String message){
 		api.event(new DivinityPluginMessageEvent(s, type, new String[]{message}));
 	}

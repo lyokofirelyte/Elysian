@@ -440,6 +440,13 @@ public class ElyCommand {
 		main.s(p, "Updated!");
 	}
 	
+	@DivCommand(aliases = {"me"}, desc = "This is you", help = "/me <action>", player = true, min = 1)
+	public void onMe(Player p, String[] args){
+		for(Player player : Bukkit.getOnlinePlayers()){
+			player.sendMessage(main.AS("&f* " + p.getName() + " " + main.api.divUtils.createString(args, 0)));
+		}
+	}
+	
 	@DivCommand(perm = "wa.staff.admin", aliases = {"motd"}, desc = "Change the MOTD", help = "/motd <message>", player = false, min = 1)
 	public void onMOTD(CommandSender p, String[] args){
 		main.api.getSystem().set(DPI.MOTD, main.api.divUtils.createString(args, 0));
