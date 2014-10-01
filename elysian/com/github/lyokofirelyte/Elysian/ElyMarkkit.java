@@ -2,8 +2,10 @@ package com.github.lyokofirelyte.Elysian;
 
 import java.util.Arrays;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
+import net.minecraft.util.gnu.trove.map.hash.THashMap;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -26,6 +28,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 import com.github.lyokofirelyte.Divinity.Storage.DPI;
 import com.github.lyokofirelyte.Divinity.Storage.DivinityPlayer;
+import com.github.lyokofirelyte.Divinity.Storage.DivinitySystem;
 
 /**
  * 
@@ -36,14 +39,16 @@ import com.github.lyokofirelyte.Divinity.Storage.DivinityPlayer;
 public class ElyMarkkit implements Listener {
 
 	private Elysian main;
-	private HashMap<String, Inventory> inventory = new HashMap<String, Inventory>();
-	private HashMap<String, Inventory> playershop = new HashMap<String, Inventory>();
-	private HashMap<String, String> invName = new HashMap<String, String>();
-	private HashMap<String, Integer> totalPrice = new HashMap<String, Integer>();
-	private HashMap<String, Integer> showPrice = new HashMap<String, Integer>();
-	private HashMap<String, Location> chestLocation = new HashMap<String, Location>();
+	private DivinitySystem system;
+	private Map<String, Inventory> inventory = new THashMap<String, Inventory>();
+	private Map<String, Inventory> playershop = new THashMap<String, Inventory>();
+	private Map<String, String> invName = new THashMap<String, String>();
+	private Map<String, Integer> totalPrice = new THashMap<String, Integer>();
+	private Map<String, Integer> showPrice = new THashMap<String, Integer>();
+	private Map<String, Location> chestLocation = new THashMap<String, Location>();
 	public ElyMarkkit(Elysian i){
 		main = i;
+		system = main.api.getSystem();
 	}
 
 	@EventHandler
@@ -114,7 +119,7 @@ public class ElyMarkkit implements Listener {
 				int total = 0;
 				for(int i : buyCartPlayerShop){
 					if(e.getInventory().getItem(i) != null && e.getInventory().getItem(i).getType() != Material.AIR){
-						int money = main.markkitYaml.getInt("playershop." + e.getInventory().getItem(44).getItemMeta().getDisplayName().split(" ")[0] + "." + e.getInventory().getItem(i).getTypeId() + "." + e.getInventory().getItem(i).getDurability());
+						int money = system.getMarkkit().getInt("playershop." + e.getInventory().getItem(44).getItemMeta().getDisplayName().split(" ")[0] + "." + e.getInventory().getItem(i).getTypeId() + "." + e.getInventory().getItem(i).getDurability());
 						total = total + money;
 						Chest c = (Chest) e.getWhoClicked().getLocation().getWorld().getBlockAt(chestLocation.get(e.getInventory().getItem(44).getItemMeta().getDisplayName().split(" ")[0])).getState();
 						c.getInventory().removeItem(new ItemStack(e.getInventory().getItem(i).getType(), 1));
@@ -139,7 +144,7 @@ public class ElyMarkkit implements Listener {
 			e.setCancelled(true);
 			String name = invName.get(e.getWhoClicked().getName());
 			if(e.getCurrentItem() != null){
-				if(!sellCart.contains(e.getRawSlot()) && !buyCart.contains(e.getRawSlot()) &&!itemSlot.contains(e.getRawSlot()) && e.getCurrentItem().getTypeId() == main.markkitYaml.getInt("Items." + name + ".ID") && e.getCurrentItem().getDurability() == main.markkitYaml.getInt("Items." + name + ".Damage")){
+				if(!sellCart.contains(e.getRawSlot()) && !buyCart.contains(e.getRawSlot()) &&!itemSlot.contains(e.getRawSlot()) && e.getCurrentItem().getTypeId() == system.getMarkkit().getInt("Items." + name + ".ID") && e.getCurrentItem().getDurability() == system.getMarkkit().getInt("Items." + name + ".Damage")){
 					ItemStack clicked = e.getCurrentItem();
 					for (Integer i : sellCart){
 						if(e.getInventory().getItem(i) == null){
@@ -175,12 +180,12 @@ public class ElyMarkkit implements Listener {
 
 				for (Integer i : buyCart){
 					if(e.getInventory().getItem(i) != null){
-						if(main.markkitYaml.getBoolean("Items." + name + ".isSellDoubled") == true){
-							int fullPrice = main.markkitYaml.getInt("Items." + name + "." + 64 + ".buyprice");
+						if(system.getMarkkit().getBoolean("Items." + name + ".isSellDoubled") == true){
+							int fullPrice = system.getMarkkit().getInt("Items." + name + "." + 64 + ".buyprice");
 							int currentPrice = fullPrice*e.getInventory().getItem(i).getAmount()/64;
 							showPrice.put(e.getWhoClicked().getName(), showPrice.get(e.getWhoClicked().getName()) + (currentPrice*2));
 						}else{
-							int fullPrice = main.markkitYaml.getInt("Items." + name + "." + 64 + ".buyprice");
+							int fullPrice = system.getMarkkit().getInt("Items." + name + "." + 64 + ".buyprice");
 							int currentPrice = fullPrice*e.getInventory().getItem(i).getAmount()/64;
 							showPrice.put(e.getWhoClicked().getName(), showPrice.get(e.getWhoClicked().getName()) + currentPrice);
 						}
@@ -215,7 +220,7 @@ public class ElyMarkkit implements Listener {
 
 				for(Integer i : sellCart){
 					if(e.getInventory().getItem(i) != null){
-						int fullPrice = main.markkitYaml.getInt("Items." + name + "." + 64 + ".buyprice");
+						int fullPrice = system.getMarkkit().getInt("Items." + name + "." + 64 + ".buyprice");
 						int currentPrice = fullPrice*e.getInventory().getItem(i).getAmount()/64;
 						showPrice.put(e.getWhoClicked().getName(), showPrice.get(e.getWhoClicked().getName()) + currentPrice);
 					}
@@ -250,7 +255,7 @@ public class ElyMarkkit implements Listener {
 				for(Integer i : sellCart){
 					if(e.getInventory().getItem(i) != null){
 						itemCount = itemCount + e.getInventory().getItem(i).getAmount();
-						int fullPrice = main.markkitYaml.getInt("Items." + name + "." + 64 + ".sellprice");
+						int fullPrice = system.getMarkkit().getInt("Items." + name + "." + 64 + ".sellprice");
 						int currentPrice = fullPrice*e.getInventory().getItem(i).getAmount()/64;
 						if(totalPrice.get(e.getWhoClicked().getName()) == null){
 							totalPrice.put(e.getWhoClicked().getName(), 0);
@@ -274,11 +279,11 @@ public class ElyMarkkit implements Listener {
 				dp.set(DPI.BALANCE, dp.getInt(DPI.BALANCE) + totalPrice.get(e.getWhoClicked().getName()));
 				main.s((Player)e.getWhoClicked(), totalPrice.get(e.getWhoClicked().getName()) + " was added to your account!");
 				totalPrice.put(e.getWhoClicked().getName(), 0);
-				main.markkitYaml.set("Items." + name + ".inStock", main.markkitYaml.getInt("Items." + name + ".inStock") + itemCount);
-				if(main.markkitYaml.getInt("Items." + name + ".inStock") < 0 || main.markkitYaml.getInt("Items." + name + ".inStock") == 0){
-					main.markkitYaml.set("Items." + name + ".isSellDoubled", true);
+				system.getMarkkit().set("Items." + name + ".inStock", system.getMarkkit().getInt("Items." + name + ".inStock") + itemCount);
+				if(system.getMarkkit().getInt("Items." + name + ".inStock") < 0 || system.getMarkkit().getInt("Items." + name + ".inStock") == 0){
+					system.getMarkkit().set("Items." + name + ".isSellDoubled", true);
 				}else{
-					main.markkitYaml.set("Items." + name + ".isSellDoubled", false);
+					system.getMarkkit().set("Items." + name + ".isSellDoubled", false);
 				}
 
 				loadMarkkitInventory((Player)e.getWhoClicked(), name);
@@ -312,7 +317,7 @@ public class ElyMarkkit implements Listener {
 						if(i == 6 || i == 7 || i == 8 || i == 15 || i == 16 || i == 17 || i == 24 || i == 25 || i == 26 || i == 33 || i == 34 || i == 35 || i == 42 || i == 43 || i == 44){
 							if(e.getInventory().getItem(i) != null){
 								itemC = itemC + e.getInventory().getItem(i).getAmount();
-								int price = main.markkitYaml.getInt("Items." + name + "." + e.getInventory().getItem(i).getAmount() + ".buyprice");
+								int price = system.getMarkkit().getInt("Items." + name + "." + e.getInventory().getItem(i).getAmount() + ".buyprice");
 								if(totalPrice.get(e.getWhoClicked().getName()) == null){
 									totalPrice.put(e.getWhoClicked().getName(), 0);
 								}
@@ -321,7 +326,7 @@ public class ElyMarkkit implements Listener {
 							if(i == 44){
 								dp = main.api.getDivPlayer(p);
 								if (dp.getInt(DPI.BALANCE) >= totalPrice.get(e.getWhoClicked().getName())){
-									if(main.markkitYaml.getBoolean("Items." + name + ".isSellDoubled")){
+									if(system.getMarkkit().getBoolean("Items." + name + ".isSellDoubled")){
 										if(dp.getInt(DPI.BALANCE) >= totalPrice.get(e.getWhoClicked().getName())*2){
 											dp.set(DPI.BALANCE, dp.getInt(DPI.BALANCE) - totalPrice.get(e.getWhoClicked().getName())*2);
 											main.s((Player)e.getWhoClicked(), totalPrice.get(e.getWhoClicked().getName())*2 + " was taken from your account!");
@@ -349,11 +354,11 @@ public class ElyMarkkit implements Listener {
 											e.getInventory().setItem(x, new ItemStack(Material.AIR));
 										}
 									}
-									main.markkitYaml.set("Items." + name + ".inStock", main.markkitYaml.getInt("Items." + name + ".inStock") - itemC);
-									if(main.markkitYaml.getInt("Items." + name + ".inStock") < 0 || main.markkitYaml.getInt("Items." + name + ".inStock") == 0){
-										main.markkitYaml.set("Items." + name + ".isSellDoubled", true);
+									system.getMarkkit().set("Items." + name + ".inStock", system.getMarkkit().getInt("Items." + name + ".inStock") - itemC);
+									if(system.getMarkkit().getInt("Items." + name + ".inStock") < 0 || system.getMarkkit().getInt("Items." + name + ".inStock") == 0){
+										system.getMarkkit().set("Items." + name + ".isSellDoubled", true);
 									}else{
-										main.markkitYaml.set("Items." + name + ".isSellDoubled", false);
+										system.getMarkkit().set("Items." + name + ".isSellDoubled", false);
 									}
 									loadMarkkitInventory((Player)e.getWhoClicked(), name);
 								} else {
@@ -376,10 +381,10 @@ public class ElyMarkkit implements Listener {
 					}
 					for (Integer i : buyCart){
 						if (e.getInventory().getItem(i) == null){
-							if(main.markkitYaml.getBoolean("Items." + name + ".isSellDoubled") == true){
+							if(system.getMarkkit().getBoolean("Items." + name + ".isSellDoubled") == true){
 								e.getInventory().setItem(i, clicked);
 							}else{
-								if(main.markkitYaml.getInt("Items." + name + ".inStock") > count + e.getCurrentItem().getAmount() - 1){
+								if(system.getMarkkit().getInt("Items." + name + ".inStock") > count + e.getCurrentItem().getAmount() - 1){
 									e.getInventory().setItem(i, clicked);
 								}else{
 									main.s(p, "There is no more playerstock!, please buy this and re-open to buy moar.");
@@ -457,8 +462,8 @@ public class ElyMarkkit implements Listener {
 						ItemMeta i = itemstack.getItemMeta();
 						i.setDisplayName(itemstack.getType().name().toLowerCase());
 						
-						if(main.markkitYaml.getString("playershop." + owner + "." + itemstack.getTypeId() + "." + itemstack.getDurability()) != null){
-							i.setLore(Arrays.asList("Price: " + main.markkitYaml.getString("playershop." + owner + "." + itemstack.getTypeId() + "." + itemstack.getDurability())));
+						if(system.getMarkkit().getString("playershop." + owner + "." + itemstack.getTypeId() + "." + itemstack.getDurability()) != null){
+							i.setLore(Arrays.asList("Price: " + system.getMarkkit().getString("playershop." + owner + "." + itemstack.getTypeId() + "." + itemstack.getDurability())));
 						}else{
 							i.setLore(Arrays.asList("Price not found"));
 						}
@@ -486,25 +491,25 @@ public class ElyMarkkit implements Listener {
 		}
 		
 		public void loadMarkkitInventory(Player p, String name){
-			Material mat = Material.getMaterial(main.markkitYaml.getInt("Items." + name + ".ID"));
-			short damage = (short) main.markkitYaml.getInt("Items." + name + ".Damage");
+			Material mat = Material.getMaterial(system.getMarkkit().getInt("Items." + name + ".ID"));
+			short damage = (short) system.getMarkkit().getInt("Items." + name + ".Damage");
 			
-			if(main.markkitYaml.get("Items." + name) == null){
+			if(system.getMarkkit().get("Items." + name) == null){
 				main.s(p, "Cannot find this markkit, please contact staff.");
 				return;
 			}
 			
-			if(main.markkitYaml.get("Items." + name + ".inStock") == null){
-				main.markkitYaml.set("Items." + name + ".inStock", 192);
+			if(system.getMarkkit().get("Items." + name + ".inStock") == null){
+				system.getMarkkit().set("Items." + name + ".inStock", 192);
 			}
-			if(main.markkitYaml.getInt("Items." + name + ".inStock") < 0){
-				main.markkitYaml.set("Items." + name + ".inStock", 0);
+			if(system.getMarkkit().getInt("Items." + name + ".inStock") < 0){
+				system.getMarkkit().set("Items." + name + ".inStock", 0);
 			}
 			Inventory inv;
-			if(main.markkitYaml.getBoolean("Items." + name + ".isSellDoubled") == true){
+			if(system.getMarkkit().getBoolean("Items." + name + ".isSellDoubled") == true){
 				inv = Bukkit.createInventory(null, 54, main.AS("&40 stocked. Double price!"));
 			}else{
-				inv = Bukkit.createInventory(null, 54, main.AS("&6" + main.markkitYaml.getInt("Items." + name + ".inStock") + "&b items stocked."));
+				inv = Bukkit.createInventory(null, 54, main.AS("&6" + system.getMarkkit().getInt("Items." + name + ".inStock") + "&b items stocked."));
 			}
 			
 			
@@ -547,79 +552,79 @@ public class ElyMarkkit implements Listener {
 			inv.setItem(45, calculateLeft);
 
 
-			if(main.markkitYaml.contains("Items." + name + "." + 64)){
-				if(main.markkitYaml.getInt("Items." + name + ".64.buyprice") > 0){
+			if(system.getMarkkit().contains("Items." + name + "." + 64)){
+				if(system.getMarkkit().getInt("Items." + name + ".64.buyprice") > 0){
 					ItemStack item = new ItemStack(mat, 64, damage);
 					ItemMeta itemMeta = item.getItemMeta();
-					if(main.markkitYaml.getBoolean("Items." + name + ".isSellDoubled") == true){
-						itemMeta.setLore(Arrays.asList(ChatColor.GREEN + "Buy", (Integer.parseInt(main.markkitYaml.getString("Items." + name + ".64.buyprice"))*2) + "", ChatColor.RED + "Sell", main.markkitYaml.getString("Items." + name + ".64.sellprice")));
+					if(system.getMarkkit().getBoolean("Items." + name + ".isSellDoubled") == true){
+						itemMeta.setLore(Arrays.asList(ChatColor.GREEN + "Buy", (Integer.parseInt(system.getMarkkit().getString("Items." + name + ".64.buyprice"))*2) + "", ChatColor.RED + "Sell", system.getMarkkit().getString("Items." + name + ".64.sellprice")));
 					}else{
-						itemMeta.setLore(Arrays.asList(ChatColor.GREEN + "Buy", main.markkitYaml.getString("Items." + name + ".64.buyprice"), ChatColor.RED + "Sell", main.markkitYaml.getString("Items." + name + ".64.sellprice")));
+						itemMeta.setLore(Arrays.asList(ChatColor.GREEN + "Buy", system.getMarkkit().getString("Items." + name + ".64.buyprice"), ChatColor.RED + "Sell", system.getMarkkit().getString("Items." + name + ".64.sellprice")));
 					}
 					item.setItemMeta(itemMeta);
 					inv.setItem(4, item);
 				}
 			}
 			
-			if(main.markkitYaml.contains("Items." + name + "." + 32)){
-				if(main.markkitYaml.getInt("Items." + name + ".32.buyprice") > 0){
+			if(system.getMarkkit().contains("Items." + name + "." + 32)){
+				if(system.getMarkkit().getInt("Items." + name + ".32.buyprice") > 0){
 					ItemStack item = new ItemStack(mat, 32, damage);
 					ItemMeta itemMeta = item.getItemMeta();
-					if(main.markkitYaml.getBoolean("Items." + name + ".isSellDoubled") == true){
-						itemMeta.setLore(Arrays.asList(ChatColor.GREEN + "Buy", (Integer.parseInt(main.markkitYaml.getString("Items." + name + ".32.buyprice"))*2) + "", ChatColor.RED + "Sell", main.markkitYaml.getString("Items." + name + ".32.sellprice")));
+					if(system.getMarkkit().getBoolean("Items." + name + ".isSellDoubled") == true){
+						itemMeta.setLore(Arrays.asList(ChatColor.GREEN + "Buy", (Integer.parseInt(system.getMarkkit().getString("Items." + name + ".32.buyprice"))*2) + "", ChatColor.RED + "Sell", system.getMarkkit().getString("Items." + name + ".32.sellprice")));
 					}else{
-						itemMeta.setLore(Arrays.asList(ChatColor.GREEN + "Buy", main.markkitYaml.getString("Items." + name + ".32.buyprice"), ChatColor.RED + "Sell", main.markkitYaml.getString("Items." + name + ".32.sellprice")));
+						itemMeta.setLore(Arrays.asList(ChatColor.GREEN + "Buy", system.getMarkkit().getString("Items." + name + ".32.buyprice"), ChatColor.RED + "Sell", system.getMarkkit().getString("Items." + name + ".32.sellprice")));
 					}								item.setItemMeta(itemMeta);
 					inv.setItem(13, item);
 				}
 			}
 			
-			if(main.markkitYaml.contains("Items." + name + "." + 16)){
-				if(main.markkitYaml.getInt("Items." + name + ".16.buyprice") > 0){
+			if(system.getMarkkit().contains("Items." + name + "." + 16)){
+				if(system.getMarkkit().getInt("Items." + name + ".16.buyprice") > 0){
 					ItemStack item = new ItemStack(mat, 16, damage);
 					ItemMeta itemMeta = item.getItemMeta();
-					if(main.markkitYaml.getBoolean("Items." + name + ".isSellDoubled") == true){
-						itemMeta.setLore(Arrays.asList(ChatColor.GREEN + "Buy", (Integer.parseInt(main.markkitYaml.getString("Items." + name + ".16.buyprice"))*2) + "", ChatColor.RED + "Sell", main.markkitYaml.getString("Items." + name + ".16.sellprice")));
+					if(system.getMarkkit().getBoolean("Items." + name + ".isSellDoubled") == true){
+						itemMeta.setLore(Arrays.asList(ChatColor.GREEN + "Buy", (Integer.parseInt(system.getMarkkit().getString("Items." + name + ".16.buyprice"))*2) + "", ChatColor.RED + "Sell", system.getMarkkit().getString("Items." + name + ".16.sellprice")));
 					}else{
-						itemMeta.setLore(Arrays.asList(ChatColor.GREEN + "Buy", main.markkitYaml.getString("Items." + name + ".16.buyprice"), ChatColor.RED + "Sell", main.markkitYaml.getString("Items." + name + ".16.sellprice")));
+						itemMeta.setLore(Arrays.asList(ChatColor.GREEN + "Buy", system.getMarkkit().getString("Items." + name + ".16.buyprice"), ChatColor.RED + "Sell", system.getMarkkit().getString("Items." + name + ".16.sellprice")));
 					}								item.setItemMeta(itemMeta);
 					inv.setItem(22, item);
 				}
 			}
 			
-			if(main.markkitYaml.contains("Items." + name + "." + 8)){
-				if(main.markkitYaml.getInt("Items." + name + ".8.buyprice") > 0){
+			if(system.getMarkkit().contains("Items." + name + "." + 8)){
+				if(system.getMarkkit().getInt("Items." + name + ".8.buyprice") > 0){
 					ItemStack item = new ItemStack(mat, 8, damage);
 					ItemMeta itemMeta = item.getItemMeta();
-					if(main.markkitYaml.getBoolean("Items." + name + ".isSellDoubled") == true){
-						itemMeta.setLore(Arrays.asList(ChatColor.GREEN + "Buy", (Integer.parseInt(main.markkitYaml.getString("Items." + name + ".8.buyprice"))*2) + "", ChatColor.RED + "Sell", main.markkitYaml.getString("Items." + name + ".8.sellprice")));
+					if(system.getMarkkit().getBoolean("Items." + name + ".isSellDoubled") == true){
+						itemMeta.setLore(Arrays.asList(ChatColor.GREEN + "Buy", (Integer.parseInt(system.getMarkkit().getString("Items." + name + ".8.buyprice"))*2) + "", ChatColor.RED + "Sell", system.getMarkkit().getString("Items." + name + ".8.sellprice")));
 					}else{
-						itemMeta.setLore(Arrays.asList(ChatColor.GREEN + "Buy", main.markkitYaml.getString("Items." + name + ".8.buyprice"), ChatColor.RED + "Sell", main.markkitYaml.getString("Items." + name + ".8.sellprice")));
+						itemMeta.setLore(Arrays.asList(ChatColor.GREEN + "Buy", system.getMarkkit().getString("Items." + name + ".8.buyprice"), ChatColor.RED + "Sell", system.getMarkkit().getString("Items." + name + ".8.sellprice")));
 					}	
 					item.setItemMeta(itemMeta);
 					inv.setItem(31, item);
 				}
 			}
 			
-			if(main.markkitYaml.contains("Items." + name + "." + 1) && main.markkitYaml.get("Items." + name + "." + 64) != null){
-				if(main.markkitYaml.getInt("Items." + name + ".1.buyprice") > 0){
+			if(system.getMarkkit().contains("Items." + name + "." + 1) && system.getMarkkit().get("Items." + name + "." + 64) != null){
+				if(system.getMarkkit().getInt("Items." + name + ".1.buyprice") > 0){
 					ItemStack item = new ItemStack(mat, 1, damage);
 					ItemMeta itemMeta = item.getItemMeta();
-					if(main.markkitYaml.getBoolean("Items." + name + ".isSellDoubled") == true){
-						itemMeta.setLore(Arrays.asList(ChatColor.GREEN + "Buy", (Integer.parseInt(main.markkitYaml.getString("Items." + name + ".1.buyprice"))*2) + "", ChatColor.RED + "Sell", main.markkitYaml.getString("Items." + name + ".1.sellprice")));
+					if(system.getMarkkit().getBoolean("Items." + name + ".isSellDoubled") == true){
+						itemMeta.setLore(Arrays.asList(ChatColor.GREEN + "Buy", (Integer.parseInt(system.getMarkkit().getString("Items." + name + ".1.buyprice"))*2) + "", ChatColor.RED + "Sell", system.getMarkkit().getString("Items." + name + ".1.sellprice")));
 					}else{
-						itemMeta.setLore(Arrays.asList(ChatColor.GREEN + "Buy", main.markkitYaml.getString("Items." + name + ".1.buyprice"), ChatColor.RED + "Sell", main.markkitYaml.getString("Items." + name + ".1.sellprice")));
+						itemMeta.setLore(Arrays.asList(ChatColor.GREEN + "Buy", system.getMarkkit().getString("Items." + name + ".1.buyprice"), ChatColor.RED + "Sell", system.getMarkkit().getString("Items." + name + ".1.sellprice")));
 					}								item.setItemMeta(itemMeta);
 					inv.setItem(40, item);
 				}
-			}else if(main.markkitYaml.contains("Items." + name + "." + 1) && main.markkitYaml.get("Items." + name + "." + 64) == null){
-				if(main.markkitYaml.getInt("Items." + name + ".1.buyprice") > 0){
+			}else if(system.getMarkkit().contains("Items." + name + "." + 1) && system.getMarkkit().get("Items." + name + "." + 64) == null){
+				if(system.getMarkkit().getInt("Items." + name + ".1.buyprice") > 0){
 					ItemStack item = new ItemStack(mat, 1, damage);
 					ItemMeta itemMeta = item.getItemMeta();
-					if(main.markkitYaml.getBoolean("Items." + name + ".isSellDoubled") == true){
-						itemMeta.setLore(Arrays.asList(ChatColor.GREEN + "Buy", (Integer.parseInt(main.markkitYaml.getString("Items." + name + ".1.buyprice"))*2) + "", ChatColor.RED + "Sell", main.markkitYaml.getString("Items." + name + ".1.sellprice")));
+					if(system.getMarkkit().getBoolean("Items." + name + ".isSellDoubled") == true){
+						itemMeta.setLore(Arrays.asList(ChatColor.GREEN + "Buy", (Integer.parseInt(system.getMarkkit().getString("Items." + name + ".1.buyprice"))*2) + "", ChatColor.RED + "Sell", system.getMarkkit().getString("Items." + name + ".1.sellprice")));
 					}else{
-						itemMeta.setLore(Arrays.asList(ChatColor.GREEN + "Buy", main.markkitYaml.getString("Items." + name + ".1.buyprice"), ChatColor.RED + "Sell", main.markkitYaml.getString("Items." + name + ".1.sellprice")));
+						itemMeta.setLore(Arrays.asList(ChatColor.GREEN + "Buy", system.getMarkkit().getString("Items." + name + ".1.buyprice"), ChatColor.RED + "Sell", system.getMarkkit().getString("Items." + name + ".1.sellprice")));
 					}								item.setItemMeta(itemMeta);
 					inv.setItem(4, item);
 				}

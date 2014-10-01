@@ -51,6 +51,7 @@ import com.github.lyokofirelyte.Elysian.Events.ElyLogger;
 import com.github.lyokofirelyte.Elysian.Events.ElyMobs;
 import com.github.lyokofirelyte.Elysian.Events.ElyTP;
 import com.github.lyokofirelyte.Elysian.Games.Blink.Blink;
+import com.github.lyokofirelyte.Elysian.Games.Cranked.Cranked;
 import com.github.lyokofirelyte.Elysian.Games.Gotcha.Gotcha;
 import com.github.lyokofirelyte.Elysian.Games.Spleef.Spleef;
 import com.github.lyokofirelyte.Elysian.Games.TeamPVP.TeamPVP;
@@ -59,8 +60,6 @@ import com.github.lyokofirelyte.Elysian.MMO.ElyMMO;
 import com.sk89q.worldedit.bukkit.WorldEditPlugin;
 
 public class Elysian extends DivinityAPI implements DivinityModule {
-	
-	public YamlConfiguration markkitYaml;
 	
 	public Divinity api;
 	public WorldEditPlugin we;
@@ -89,7 +88,7 @@ public class Elysian extends DivinityAPI implements DivinityModule {
 	public Blink blink;
 	public TeamPVP teamPVP;
 	public Gotcha gotcha;
-	
+	public Cranked cranked;
 	public DivInvManager invManager;
 	
 	public Map<ElyTask, Integer> tasks = new THashMap<ElyTask, Integer>();
@@ -105,7 +104,6 @@ public class Elysian extends DivinityAPI implements DivinityModule {
 		setup = new ElySetup(this);
 		setup.start();
 		register(this);
-		markkitYaml = api.getSystem().getMarkkit();
 	}
 	
 	@Override

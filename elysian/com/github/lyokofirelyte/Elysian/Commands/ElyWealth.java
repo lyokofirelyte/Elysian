@@ -91,10 +91,10 @@ public class ElyWealth {
 									try {
 									
 										if (amount > 0 && cont){
-											for (String path : main.markkitYaml.getConfigurationSection("Items").getKeys(false)){
-												if (main.markkitYaml.contains("Items." + path)){
-													if (main.markkitYaml.getInt("Items." + path + ".ID") == m.getId()){
-														double init = main.markkitYaml.getDouble("Items." + path + ".64.sellprice")/64.0D;
+											for (String path : main.api.getSystem().getMarkkit().getConfigurationSection("Items").getKeys(false)){
+												if (main.api.getSystem().getMarkkit().contains("Items." + path)){
+													if (main.api.getSystem().getMarkkit().getInt("Items." + path + ".ID") == m.getId()){
+														double init = main.api.getSystem().getMarkkit().getDouble("Items." + path + ".64.sellprice")/64.0D;
 														price += init*amount;
 														break;
 													}
@@ -150,11 +150,11 @@ public class ElyWealth {
 									
 							for (ItemStack i : chest.getInventory().getContents()){
 								if (i != null && !i.getType().toString().contains("EMERALD")){
-									for (String path : main.markkitYaml.getConfigurationSection("Items").getKeys(false)){
-										if (main.markkitYaml.getInt("Items." + path + ".ID") == i.getType().getId()){
-											if (main.markkitYaml.contains("Items." + path + ".64.sellprice")){
-												if (main.markkitYaml.getDouble("Items." + path + ".64.sellprice") < 200000){
-													double init = main.markkitYaml.getDouble("Items." + path + ".64.sellprice")/64.0D;
+									for (String path : main.api.getSystem().getMarkkit().getConfigurationSection("Items").getKeys(false)){
+										if (main.api.getSystem().getMarkkit().getInt("Items." + path + ".ID") == i.getType().getId()){
+											if (main.api.getSystem().getMarkkit().contains("Items." + path + ".64.sellprice")){
+												if (main.api.getSystem().getMarkkit().getDouble("Items." + path + ".64.sellprice") < 200000){
+													double init = main.api.getSystem().getMarkkit().getDouble("Items." + path + ".64.sellprice")/64.0D;
 													wealth += chest.getInventory().getHolder() instanceof DoubleChest ? init*(i.getAmount()/2) : init*i.getAmount();
 												}
 											}
