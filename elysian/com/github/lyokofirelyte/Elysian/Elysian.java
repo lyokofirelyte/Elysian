@@ -61,8 +61,6 @@ import com.sk89q.worldedit.bukkit.WorldEditPlugin;
 
 public class Elysian extends DivinityAPI implements DivinityModule {
 	
-	public YamlConfiguration markkitYaml;
-	
 	public Divinity api;
 	public WorldEditPlugin we;
 	
@@ -104,7 +102,6 @@ public class Elysian extends DivinityAPI implements DivinityModule {
 		setup = new ElySetup(this);
 		setup.start();
 		register(this);
-		markkitYaml = api.getSystem().getMarkkit();
 	}
 	
 	@Override

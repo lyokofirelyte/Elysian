@@ -6,7 +6,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 import com.github.lyokofirelyte.Divinity.Events.DivinityChannelEvent;
-import com.github.lyokofirelyte.Divinity.Storage.DPI;
 import com.github.lyokofirelyte.Elysian.MMO.MMO;
 
 public class ElyAutoSave implements Runnable {
@@ -21,6 +20,8 @@ public class ElyAutoSave implements Runnable {
 	public void run(){
 		
 		long startTime = new Long(System.currentTimeMillis());
+		
+		main.api.getSystem().saveMarkkit();
 		
 		for (ElySave saveClass : main.saveClasses.values()){
 			saveClass.save();

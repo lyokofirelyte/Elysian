@@ -285,11 +285,11 @@ public class ElyStaff implements Listener {
 		 Sign s = (Sign) newSign.getState();
 		 s.setLine(0, "§dWC §5Markkit");
 			 
-		 ConfigurationSection configSection = main.markkitYaml.getConfigurationSection("Items");
+		 ConfigurationSection configSection = main.api.getSystem().getMarkkit().getConfigurationSection("Items");
 		 String text = "§fNot Found";
 			 
 		 for (String path : configSection.getKeys(false)){
-			 if((Integer.parseInt(main.markkitYaml.getString("Items." + path + ".ID")) == p.getItemInHand().getTypeId()) && (Integer.parseInt(main.markkitYaml.getString("Items." + path + ".Damage")) == p.getItemInHand().getDurability())){
+			 if((Integer.parseInt(main.api.getSystem().getMarkkit().getString("Items." + path + ".ID")) == p.getItemInHand().getTypeId()) && (Integer.parseInt(main.api.getSystem().getMarkkit().getString("Items." + path + ".Damage")) == p.getItemInHand().getDurability())){
 				 text = "§f" + path;
 				 break;
 			 }
@@ -436,32 +436,32 @@ public class ElyStaff implements Listener {
 	    	  ItemStack full = p.getItemInHand();
 	    	  
 	    	  
-	    	  main.markkitYaml.set("Items." + name, null);
+	    	  main.api.getSystem().getMarkkit().set("Items." + name, null);
 	    	  
-	    	  main.markkitYaml.set("Items." + name + ".ID", full.getTypeId());
-	    	  main.markkitYaml.set("Items." + name + ".Damage", full.getDurability());
+	    	  main.api.getSystem().getMarkkit().set("Items." + name + ".ID", full.getTypeId());
+	    	  main.api.getSystem().getMarkkit().set("Items." + name + ".Damage", full.getDurability());
 			  
-	    	  main.markkitYaml.set("Items." + name + ".64.buyprice", buyprice);
-			  main.markkitYaml.set("Items." + name + ".64.sellprice", sellprice);
+	    	  main.api.getSystem().getMarkkit().set("Items." + name + ".64.buyprice", buyprice);
+			  main.api.getSystem().getMarkkit().set("Items." + name + ".64.sellprice", sellprice);
 			  
 	    	  if(buyprice/2 >= 1){
-	    		  main.markkitYaml.set("Items." + name + ".32.buyprice", buyprice/2);
-	    		  main.markkitYaml.set("Items." + name + ".32.sellprice", sellprice/2);
+	    		  main.api.getSystem().getMarkkit().set("Items." + name + ".32.buyprice", buyprice/2);
+	    		  main.api.getSystem().getMarkkit().set("Items." + name + ".32.sellprice", sellprice/2);
 	    	  }
 	    	  
 	    	  if(buyprice/4 >= 1){
-	    		  main.markkitYaml.set("Items." + name + ".16.buyprice", buyprice/4);
-	    		  main.markkitYaml.set("Items." + name + ".16.sellprice", sellprice/4);
+	    		  main.api.getSystem().getMarkkit().set("Items." + name + ".16.buyprice", buyprice/4);
+	    		  main.api.getSystem().getMarkkit().set("Items." + name + ".16.sellprice", sellprice/4);
 	    	  }
 	    	  
 	    	  if(buyprice/8 >= 1){
-	    		  main.markkitYaml.set("Items." + name + ".8.buyprice", buyprice/8);
-	    		  main.markkitYaml.set("Items." + name + ".8.sellprice", sellprice/8);
+	    		  main.api.getSystem().getMarkkit().set("Items." + name + ".8.buyprice", buyprice/8);
+	    		  main.api.getSystem().getMarkkit().set("Items." + name + ".8.sellprice", sellprice/8);
 	    	  }
 	    	 	    	  
 	    	  if(buyprice/64 >= 1){
-	    		  main.markkitYaml.set("Items." + name + ".1.buyprice", buyprice/64);
-	    		  main.markkitYaml.set("Items." + name + ".1.sellprice", sellprice/64);
+	    		  main.api.getSystem().getMarkkit().set("Items." + name + ".1.buyprice", buyprice/64);
+	    		  main.api.getSystem().getMarkkit().set("Items." + name + ".1.sellprice", sellprice/64);
 	    	  }
 			  main.s(p, "Added succesfully!");
 
@@ -473,13 +473,13 @@ public class ElyStaff implements Listener {
 	    	  ItemStack full = p.getItemInHand();
 	    	  
 	    	  
-	    	  main.markkitYaml.set("Items." + name, null);
+	    	  main.api.getSystem().getMarkkit().set("Items." + name, null);
 	    	  
-	    	  main.markkitYaml.set("Items." + name + ".ID", full.getTypeId());
-	    	  main.markkitYaml.set("Items." + name + ".Damage", full.getDurability());
+	    	  main.api.getSystem().getMarkkit().set("Items." + name + ".ID", full.getTypeId());
+	    	  main.api.getSystem().getMarkkit().set("Items." + name + ".Damage", full.getDurability());
 			  
-			  main.markkitYaml.set("Items." + name + ".1.buyprice", buyprice);
-			  main.markkitYaml.set("Items." + name + ".1.sellprice", sellprice);
+			  main.api.getSystem().getMarkkit().set("Items." + name + ".1.buyprice", buyprice);
+			  main.api.getSystem().getMarkkit().set("Items." + name + ".1.sellprice", sellprice);
 			  
 			  main.s(p, "Added succesfully!");
 		  }
