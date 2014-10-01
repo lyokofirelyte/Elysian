@@ -2,7 +2,6 @@ package com.github.lyokofirelyte.Elysian;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -52,6 +51,7 @@ import com.github.lyokofirelyte.Elysian.Events.ElyLogger;
 import com.github.lyokofirelyte.Elysian.Events.ElyMobs;
 import com.github.lyokofirelyte.Elysian.Events.ElyTP;
 import com.github.lyokofirelyte.Elysian.Games.Blink.Blink;
+import com.github.lyokofirelyte.Elysian.Games.Cranked.Cranked;
 import com.github.lyokofirelyte.Elysian.Games.Gotcha.Gotcha;
 import com.github.lyokofirelyte.Elysian.Games.Spleef.Spleef;
 import com.github.lyokofirelyte.Elysian.Games.TeamPVP.TeamPVP;
@@ -89,7 +89,7 @@ public class Elysian extends DivinityAPI implements DivinityModule {
 	public Blink blink;
 	public TeamPVP teamPVP;
 	public Gotcha gotcha;
-	
+	public Cranked cranked;
 	public DivInvManager invManager;
 	
 	public Map<ElyTask, Integer> tasks = new THashMap<ElyTask, Integer>();

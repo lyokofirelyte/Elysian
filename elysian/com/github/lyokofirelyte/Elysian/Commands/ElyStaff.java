@@ -93,10 +93,10 @@ public class ElyStaff implements Listener {
 				 
 				 main.s(cs, Lists.reverse(result));
 			 }else{
-				 main.s(cs, "That is not a number!");
+				 main.s(cs, "&cThat is not a number!");
 			 }
 		 }else{
-			 main.s(cs, "Could find player " + args[0]);
+			 main.s(cs, "&cCouldn't find player " + args[0]);
 		 }
 	 }
 	 
