@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Random;
 
 import org.bukkit.Bukkit;
+import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -42,6 +43,19 @@ public class Gotcha extends THashMap<String, GotchaGame> implements DivGame, Ely
 		command = new GotchaCommand(this);
 	}
 	
+	public boolean isPlayerInGame(DivinityPlayer dp){
+		
+		if (size() > 0){
+			for (GotchaGame g : values()){
+				if (g.getPlayers().contains(dp)){
+					return true;
+				}
+			}
+		}
+		
+		return false;
+	}
+	
 	public GotchaGame getGameWithPlayer(DivinityPlayer dp){
 		
 		for (GotchaGame g : values()){
@@ -67,6 +81,7 @@ public class Gotcha extends THashMap<String, GotchaGame> implements DivGame, Ely
 				private Map<DivinityPlayer, Long> cooldowns = new THashMap<DivinityPlayer, Long>();
 				
 				private boolean inProgress = false;
+				private boolean addQueue = false;
 				public int secondsLeft = 0;
 				
 				public String name(){
@@ -190,19 +205,22 @@ public class Gotcha extends THashMap<String, GotchaGame> implements DivGame, Ely
 				
 				public void start(){
 					
-					secondsLeft = 600;
-					msg("The game is starting in 30 seconds!");
-					
-					for (String loc : toDivGame().getStringList("Arenas." + name + ".Spawns")){
-						String[] l = loc.split(" ");
-						spawnPoints.add(new Location(Bukkit.getWorld(l[0]), Integer.parseInt(l[1]), Integer.parseInt(l[2]), Integer.parseInt(l[3]), Float.parseFloat(l[4]), Float.parseFloat(l[5])));
+					if (!addQueue){
+						addQueue = true;
+						secondsLeft = 600;
+						msg("The game is starting in 30 seconds!");
+						
+						for (String loc : toDivGame().getStringList("Arenas." + name + ".Spawns")){
+							String[] l = loc.split(" ");
+							spawnPoints.add(new Location(Bukkit.getWorld(l[0]), Integer.parseInt(l[1]), Integer.parseInt(l[2]), Integer.parseInt(l[3]), Float.parseFloat(l[4]), Float.parseFloat(l[5])));
+						}
+						
+						Bukkit.getScheduler().scheduleSyncDelayedTask(main, new Runnable(){ public void run(){
+							
+							actuallyStart();
+							
+						}}, 600L);
 					}
-					
-					Bukkit.getScheduler().scheduleSyncDelayedTask(main, new Runnable(){ public void run(){
-						
-						actuallyStart();
-						
-					}}, 600L);
 				}
 				
 				public void stop(){
@@ -252,8 +270,11 @@ public class Gotcha extends THashMap<String, GotchaGame> implements DivGame, Ely
 						
 						for (DivinityPlayer dp : players){
 							dp.set(DPI.IN_GAME, true);
-							Bukkit.getPlayer(dp.uuid()).getInventory().addItem(i);
 							Bukkit.getPlayer(dp.uuid()).setWalkSpeed(0.4F);
+							Bukkit.getPlayer(dp.uuid()).setGameMode(GameMode.CREATIVE);
+							Bukkit.getPlayer(dp.uuid()).setFlying(false);
+							Bukkit.getPlayer(dp.uuid()).setAllowFlight(false);
+							Bukkit.getPlayer(dp.uuid()).getInventory().addItem(i);
 							main.api.repeat(main.api, "event", 20L, 0L, "gotchaScore" + dp.name(), new ScoreboardUpdateEvent(Bukkit.getPlayer(dp.uuid()), "gameGotcha"));
 						}
 						

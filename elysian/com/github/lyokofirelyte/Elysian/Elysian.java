@@ -2,7 +2,6 @@ package com.github.lyokofirelyte.Elysian;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -61,8 +60,6 @@ import com.sk89q.worldedit.bukkit.WorldEditPlugin;
 
 public class Elysian extends DivinityAPI implements DivinityModule {
 	
-	public YamlConfiguration markkitYaml;
-	
 	public Divinity api;
 	public WorldEditPlugin we;
 	
@@ -104,7 +101,6 @@ public class Elysian extends DivinityAPI implements DivinityModule {
 		setup = new ElySetup(this);
 		setup.start();
 		register(this);
-		markkitYaml = api.getSystem().getMarkkit();
 	}
 	
 	@Override

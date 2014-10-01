@@ -17,11 +17,11 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.SmallFireball;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
+import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.scoreboard.DisplaySlot;
@@ -32,7 +32,6 @@ import org.bukkit.scoreboard.ScoreboardManager;
 
 import com.github.lyokofirelyte.Divinity.Events.DivinityTeleportEvent;
 import com.github.lyokofirelyte.Divinity.Events.ScoreboardUpdateEvent;
-import com.github.lyokofirelyte.Divinity.Events.SkillExpGainEvent;
 import com.github.lyokofirelyte.Divinity.PublicUtils.ParticleEffect;
 import com.github.lyokofirelyte.Divinity.Storage.DPI;
 import com.github.lyokofirelyte.Divinity.Storage.DivinityPlayer;
@@ -54,9 +53,19 @@ public class GotchaActive implements Listener {
 		
 		DivinityPlayer dp = main.api.getDivPlayer(e.getPlayer());
 		
-		if (root.getGameWithPlayer(dp) != null){
+		if (root.isPlayerInGame(dp)){
 			root.getGameWithPlayer(dp).remPlayer(dp);
 			root.getGameWithPlayer(dp).msg(e.getPlayer().getDisplayName() + " &c&ohas left the Gotcha game!");
+		}
+	}
+	
+	@EventHandler
+	public void onOpen(InventoryOpenEvent e){
+		
+		if (e.getPlayer() instanceof Player){
+			if (root.isPlayerInGame(main.api.getDivPlayer((Player) e.getPlayer()))){
+				e.setCancelled(true);
+			}
 		}
 	}
 	

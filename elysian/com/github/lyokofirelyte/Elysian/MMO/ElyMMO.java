@@ -16,7 +16,6 @@ import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Arrow;
-import org.bukkit.entity.Fish;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Monster;
@@ -34,7 +33,6 @@ import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.PotionSplashEvent;
 import org.bukkit.event.inventory.CraftItemEvent;
-import org.bukkit.event.player.PlayerFishEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
@@ -97,7 +95,7 @@ public class ElyMMO extends THashMap<Material, MXP> implements Listener {
 		sm(Material.LEAVES, ElySkill.WOODCUTTING, 168, 30);
 		sm(Material.LEAVES_2, ElySkill.WOODCUTTING, 200, 45);
 		
-		sm(Material.RAW_FISH, ElySkill.FISHERMAN, 200, 0);
+		//sm(Material.RAW_FISH, ElySkill.FISHERMAN, 200, 0);
 		
 		sm(Material.STONE, ElySkill.MINING, 15, 0);
 		sm(Material.NETHERRACK, ElySkill.MINING, 15, 0);
@@ -389,7 +387,7 @@ public class ElyMMO extends THashMap<Material, MXP> implements Listener {
 			case BUILDING: return "&6You just place stuff. Pretty easy. What, you want a medal or something?";
 			case FARMING: return "&6The best skill to get 99 in. Tear down crops.";
 			case PATROL: return "&6Hunt or skill with a group of people and share the XP!";
-			case FISHERMAN: return "&6Just fish stuff! :)";
+			//case FISHERMAN: return "&6Just fish stuff! :)";
 			case SOLAR: return "&6Destructive spells!";
 			case LUNAR: return "&6Group-based healing & help skills!";
 		}
@@ -414,7 +412,7 @@ public class ElyMMO extends THashMap<Material, MXP> implements Listener {
 			case BUILDING: return "&6You literally get nothing for leveling this skill. Nothing.";
 			case FARMING: return "&bLevel 10: &6LIFE FORCE (right-click sapling)\n&7&oPlants a random tree.\n&7&oEvery level decreases cooldown by 1 second.";
 			case PATROL: return "&6More Shop Options";
-			case FISHERMAN: return "&bLevel 10: &6HOLY MACKEREL! (right-click rod)\n&7&oWhip up a crazy fish-storm!\n&7&oThe cooldown for this does not change as you level.";
+			//case FISHERMAN: return "&bLevel 10: &6HOLY MACKEREL! (right-click rod)\n&7&oWhip up a crazy fish-storm!\n&7&oThe cooldown for this does not change as you level.";
 			case SOLAR: return "&6Level up for new spells!\n&3&o0.4% damage increase per level";
 			case LUNAR: return "&6Level up for new spells!";
 		}
@@ -570,19 +568,7 @@ public class ElyMMO extends THashMap<Material, MXP> implements Listener {
 		
 		p.sendMessage(main.AS("&7&oHover for full skill layout."));
 	}
-	
-	@EventHandler (ignoreCancelled = true, priority = EventPriority.MONITOR)
-	public void onFish(PlayerFishEvent e){
-		
-		if (new Random().nextInt(101) < (main.api.getDivPlayer(e.getPlayer()).getLevel(ElySkill.FISHERMAN)*0.3)){
-			e.getPlayer().getWorld().dropItemNaturally(e.getPlayer().getLocation(), new ItemStack(Material.RAW_FISH));
-		}
-		
-		if (e.getHook() != null && e.getHook() instanceof Fish){
-			main.api.event(new SkillExpGainEvent(e.getPlayer(), ElySkill.FISHERMAN, 200));
-		}
-	}
-	
+
 	@EventHandler (ignoreCancelled = true, priority = EventPriority.MONITOR)
 	public void onBreak(BlockBreakEvent e){
 		
@@ -611,15 +597,14 @@ public class ElyMMO extends THashMap<Material, MXP> implements Listener {
 			}
 			
 			if (cont){
-			
-				if (results[1]){
-					if (new Random().nextInt(101) < (dp.getLevel(skills.get(i))*0.3)){
-						p.getWorld().dropItemNaturally(p.getLocation(), new ItemStack(e.getBlock().getType()));
-					}
-				}
 				
 				if (results[0]){
 					main.api.event(new SkillExpGainEvent(p, skills.get(i), get(e.getBlock().getType()).getXP(skills.get(i))));
+					if (results[1]){
+						if (new Random().nextInt(101) < (dp.getLevel(skills.get(i))*0.3)){
+							p.getWorld().dropItemNaturally(p.getLocation(), new ItemStack(e.getBlock().getType()));
+						}
+					}
 				}
 			}
 		}
