@@ -9,5 +9,6 @@ public class CrankedActive {
 
 	CrankedActive(Cranked i){
 		root = i;
+		main = root.main;
 	}
 }

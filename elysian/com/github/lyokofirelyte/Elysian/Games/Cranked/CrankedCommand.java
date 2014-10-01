@@ -12,6 +12,7 @@ public class CrankedCommand {
 	
 	CrankedCommand(Cranked i){
 		root = i;
+		main = root.main;
 	}
 	
 	@DivCommand(aliases = {"cranked"}, desc = "Main Cranked Command", help = "/cranked help", player = true, min = 0)

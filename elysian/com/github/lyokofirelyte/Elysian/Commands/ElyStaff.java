@@ -56,17 +56,6 @@ public class ElyStaff implements Listener {
 		 main = i;
 	 }
 	 
-	 @DivCommand(perm = "wa.staff.admin", aliases = {"test"}, desc = "test Command", help = "/test", player = true)
-	 public void test(CommandSender cs, String[] args){
-		 Player p = (Player)cs;
-		 ElyMarkkitItem item = new ElyMarkkitItem(main, p.getInventory().getItemInHand().getType(), p.getInventory().getItemInHand().getDurability());
-		 System.out.println(item.getDamage());
-		 System.out.println(item.getStackSellPrice());
-		 System.out.println(item.getInStock());
-		 System.out.println(item.getSellPrice(32));
-		 System.out.println(item.getSignName());
-	 }
-	 
 	 @DivCommand(perm = "wa.staff.admin", aliases = {"backup"}, desc = "File Backup Command", help = "/backup", player = false)
 	 public void onBackup(CommandSender cs, String[] args){
 		 main.api.divManager.backup();
@@ -300,7 +289,7 @@ public class ElyStaff implements Listener {
 		 newSign.setType(args[0].equals("side") ? Material.WALL_SIGN : Material.SIGN_POST);
 			 
 		 Sign s = (Sign) newSign.getState();
-		 s.setLine(0, "§dWC §5Markkit");
+		 s.setLine(0, "§bEly §3Markkit");
 			 
 		 ConfigurationSection configSection = main.api.getSystem().getMarkkit().getConfigurationSection("Items");
 		 String text = "§fNot Found";
@@ -379,6 +368,7 @@ public class ElyStaff implements Listener {
 	 @DivCommand(perm = "wa.staff.mod", aliases = {"speed"}, desc = "Speed Command", help = "/speed <1-10>", player = true, min = 1, max = 2)
 	 public void onSpeed(CommandSender cs, String[] args){
 		 Player p = (Player)cs;
+
 		 if(main.api.divUtils.isInteger(args[0])){
 			 float speed = Float.parseFloat(args[0]);
 			 
@@ -393,7 +383,8 @@ public class ElyStaff implements Listener {
 				 }
 				 main.s(p, "Speed updated!");
 			 }else{
-				 if(main.doesPartialPlayerExist(args[0]) && main.isOnline(args[0])){
+
+				 if(main.doesPartialPlayerExist(args[1]) && main.isOnline(args[1])){
 					 Player pl = main.getPlayer(args[1]);
 					 if(pl.isFlying()){
 						 pl.setFlySpeed(speed/10);

@@ -9,5 +9,6 @@ public class CrankedData {
 
 	CrankedData(Cranked i){
 		root = i;
+		main = root.main;
 	}
 }

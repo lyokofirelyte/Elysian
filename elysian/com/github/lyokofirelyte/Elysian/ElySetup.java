@@ -52,6 +52,7 @@ import com.github.lyokofirelyte.Elysian.Events.ElyScoreBoard;
 import com.github.lyokofirelyte.Elysian.Events.ElyTP;
 import com.github.lyokofirelyte.Elysian.Games.Blink.Blink;
 import com.github.lyokofirelyte.Elysian.Games.Cranked.Cranked;
+import com.github.lyokofirelyte.Elysian.Games.Cranked.CrankedCommand;
 import com.github.lyokofirelyte.Elysian.Games.Gotcha.Gotcha;
 import com.github.lyokofirelyte.Elysian.Games.Spleef.Spleef;
 import com.github.lyokofirelyte.Elysian.Games.Spleef.SpleefData.SpleefDataType;
@@ -118,6 +119,7 @@ public class ElySetup {
 		main.saveClasses.put("main.blink", new Blink(main));
 		main.saveClasses.put("main.teampvp", new TeamPVP(main));
 		main.saveClasses.put("main.gotcha", new Gotcha(main));
+		main.saveClasses.put("main.cranked", new Cranked(main));
 		
 		main.blink = (Blink) main.saveClasses.get("main.blink");
 		main.teamPVP = (TeamPVP) main.saveClasses.get("main.teampvp");
@@ -239,7 +241,8 @@ public class ElySetup {
 			main.blink.blinkCommand,
 			main.teamPVP.command,
 			main.gotcha.command,
-			main.wealth
+			main.wealth,
+			main.cranked.command
 		);
 	}
 	
