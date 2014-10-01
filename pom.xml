@@ -8,8 +8,8 @@
 	<name>Elysian</name>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<bukkit>1.7.8-R0.1-SNAPSHOT</bukkit>
-		<craftbukkit>1.7.8-R0.1-SNAPSHOT</craftbukkit>
+		<bukkit>1.7.9-R0.1-SNAPSHOT</bukkit>
+		<craftbukkit>1.7.9-R0.1-SNAPSHOT</craftbukkit>
 	</properties>
 	<dependencies>
 		<dependency>

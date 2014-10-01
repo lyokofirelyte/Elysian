@@ -2,7 +2,6 @@ package com.github.lyokofirelyte.Elysian;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -84,6 +83,7 @@ public class Elysian extends DivinityAPI implements DivinityModule {
 	public ElyMMOCleanup cleanup;
 	public ElyAutoSave autoSave;
 	public ElyWealth wealth;
+	public ElyMarkkitItem markkitItem;
 	
 	public Spleef spleef;
 	public Blink blink;
@@ -98,7 +98,8 @@ public class Elysian extends DivinityAPI implements DivinityModule {
 	public List<String> numerals = new ArrayList<String>();
 	public Map<String, ElySave> saveClasses = new THashMap<String, ElySave>();
 	public Map<Object, String> spellTasks = new THashMap<Object, String>();
-
+	public boolean hasSunDayBeenPerformedBefore = false;
+	
 	@Override
 	public void onEnable(){
 		setup = new ElySetup(this);

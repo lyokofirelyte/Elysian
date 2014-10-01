@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 import net.minecraft.util.com.google.common.collect.Lists;
+import net.minecraft.util.gnu.trove.map.hash.THashMap;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -43,6 +44,7 @@ import com.github.lyokofirelyte.Divinity.Storage.DAI;
 import com.github.lyokofirelyte.Divinity.Storage.DPI;
 import com.github.lyokofirelyte.Divinity.Storage.DivinityPlayer;
 import com.github.lyokofirelyte.Divinity.Storage.DivinityStorage;
+import com.github.lyokofirelyte.Elysian.ElyMarkkitItem;
 import com.github.lyokofirelyte.Elysian.Elysian;
 import com.github.lyokofirelyte.Elysian.Gui.GuiChest;
 
@@ -54,13 +56,24 @@ public class ElyStaff implements Listener {
 		 main = i;
 	 }
 	 
+	 @DivCommand(perm = "wa.staff.admin", aliases = {"test"}, desc = "test Command", help = "/test", player = true)
+	 public void test(CommandSender cs, String[] args){
+		 Player p = (Player)cs;
+		 ElyMarkkitItem item = new ElyMarkkitItem(main, p.getInventory().getItemInHand().getType(), p.getInventory().getItemInHand().getDurability());
+		 System.out.println(item.getDamage());
+		 System.out.println(item.getStackSellPrice());
+		 System.out.println(item.getInStock());
+		 System.out.println(item.getSellPrice(32));
+		 System.out.println(item.getSignName());
+	 }
+	 
 	 @DivCommand(perm = "wa.staff.admin", aliases = {"backup"}, desc = "File Backup Command", help = "/backup", player = false)
 	 public void onBackup(CommandSender cs, String[] args){
 		 main.api.divManager.backup();
 		 main.s(cs, "Backup Complete!");
 	 }
 	 
-	 @DivCommand(perm = "wa.staff.mod2", aliases = {"markkit"}, desc = "Lookup command", help = "/markkit <player> <page>", player = false, min = 2)
+	 @DivCommand(perm = "wa.staff.mod", aliases = {"markkit"}, desc = "Lookup command", help = "/markkit <player> <page>", player = false, min = 2)
 	 public void onMarkkit(CommandSender cs, String[] args){
 		 if(main.doesPartialPlayerExist(args[0])){
 			 if(main.api.divUtils.isInteger(args[1])){
@@ -69,7 +82,7 @@ public class ElyStaff implements Listener {
 				 
 				 int page = Integer.parseInt(args[1]);
 				 
-				 DivinityPlayer dp = main.api.getDivPlayer(main.getPlayer(args[0]));
+				 DivinityPlayer dp = main.matchDivPlayer(args[0]);
 				 
 				 List<String> logList = dp.getList(DPI.MARKKIT_LOG);
 				 List<String> log = Lists.reverse(logList);
@@ -90,7 +103,7 @@ public class ElyStaff implements Listener {
 						 }catch(Exception e){}					 
 					}
 				 }
-				 
+
 				 main.s(cs, Lists.reverse(result));
 			 }else{
 				 main.s(cs, "That is not a number!");
@@ -116,7 +129,7 @@ public class ElyStaff implements Listener {
 	 public void onRegister(Player p, String[] args){
 		 
 		 DivinityPlayer dp = main.api.getDivPlayer(p);
-		 Map<String, Object> input = new HashMap<String, Object>();
+		 Map<String, Object> input = new THashMap<String, Object>();
 		 input.put("username", p.getName());
 		 input.put("password", args[0]);
 		 
@@ -233,24 +246,28 @@ public class ElyStaff implements Listener {
 	 public void onSunday(CommandSender cs, String[] args){
 		 
 		 String who = cs instanceof Player ? ((Player)cs).getDisplayName() : "&6Console";
-		 
-		 for (DivinityStorage dp : main.api.divManager.getAllUsers()){
-			 List<String> groups = new ArrayList<String>(main.perms.memberGroups);
-			 Collections.reverse(groups);
-			 for (String group : groups){
-				 if (dp.getList(DPI.PERMS).contains("wa." + ("rank." + group).replace("rank.member", "member"))){
-					 float amt = Float.parseFloat(main.perms.rankNames.get(group).split(" % ")[2])/100;
-					 float amount = dp.getInt(DPI.BALANCE)*amt;
-					 dp.set(DPI.BALANCE, dp.getInt(DPI.BALANCE) + Math.round(amount));
-					 dp.getList(DPI.MAIL).add("personal" + "%SPLIT%" + who + "%SPLIT%" + "Sunday balance updated! You were given " + Math.round(amount) + " this week!");
-					 
-					 if (Bukkit.getPlayer(dp.uuid()) != null){
-						 main.s(Bukkit.getPlayer(dp.uuid()), "none", "You've recieved a mail! /mail read");
+		 if(main.hasSunDayBeenPerformedBefore == false){
+			 main.hasSunDayBeenPerformedBefore = true;
+			 for (DivinityStorage dp : main.api.divManager.getAllUsers()){
+				 List<String> groups = new ArrayList<String>(main.perms.memberGroups);
+				 Collections.reverse(groups);
+				 for (String group : groups){
+					 if (dp.getList(DPI.PERMS).contains("wa." + ("rank." + group).replace("rank.member", "member"))){
+						 float amt = Float.parseFloat(main.perms.rankNames.get(group).split(" % ")[2])/100;
+						 float amount = dp.getInt(DPI.BALANCE)*amt;
+						 dp.set(DPI.BALANCE, dp.getInt(DPI.BALANCE) + Math.round(amount));
+						 dp.getList(DPI.MAIL).add("personal" + "%SPLIT%" + who + "%SPLIT%" + "Sunday balance updated! You were given " + Math.round(amount) + " this week!");
+						 
+						 if (Bukkit.getPlayer(dp.uuid()) != null){
+							 main.s(Bukkit.getPlayer(dp.uuid()), "none", "You've recieved a mail! /mail read");
+						 }
+						 
+						 break;
 					 }
-					 
-					 break;
 				 }
 			 }
+		 }else{
+			 main.s(cs, "Sunday balance has already been done!");
 		 }
 	 }
 	 
@@ -359,7 +376,7 @@ public class ElyStaff implements Listener {
 		 p.kickPlayer("§4Abandoned Ship!");
 	 }
 	 
-	 @DivCommand(perm = "wa.staff.mod", aliases = {"speed"}, desc = "Speed Command", help = "/speed <1-10>", player = true, min = 1, max = 1)
+	 @DivCommand(perm = "wa.staff.mod", aliases = {"speed"}, desc = "Speed Command", help = "/speed <1-10>", player = true, min = 1, max = 2)
 	 public void onSpeed(CommandSender cs, String[] args){
 		 Player p = (Player)cs;
 		 if(main.api.divUtils.isInteger(args[0])){
@@ -368,12 +385,25 @@ public class ElyStaff implements Listener {
 			 if((speed) < 0 || (speed) > 10){
 				 main.s(p, "/speed <1-10>");
 			 }
-			 if(p.isFlying()){
-				 p.setFlySpeed(speed/10);
+			 if(args.length == 1){
+				 if(p.isFlying()){
+					 p.setFlySpeed(speed/10);
+				 }else{
+					 p.setWalkSpeed(speed/10);
+				 }
+				 main.s(p, "Speed updated!");
 			 }else{
-				 p.setWalkSpeed(speed/10);
+				 if(main.doesPartialPlayerExist(args[0]) && main.isOnline(args[0])){
+					 Player pl = main.getPlayer(args[1]);
+					 if(pl.isFlying()){
+						 pl.setFlySpeed(speed/10);
+					 }else{
+						 pl.setWalkSpeed(speed/10);
+					 }
+					 main.s(pl, "Speed updated!");
+					 main.s(p, "Speed updated!");
+				 }
 			 }
-			 main.s(p, "Speed updated!");
 		 }else{
 			 main.s(p, "That's not a number!");
 		 }
