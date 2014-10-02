@@ -4,13 +4,12 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-import java.util.logging.Level;
-
 import org.apache.commons.math3.util.Precision;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Animals;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
@@ -26,22 +25,12 @@ import com.github.lyokofirelyte.Divinity.Storage.DPI;
 import com.github.lyokofirelyte.Divinity.Storage.DivinityPlayer;
 import com.github.lyokofirelyte.Elysian.Elysian;
 
-public class FriendlyReminder implements Listener{
+public class FriendlyReminder implements Listener {
 	
 	private Elysian main;
-	private ArrayList<EntityType> friendlies;
 	
 	public FriendlyReminder(Elysian i) {
 		main = i;
-		
-		friendlies = new ArrayList<EntityType>();
-		friendlies.add(EntityType.SHEEP);
-		friendlies.add(EntityType.COW);
-		friendlies.add(EntityType.CHICKEN);
-		friendlies.add(EntityType.WOLF);
-		friendlies.add(EntityType.OCELOT);
-		friendlies.add(EntityType.HORSE);
-		friendlies.add(EntityType.PIG);
 	}
 	
 	@EventHandler
@@ -65,8 +54,9 @@ public class FriendlyReminder implements Listener{
 	 */
 	@EventHandler(ignoreCancelled = true)
 	public void onFriendlyKill (EntityDeathEvent e) {
-		if(friendlies.contains(e.getEntityType())) {
-			if(e.getEntity().getKiller() instanceof Player) {
+		
+		if(e.getEntity().getKiller() instanceof Player){
+			if(e.getEntity() instanceof Animals){
 				DivinityPlayer dp = main.getDivPlayer(e.getEntity().getKiller());
 				checkAndMessage(dp, "friendlyKill");
 			}
@@ -74,9 +64,9 @@ public class FriendlyReminder implements Listener{
 	}
 	
 	@EventHandler(ignoreCancelled = true)
-	public void onCreeperExplosion(EntityExplodeEvent e) {
-		List<Entity> entities = e.getEntity().getNearbyEntities(10, 4, 10);
-		for( Entity E: entities) {
+	public void onCreeperExplosion(EntityExplodeEvent e){
+		
+		for (Entity E : e.getEntity().getNearbyEntities(10, 4, 10)) {
 			if(E.getType() == EntityType.PLAYER) {
 				checkAndMessage(main.getDivPlayer((Player) E), "CreeperHole");
 			}
@@ -89,13 +79,14 @@ public class FriendlyReminder implements Listener{
 	 * @param e
 	 */
 	@EventHandler(ignoreCancelled = true)
-	public void onBlockBreak (BlockBreakEvent e) {
-		if(e.getBlock().getType().equals(Material.CROPS)) {
+	public void onBlockBreak (BlockBreakEvent e){
+		
+		if(e.getBlock().getType().equals(Material.CROPS)){
 			checkAndMessage(main.getDivPlayer(e.getPlayer()), "CropReplanting");
 		}
 		
 		if(e.getBlock().getType().equals(Material.LOG)) {
-			if(check(main.getDivPlayer(e.getPlayer()), "TreeReplanting")) {
+			if(check(main.getDivPlayer(e.getPlayer()), DPI.FR_TR_TOGGLE)) {
 				Player p = e.getPlayer();
 				Location l = e.getBlock().getLocation();
 				String loc = l.toVector().getBlockX() + "," + l.toVector().getBlockZ();
@@ -117,34 +108,11 @@ public class FriendlyReminder implements Listener{
 		}
 	}
 	
-	private boolean check(DivinityPlayer dp, String EventType) {
-		switch(EventType) {
-		case "friendlyKill" : {
-			if(dp.getBool(DPI.FR_FK_TOGGLE) && (dp.getLong(DPI.FR_FK_COOLDOWN) <= System.currentTimeMillis())) {
-				return true;
-			}
-		}
-		case "CreeperHole" : {
-			if(dp.getBool(DPI.FR_CH_TOGGLE) && (dp.getLong(DPI.FR_CH_COOLDOWN) <= System.currentTimeMillis())) {
-				return true;
-			}
-		}
-		case "CropReplanting" : {
-			if(dp.getBool(DPI.FR_CR_TOGGLE) && (dp.getLong(DPI.FR_CR_COOLDOWN) <= System.currentTimeMillis())) {
-				return true;
-			}
-		}
-		case "TreeReplanting" : {
-			if(dp.getBool(DPI.FR_TR_TOGGLE) && (dp.getLong(DPI.FR_TR_COOLDOWN) <= System.currentTimeMillis())) {
-				return true;
-			}
-		}
-		default: return false;
-		}
+	private boolean check(DivinityPlayer dp, DPI dpi) {
+		return dp.getBool(dpi) && (dp.getLong(DPI.valueOf(dpi.toString().replace("TOGGLE", "COOLDOWN"))) <= System.currentTimeMillis());
 	}
 	
 	private void checkAndMessage(DivinityPlayer dp, String EventType) {
-		main.getLogger().log(Level.INFO, "This is a test for the firing system of Friendly Reminder");
 		switch(EventType) {
 		case "friendlyKill" : {
 			if(dp.getBool(DPI.FR_FK_TOGGLE) && (dp.getLong(DPI.FR_FK_COOLDOWN) <= System.currentTimeMillis())) {
@@ -181,7 +149,6 @@ public class FriendlyReminder implements Listener{
 	private String msg(String type) {
 		int c = new Random().nextInt(4);
 		String s;
-		System.out.println("Switch: " + type+"|" + c);
 		switch(type + "|" + c) {
 		case "friendlyKill|0": s = "If you kill an animal please erm, 'Repopulate' them!";
 		break;
