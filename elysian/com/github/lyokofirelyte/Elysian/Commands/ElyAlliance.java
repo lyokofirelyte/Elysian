@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
@@ -42,16 +43,22 @@ public class ElyAlliance {
 		 DivinityPlayer dp = main.api.getDivPlayer(p);
 		 args[0] = ChatColor.stripColor(args[0]);
 		 
-		 if (!args[0].toLowerCase().startsWith(dp.name().substring(0, 3).toLowerCase())){
-			 main.s(p, "none", "You must at least use the first 3 letters of your name.");
-		 } else {
-			 if (args[0].length() > 11){
-				 args[0] = args[0].substring(0, 11);
+		 if (StringUtils.isAlphanumeric(args[0]) || !StringUtils.isAlphanumeric(p.getName())){
+
+			 if (!args[0].toLowerCase().startsWith(dp.name().substring(0, 3).toLowerCase())){
+				 main.s(p, "none", "You must at least use the first 3 letters of your name.");
+			 } else {
+				 if (args[0].length() > 11){
+					 args[0] = args[0].substring(0, 11);
+				 }
+				 p.setDisplayName(nick(dp, ChatColor.stripColor(main.AS(args[0]))));
+				 dp.set(DPI.DISPLAY_NAME, (nick(dp, ChatColor.stripColor(main.AS(args[0])))));
+				 p.setPlayerListName(main.AS(dp.getStr(DPI.DISPLAY_NAME)));
+				 main.s(p, "none", "Display name changed to " + main.AS(p.getDisplayName()) + "&b.");
 			 }
-			 p.setDisplayName(nick(dp, args[0]));
-			 dp.set(DPI.DISPLAY_NAME, nick(dp, args[0]));
-			 p.setPlayerListName(main.AS(dp.getStr(DPI.DISPLAY_NAME)));
-			 main.s(p, "none", "Display name changed to " + main.AS(p.getDisplayName()) + "&b.");
+			 
+		 } else {
+			 dp.err("You can't have those characters in your name, sorry!");
 		 }
 	 }
 	 
@@ -65,7 +72,7 @@ public class ElyAlliance {
 		 }
 	 }
 	 
-	 @DivCommand(aliases = {"a", "alliance"}, desc = "Elysian Alliance Command", help = "/a help", player = true, min = 1)
+	 @DivCommand(aliases = {"a", "alliance"}, desc = "Elysian Alliance Command", help = "/a -help", player = true, min = 1)
 	 public void onAllianceCommand(Player p, String[] args){
 		 
 		 DivinityPlayer dp = main.api.getDivPlayer(p);
@@ -73,23 +80,23 @@ public class ElyAlliance {
 		 
 		 switch (args[0]){
 		 	
-		 	case "help":
+		 	case "-help":
 				 
 		 		String[] help = new String[] {
-		 			"/a list",
-		 			"/a info <name>",
-		 			"/a pay <name> <monies>",
-					"/a invite <player>",
-					"/a accept",
-					"/a decline",
-					"/a kick <player>",
-					"/a leave",
-					"/a colors <alliance> <color1> <color2>",
-					"/a create <name> <color1> <color2> <leader>",
-					"/a upgrade <name>",
-					"/a disband <name>",
-					"/a transfer <name> <name>",
-					"/a desc <name> <words>",
+		 			"/a -list",
+		 			"/a -info <name>",
+		 			"/a -pay <name> <monies>",
+					"/a -invite <player>",
+					"/a -accept",
+					"/a -decline",
+					"/a -kick <player>",
+					"/a -leave",
+					"/a -colors <alliance> <color1> <color2>",
+					"/a -create <name> <color1> <color2> <leader>",
+					"/a -upgrade <name>",
+					"/a -disband <name>",
+					"/a -transfer <name> <name>",
+					"/a -desc <name> <words>",
 					"/a <message for chat>",
 					"/toggle alliance (in/out of chat)"
 		 		};
@@ -100,7 +107,7 @@ public class ElyAlliance {
 
 		 	break;
 		 	
-		 	case "desc":
+		 	case "-desc":
 		 		
 		 		if (args.length >= 3){
 		 			if (doesAllianceExist(args[1])){
@@ -119,7 +126,7 @@ public class ElyAlliance {
 		 		
 		 	break;
 		 	
-		 	case "upgrade":
+		 	case "-upgrade":
 		 		
 		 		if (main.perms(p, "wa.staff.mod")){
 		 			if (args.length == 2 && doesAllianceExist(args[1])){
@@ -138,7 +145,7 @@ public class ElyAlliance {
 		 		
 		 	break;
 		 	
-		 	case "colors":
+		 	case "-colors":
 		 		
 		 		if (dp.getBool(DPI.ALLIANCE_LEADER) || main.perms(p, "wa.staff.admin")){
 		 			if (args.length == 4 && doesAllianceExist(args[1])){
@@ -174,7 +181,7 @@ public class ElyAlliance {
 		 		
 		 	break;
 		 	
-		 	case "transfer":
+		 	case "-transfer":
 		 		
 		 		if (args.length == 3){
 		 			if (main.doesPartialPlayerExist(args[1]) && main.doesPartialPlayerExist(args[2])){
@@ -201,7 +208,7 @@ public class ElyAlliance {
 		 		
 		 	break;
 
-		 	case "create":
+		 	case "-create":
 		 		
 		 		if (args.length == 5){
 		 			if (!doesAllianceExist(args[1]) && main.perms(p, "wa.staff.mod2")){
@@ -227,7 +234,7 @@ public class ElyAlliance {
 		 				alliance.getList(DAI.MEMBERS).add(leader.uuid().toString());
 
 		 				Bukkit.getPlayer(leader.uuid()).performCommand("nick " + ChatColor.stripColor(main.AS(Bukkit.getPlayer(leader.uuid()).getDisplayName())));
-		 				leader.set(DPI.DISPLAY_NAME, p.getDisplayName());
+		 				leader.set(DPI.DISPLAY_NAME, Bukkit.getPlayer(leader.uuid()).getDisplayName());
 		 				
 		 				DivinityRegion region = main.api.getDivRegion(args[1].toLowerCase());
 		 				
@@ -237,7 +244,8 @@ public class ElyAlliance {
 						region.set(DRF.BLOCK_PLACE, true);
 						region.set(DRF.FIRE_SPREAD, true);
 						region.set(DRF.TNT_EXPLODE, true);
-						region.getList(DRI.PERMS).add("wa.alliance." + args[0].toLowerCase());
+						region.set(DRF.INTERACT, true);
+						region.getList(DRI.PERMS).add("wa.alliance." + args[1].toLowerCase());
 						region.getList(DRI.PERMS).add("wa.staff.admin");
 		 				
 		 				DivinityUtils.bc(main.coloredAllianceName(args[1].toLowerCase()) + " &bhas been formed!");
@@ -250,7 +258,7 @@ public class ElyAlliance {
 		 		
 		 	break;
 		 	
-		 	case "disband":
+		 	case "-disband":
 		 		
 		 		if (args.length == 2){
 		 			if (doesAllianceExist(args[1]) && (main.api.getDivAlliance(args[1]).name().equalsIgnoreCase(dp.getStr(DPI.ALLIANCE_NAME)) && dp.getBool(DPI.ALLIANCE_LEADER))|| main.silentPerms(p, "wa.staff.admin")){
@@ -279,7 +287,7 @@ public class ElyAlliance {
 		 		
 		 	break;
 		 	
-		 	case "pay": case "donate":
+		 	case "-pay": case "-donate":
 		 		
 		 		if (args.length == 3){
 		 			
@@ -318,7 +326,7 @@ public class ElyAlliance {
 		 		
 		 	break;
 		 	
-		 	case "kick":
+		 	case "-kick":
 		 		
 		 		if (args.length == 2 && main.doesPartialPlayerExist(args[1])){
 		 			
@@ -344,7 +352,7 @@ public class ElyAlliance {
 		 		
 		 	break;
 		 	
-		 	case "list":
+		 	case "-list":
 		 		
 		 		List<String> alliances = new ArrayList<String>();
 		 		String msg = "&6";
@@ -367,7 +375,7 @@ public class ElyAlliance {
 		 		
 		 	break;
 		 	
-		 	case "info":
+		 	case "-info":
 		 		
 		 		if (args.length == 2){
 		 			if (doesAllianceExist(args[1])){
@@ -404,7 +412,7 @@ public class ElyAlliance {
 		 		
 		 	break;
 		 	
-		 	case "invite":
+		 	case "-invite":
 		 		
 		 		if (args.length == 2 && main.doesPartialPlayerExist(args[1])){
 		 			if (dp.getBool(DPI.ALLIANCE_LEADER)){
@@ -412,7 +420,7 @@ public class ElyAlliance {
 		 				main.s(p, "Invite sent!");
 		 				if (main.isOnline(args[1])){
 		 					main.s(main.getPlayer(args[1]), p.getDisplayName() + " &bhas invited you to join " + main.coloredAllianceName(dp.getStr(DPI.ALLIANCE_NAME)).toUpperCase() + "&b.");
-		 					main.s(main.getPlayer(args[1]), "Type &6/a accept &bor &6/a deny&b.");
+		 					main.s(main.getPlayer(args[1]), "Type &6/a -accept &bor &6/a -deny&b.");
 		 				}
 		 			} else {
 		 				main.s(p, "&c&oOnly the leader can do this.");
@@ -423,7 +431,7 @@ public class ElyAlliance {
 		 		
 		 	break;
 		 	
-		 	case "accept":
+		 	case "-accept":
 		 		
 		 		if (!inv.equals("none")){
 		 			if (dp.getStr(DPI.ALLIANCE_NAME).equals("none")){
@@ -449,7 +457,7 @@ public class ElyAlliance {
 		 		
 		 	break;
 		 	
-		 	case "leave":
+		 	case "-leave":
 
 		 		if (!dp.getStr(DPI.ALLIANCE_NAME).equals("none") && !dp.getBool(DPI.ALLIANCE_LEADER)){
 		 			removeFromAlliance(dp, dp.getStr(DPI.ALLIANCE_NAME));
@@ -461,7 +469,7 @@ public class ElyAlliance {
 		 		
 		 	break;
 		 	
-		 	case "decline": case "deny":
+		 	case "-decline": case "-deny":
 		 		
 		 		if (!inv.equals("none")){
 		 			if (main.isOnline(inv.split(" ")[0])){

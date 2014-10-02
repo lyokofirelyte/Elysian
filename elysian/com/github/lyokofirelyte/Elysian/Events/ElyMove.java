@@ -40,6 +40,10 @@ public class ElyMove implements Listener {
 			Vector themV = e.getPlayer().getLocation().toVector();
 			you.setVelocity(themV.subtract(you.getLocation().toVector()).normalize());
 		}
+		
+		if (!dp.getStr(DPI.HOLO_ID).equals("none")){
+			dp.updateHologram();
+		}
 	}
 	
 	@EventHandler (ignoreCancelled = false)
@@ -60,7 +64,7 @@ public class ElyMove implements Listener {
 	
 	private boolean borderCheck(Player p, Vector v){
 		
-		if (p.getWorld().getName().equals("world") && (v.getBlockX() > 5000 || v.getBlockX() < -5000 || v.getBlockZ() > 5000 || v.getBlockZ() < -5000)){
+		if (p.getWorld().getName().equals("world") && (v.getBlockX() > 6000 || v.getBlockX() < -6000 || v.getBlockZ() > 6000 || v.getBlockZ() < -6000)){
 			main.s(p, "&c&oBorder reached!");
 			return true;
 		}

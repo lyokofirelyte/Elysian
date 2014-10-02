@@ -20,10 +20,12 @@ import com.github.lyokofirelyte.Divinity.Storage.ElySkill;
 import com.github.lyokofirelyte.Elysian.Elysian;
 import com.google.common.collect.ImmutableMap;
 
-public class ElyPatrol extends ElyMMO {
+public class ElyPatrol {
+	
+	private Elysian main;
 
 	public ElyPatrol(Elysian i) {
-		super(i);
+		main = i;
 	}
 
 	Map<String, Patrol> patrols = new HashMap<>();
@@ -94,7 +96,20 @@ public class ElyPatrol extends ElyMMO {
 	}
 	
 	public boolean doesPatrolExistWithPlayer(Player p){
-		return getPatrolWithPlayer(p) != null;
+		
+		if (patrols.size() <= 0){
+			return false;
+		}
+		
+		for (Patrol patrol : patrols.values()){
+			for (String player : patrol.getMembers()){
+				if (player.equals(p.getName())){
+					return true;
+				}
+			}
+		}
+		
+		return false;
 	}
 	
 	public Collection<Patrol> getAllPatrols(){

@@ -14,6 +14,7 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Monster;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Projectile;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityCreatePortalEvent;
@@ -28,9 +29,11 @@ import org.bukkit.util.Vector;
 import com.github.lyokofirelyte.Divinity.DivinityUtils;
 import com.github.lyokofirelyte.Divinity.Commands.DivCommand;
 import com.github.lyokofirelyte.Divinity.Events.DivinityChannelEvent;
+import com.github.lyokofirelyte.Divinity.Events.DivinityTeleportEvent;
 import com.github.lyokofirelyte.Divinity.Storage.DPI;
 import com.github.lyokofirelyte.Divinity.Storage.DivinityPlayer;
 import com.github.lyokofirelyte.Elysian.Elysian;
+import com.github.lyokofirelyte.Elysian.Games.TeamPVP.TeamPVPData.TeamPVPGame;
 
 public class ElyMobs implements Listener {
 	
@@ -61,6 +64,12 @@ public class ElyMobs implements Listener {
 			
 			Player p = (Player)e.getEntity();
 			
+			for (TeamPVPGame game : main.teamPVP.values()){
+				if (game.hasPlayer(p.getName())){
+					return;
+				}
+			}
+			
 			if (e.getDamager() instanceof Player){
 				
 				Player damager = (Player)e.getDamager();
@@ -69,9 +78,20 @@ public class ElyMobs implements Listener {
 					e.setCancelled(true);
 				}
 				
-			} else {
-				main.api.getDivPlayer((Player)e.getEntity()).set(DPI.IN_COMBAT, true);
+			} else if (e.getDamager() instanceof Projectile){
+				
+				Projectile proj = (Projectile) e.getDamager();
+				
+				if (proj.getShooter() instanceof Player){
+					Player damager = (Player) proj.getShooter();
+					if (!main.api.getDivPlayer(damager).getStr(DPI.DUEL_PARTNER).equals(p.getName())){
+						e.setCancelled(true);
+					}
+					
+				}
 			}
+			
+			main.api.getDivPlayer(p).set(DPI.IN_COMBAT, true);
 		}
 	}
 	
@@ -114,6 +134,12 @@ public class ElyMobs implements Listener {
 				Player dead = (Player)e.getEntity();
 				Map<String, String> replacements = new HashMap<String, String>();
 				
+				for (TeamPVPGame game : main.teamPVP.values()){
+					if (game.hasPlayer(dead.getName())){
+						return;
+					}
+				}
+				
 				DivinityPlayer killer = main.api.getDivPlayer((Player)e.getEntity().getKiller());
 				DivinityPlayer deadDP = main.api.getDivPlayer((Player)e.getEntity());
 				
@@ -144,22 +170,6 @@ public class ElyMobs implements Listener {
 				killer.set(DPI.DUEL_PARTNER, "none");
 				deadDP.set(DPI.DUEL_PARTNER, "killed");
 				
-				for (ItemStack i : dead.getInventory().getContents()){
-					if (i != null){
-						deadDP.getStack(DPI.BACKUP_INVENTORY).add(i);
-					}
-				}
-				for (ItemStack i : dead.getInventory().getArmorContents()){
-					if (i != null){
-						deadDP.getStack(DPI.BACKUP_INVENTORY).add(i);
-					}
-				}
-				
-				if (killer.getBool(DPI.IS_DUEL_SAFE)){
-					e.setDroppedExp(0);
-					e.getDrops().clear();
-				}
-				
 				DivinityUtils.bc(dead.getDisplayName() + " &e&owas brutally murdered in a duel with " + killer.getStr(DPI.DISPLAY_NAME));
 			}
 		}
@@ -170,8 +180,8 @@ public class ElyMobs implements Listener {
 		
 		e.setDeathMessage(null);
 		
-		if (e.getEntity().getKiller() != null && e.getEntity().getKiller() instanceof Player){
-			if (!((Player)e.getEntity()).equals((Player)e.getEntity().getKiller())){
+		for (TeamPVPGame game : main.teamPVP.values()){
+			if (game.hasPlayer(e.getEntity().getName())){
 				return;
 			}
 		}
@@ -189,6 +199,11 @@ public class ElyMobs implements Listener {
 		}
 		
 		dp.set(DPI.IN_COMBAT, false);
+		
+		switch (e.getEntity().getWorld().getName()){
+			case "world_the_end": case "world": case "world_nether": break;
+			default: return;
+		}
 		
 		for (ItemStack i : p.getInventory().getContents()){
 			if (i != null && !i.getType().equals(Material.AIR)){
@@ -249,6 +264,13 @@ public class ElyMobs implements Listener {
 				main.s(e.getPlayer(), "This duel was safe. Inventory restored.");
 			}
 		}
+		
+		if (!dp.getBool(DPI.IN_GAME) && e.getPlayer().getBedSpawnLocation() == null){
+			if (dp.getList(DPI.HOME).size() > 0){
+				String[] h = dp.getList(DPI.HOME).get(0).split(" ");
+				main.api.event(new DivinityTeleportEvent(e.getPlayer(), h[1], h[2], h[3], h[4], h[5], h[6]));
+			}
+		}
 	}
 	
 	@EventHandler
@@ -274,7 +296,7 @@ public class ElyMobs implements Listener {
 		dp.set(DPI.MOB_MONEY, dp.getInt(DPI.MOB_MONEY) + (superRandom == 500 ? 1000 : 0));
 	}
 	
-	@DivCommand(aliases = {"exp", "xp"}, help = "/exp <take> <amount>", desc = "Elysian EXP Storing System", player = true)
+	@DivCommand(aliases = {"exp", "xp"}, help = "/exp <take, store> <amount>", desc = "Elysian EXP Storing System", player = true)
 	public void onExp(Player p, String[] args){
 		
 		DivinityPlayer dp = main.api.getDivPlayer(p);
@@ -295,6 +317,17 @@ public class ElyMobs implements Listener {
 				} else {
 					main.s(p, "&c&oNot enough stored xp!");
 				}
+				
+			/*} else if (args[0].equals("store")){
+				
+				if (p.getTotalExperience() >= amt){
+					int restore = new Integer(p.getTotalExperience() - amt);
+					dp.set(DPI.EXP, dp.getInt(DPI.EXP) + amt);
+					p.setTotalExperience(0);
+					p.giveExp(restore);
+				} else {
+					dp.err("Not enough xp!");
+				}*/
 				
 			} else {
 				main.s(p, main.help("exp", this));

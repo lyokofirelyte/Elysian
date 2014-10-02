@@ -1,11 +1,12 @@
 package com.github.lyokofirelyte.Elysian.Commands;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.bukkit.Bukkit;
-import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import com.github.lyokofirelyte.Divinity.DivinityUtils;
 import com.github.lyokofirelyte.Divinity.Commands.DivCommand;
 import com.github.lyokofirelyte.Divinity.Storage.DPI;
 import com.github.lyokofirelyte.Divinity.Storage.DivinityPlayer;
@@ -29,8 +30,8 @@ public class ElyMail {
 		"/mail clear"
 	 };
 	 
-	 @DivCommand(aliases = {"mail"}, desc = "Elysian Mail Command", help = "/mail help", player = false, min = 1)
-	 public void onMail(CommandSender p, String[] args){
+	 @DivCommand(aliases = {"mail"}, desc = "Elysian Mail Command", help = "/mail help", player = true, min = 1)
+	 public void onMail(Player p, String[] args){
 		 
 		 
 		 String msg = args.length >= 3 ? args[2] : "";
@@ -153,55 +154,52 @@ public class ElyMail {
 		  }
 	 }
 	 
-	 public void checkMail(CommandSender p){
+	 public void checkMail(Player p){
 		 
-		 DivinityStorage reading = null;
+		 DivinityPlayer reading = main.api.getDivPlayer(p);
  		  
- 		  if (p instanceof Player){
- 			  reading = main.api.getDivPlayer((Player)p);
- 		  } else {
- 			  reading = main.api.getSystem();
- 		  }
- 		  
- 		  if (reading.getList(DPI.MAIL).size() > 0){
+		 if (reading.getList(DPI.MAIL).size() > 0){
  			  
-	  		  main.s(p, "none", "Reading mail &6(" + reading.getList(DPI.MAIL).size() + ")");
-	  		  
- 			  for (String s : reading.getList(DPI.MAIL)){
+			 main.s(p, "none", "Reading mail &6(" + reading.getList(DPI.MAIL).size() + ")");
+
+			 for (String s : reading.getList(DPI.MAIL)){
  				  
- 				  String[] split = s.split("%SPLIT%");
+				 String[] split = s.split("%SPLIT%");
+				 String newLine = "";
  				  
- 				  switch (split[0]){
+				 switch (split[0]){
  				  
-	  				  case "personal":
-	  					  
-	  					  main.s(p, "none", "&6" + split[1] + " &7-> &6you&f: &7" + split[2]);
-	  					  
-	  				  break;
-	  				  
-	  				  case "wa.staff.intern":
-	  					  
-	  					  main.s(p, "none", "&6" + split[1] + " &7-> &cstaff&f: &7" + split[2]);
-	  					  
-	  				  break;
-	  				  
-	  				  case "wa.member":
-	  					  
-	  					  main.s(p, "none", "&6" + split[1] + " &7-> &2global&f: &7" + split[2]);
-	  					  
-	  				  break;
-	  				  
-	  				  default:
-	  					  
-	  					  if (s.startsWith("wa.alliance")){
-	  						  main.s(p, "none", "&6" + split[1] + " &7-> &3alliance&f: &7" + split[2]);
-	  					  }
-	  					  
-	  				  break;
- 				  }
- 			  }
- 		  } else {
- 			  main.s(p, "none", "&c&oYou have no mail.");
- 		  }
+					 case "personal":
+		  					  
+						 newLine = "&6" + split[1] + " &7-> &6you&f: &7" + split[2];
+		  					  
+					 break;
+		  				  
+					 case "wa.staff.intern":
+		  					  
+						 newLine = "&6" + split[1] + " &7-> &cstaff&f: &7" + split[2];
+		  					  
+					 break;
+		  				  
+					 case "wa.member":
+		  					  
+						 newLine = "&6" + split[1] + " &7-> &2global&f: &7" + split[2];
+		  					  
+					 break;
+		  				  
+					 default:
+		  					  
+						 if (s.startsWith("wa.alliance")){
+							 newLine = "&6" + split[1] + " &7-> &3alliance&f: &7" + split[2];
+						 }
+		  					  
+					 break;
+				 }
+				 
+				 main.s(p, newLine);
+			 }
+		 } else {
+			 main.s(p, "none", "&c&oYou have no mail.");
+		 }
 	 }
 }	

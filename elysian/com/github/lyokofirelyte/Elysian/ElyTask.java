@@ -7,6 +7,7 @@ public enum ElyTask {
 	SPECTATE("SPECTATE"),
 	MMO_BLOCKS("MMO_BLOCKS"),
 	ANNOUNCER("ANNOUNCER"),
+	AUTO_SAVE("AUTO_SAVE"),
 	WEBSITE("WEBSITE");
 	
 	ElyTask(String type){

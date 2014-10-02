@@ -14,11 +14,6 @@
 	</properties>
 	<dependencies>
 		<dependency>
-			<groupId>com.github.lyokofirelyte</groupId>
-			<artifactId>Divinity</artifactId>
-			<version>1.0</version>
-		</dependency>
-		<dependency>
 			<groupId>com.sk89q</groupId>
 			<artifactId>WorldEdit</artifactId>
 			<version>5.6.3</version>
@@ -33,11 +28,6 @@
  			<artifactId>craftbukkit</artifactId>
  			<version>${craftbukkit}</version>
  		</dependency>
-		 <dependency>
-			<groupId>org.kitteh</groupId>
-			<artifactId>tagapi</artifactId>
-			<version>2.6</version>
-		</dependency>
 		<dependency>
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-math3</artifactId>
@@ -55,16 +45,12 @@
       		<url>http://maven.sk89q.com/repo/</url>
    		</repository>
 		<repository>
-			<id>bukkit-repo</id>
-			<url>http://repo.bukkit.org/content/repositories/snapshots/</url>
-		</repository>
-		<repository>
-			<id>kitteh-repo</id>
-			<url>http://repo.kitteh.org/content/groups/public</url>
-		</repository>
-		<repository>
 			<id>confuser-repo</id>
 			<url>http://ci.frostcast.net/plugin/repository/everything</url>
+		</repository>
+		<repository>
+			<id>bukkit-repo</id>
+			<url>http://repo.bukkit.org/content/repositories/snapshots/</url>
 		</repository>
 	</repositories>
 	<build>
@@ -103,6 +89,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
+				 <version>2.3.2</version>
 				<configuration>
 					<version>3.1</version>
 					<source>1.7</source>

@@ -7,6 +7,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import net.minecraft.util.com.google.common.collect.Lists;
+import net.minecraft.util.gnu.trove.map.hash.THashMap;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
@@ -41,6 +44,7 @@ import com.github.lyokofirelyte.Divinity.Storage.DAI;
 import com.github.lyokofirelyte.Divinity.Storage.DPI;
 import com.github.lyokofirelyte.Divinity.Storage.DivinityPlayer;
 import com.github.lyokofirelyte.Divinity.Storage.DivinityStorage;
+import com.github.lyokofirelyte.Elysian.ElyMarkkitItem;
 import com.github.lyokofirelyte.Elysian.Elysian;
 import com.github.lyokofirelyte.Elysian.Gui.GuiChest;
 
@@ -50,6 +54,52 @@ public class ElyStaff implements Listener {
 	 
 	 public ElyStaff(Elysian i){
 		 main = i;
+	 }
+	 
+	 @DivCommand(perm = "wa.staff.admin", aliases = {"backup"}, desc = "File Backup Command", help = "/backup", player = false)
+	 public void onBackup(CommandSender cs, String[] args){
+		 main.api.divManager.backup();
+		 main.s(cs, "Backup Complete!");
+	 }
+	 
+	 @DivCommand(perm = "wa.staff.mod", aliases = {"markkit"}, desc = "Lookup command", help = "/markkit <player> <page>", player = false, min = 2)
+	 public void onMarkkit(CommandSender cs, String[] args){
+		 if(main.doesPartialPlayerExist(args[0])){
+			 if(main.api.divUtils.isInteger(args[1])){
+				 
+				 main.s(cs, "&3Looking up player &6" + args[0] + "&3!");
+				 
+				 int page = Integer.parseInt(args[1]);
+				 
+				 DivinityPlayer dp = main.matchDivPlayer(args[0]);
+				 
+				 List<String> logList = dp.getList(DPI.MARKKIT_LOG);
+				 List<String> log = Lists.reverse(logList);
+				 List<String> result = new ArrayList<String>();
+//				 for(int i = 0; i < 20; i++){
+//						 main.s(cs, "&b" + log.get(i));
+//				 }
+				 if(page != 0){
+					 for(int i = 20 * page; i < 20 * page * 2; i++){
+						 try{
+							 result.add(log.get(i));
+						 }catch(Exception e){}
+					 }
+				 }else{
+					 for(int i = 0; i < 20; i++){
+						 try{
+							 result.add(log.get(i));
+						 }catch(Exception e){}					 
+					}
+				 }
+
+				 main.s(cs, Lists.reverse(result));
+			 }else{
+				 main.s(cs, "&cThat is not a number!");
+			 }
+		 }else{
+			 main.s(cs, "&cCouldn't find player " + args[0]);
+		 }
 	 }
 	 
 	 @DivCommand(perm = "wa.staff.admin", aliases = {"ts3auth"}, desc = "Set TS3Auth Info", help = "/ts3auth <user> <pass>", player = false, min = 2)
@@ -68,7 +118,7 @@ public class ElyStaff implements Listener {
 	 public void onRegister(Player p, String[] args){
 		 
 		 DivinityPlayer dp = main.api.getDivPlayer(p);
-		 Map<String, Object> input = new HashMap<String, Object>();
+		 Map<String, Object> input = new THashMap<String, Object>();
 		 input.put("username", p.getName());
 		 input.put("password", args[0]);
 		 
@@ -185,24 +235,28 @@ public class ElyStaff implements Listener {
 	 public void onSunday(CommandSender cs, String[] args){
 		 
 		 String who = cs instanceof Player ? ((Player)cs).getDisplayName() : "&6Console";
-		 
-		 for (DivinityStorage dp : main.api.divManager.getAllUsers()){
-			 List<String> groups = new ArrayList<String>(main.perms.memberGroups);
-			 Collections.reverse(groups);
-			 for (String group : groups){
-				 if (dp.getList(DPI.PERMS).contains("wa." + ("rank." + group).replace("rank.member", "member"))){
-					 float amt = Float.parseFloat(main.perms.rankNames.get(group).split(" % ")[2])/100;
-					 float amount = dp.getInt(DPI.BALANCE)*amt;
-					 dp.set(DPI.BALANCE, dp.getInt(DPI.BALANCE) + Math.round(amount));
-					 dp.getList(DPI.MAIL).add("personal" + "%SPLIT%" + who + "%SPLIT%" + "Sunday balance updated! You were given " + Math.round(amount) + " this week!");
-					 
-					 if (Bukkit.getPlayer(dp.uuid()) != null){
-						 main.s(Bukkit.getPlayer(dp.uuid()), "none", "You've recieved a mail! /mail read");
+		 if(main.hasSunDayBeenPerformedBefore == false){
+			 main.hasSunDayBeenPerformedBefore = true;
+			 for (DivinityStorage dp : main.api.divManager.getAllUsers()){
+				 List<String> groups = new ArrayList<String>(main.perms.memberGroups);
+				 Collections.reverse(groups);
+				 for (String group : groups){
+					 if (dp.getList(DPI.PERMS).contains("wa." + ("rank." + group).replace("rank.member", "member"))){
+						 float amt = Float.parseFloat(main.perms.rankNames.get(group).split(" % ")[2])/100;
+						 float amount = dp.getInt(DPI.BALANCE)*amt;
+						 dp.set(DPI.BALANCE, dp.getInt(DPI.BALANCE) + Math.round(amount));
+						 dp.getList(DPI.MAIL).add("personal" + "%SPLIT%" + who + "%SPLIT%" + "Sunday balance updated! You were given " + Math.round(amount) + " this week!");
+						 
+						 if (Bukkit.getPlayer(dp.uuid()) != null){
+							 main.s(Bukkit.getPlayer(dp.uuid()), "none", "You've recieved a mail! /mail read");
+						 }
+						 
+						 break;
 					 }
-					 
-					 break;
 				 }
 			 }
+		 }else{
+			 main.s(cs, "Sunday balance has already been done!");
 		 }
 	 }
 	 
@@ -235,13 +289,13 @@ public class ElyStaff implements Listener {
 		 newSign.setType(args[0].equals("side") ? Material.WALL_SIGN : Material.SIGN_POST);
 			 
 		 Sign s = (Sign) newSign.getState();
-		 s.setLine(0, "§dWC §5Markkit");
+		 s.setLine(0, "§bEly §3Markkit");
 			 
-		 ConfigurationSection configSection = main.markkitYaml.getConfigurationSection("Items");
+		 ConfigurationSection configSection = main.api.getSystem().getMarkkit().getConfigurationSection("Items");
 		 String text = "§fNot Found";
 			 
 		 for (String path : configSection.getKeys(false)){
-			 if((Integer.parseInt(main.markkitYaml.getString("Items." + path + ".ID")) == p.getItemInHand().getTypeId()) && (Integer.parseInt(main.markkitYaml.getString("Items." + path + ".Damage")) == p.getItemInHand().getDurability())){
+			 if((Integer.parseInt(main.api.getSystem().getMarkkit().getString("Items." + path + ".ID")) == p.getItemInHand().getTypeId()) && (Integer.parseInt(main.api.getSystem().getMarkkit().getString("Items." + path + ".Damage")) == p.getItemInHand().getDurability())){
 				 text = "§f" + path;
 				 break;
 			 }
@@ -254,7 +308,7 @@ public class ElyStaff implements Listener {
 		 s.update();
 	 }
 	 
-	 @DivCommand(perm = "wa.staff.mod", aliases = {"chestview"}, desc = "Chest Lookup / View Command", help = "/chestview <player>, /chestview lookup <player> <item>", player = true, min = 1)
+	 @DivCommand(perm = "wa.staff.mod2", aliases = {"chestview"}, desc = "Chest Lookup / View Command", help = "/chestview <player>, /chestview lookup <player> <item>", player = true, min = 1)
 	 public void onChestView(Player p, String[] args){
 		 
 		 if (args.length != 1 && args.length != 3){
@@ -311,21 +365,36 @@ public class ElyStaff implements Listener {
 		 p.kickPlayer("§4Abandoned Ship!");
 	 }
 	 
-	 @DivCommand(perm = "wa.staff.mod", aliases = {"speed"}, desc = "Speed Command", help = "/speed <1-10>", player = true, min = 1, max = 1)
+	 @DivCommand(perm = "wa.staff.mod", aliases = {"speed"}, desc = "Speed Command", help = "/speed <1-10>", player = true, min = 1, max = 2)
 	 public void onSpeed(CommandSender cs, String[] args){
 		 Player p = (Player)cs;
+
 		 if(main.api.divUtils.isInteger(args[0])){
 			 float speed = Float.parseFloat(args[0]);
 			 
 			 if((speed) < 0 || (speed) > 10){
 				 main.s(p, "/speed <1-10>");
 			 }
-			 if(p.isFlying()){
-				 p.setFlySpeed(speed/10);
+			 if(args.length == 1){
+				 if(p.isFlying()){
+					 p.setFlySpeed(speed/10);
+				 }else{
+					 p.setWalkSpeed(speed/10);
+				 }
+				 main.s(p, "Speed updated!");
 			 }else{
-				 p.setWalkSpeed(speed/10);
+
+				 if(main.doesPartialPlayerExist(args[1]) && main.isOnline(args[1])){
+					 Player pl = main.getPlayer(args[1]);
+					 if(pl.isFlying()){
+						 pl.setFlySpeed(speed/10);
+					 }else{
+						 pl.setWalkSpeed(speed/10);
+					 }
+					 main.s(pl, "Speed updated!");
+					 main.s(p, "Speed updated!");
+				 }
 			 }
-			 main.s(p, "Speed updated!");
 		 }else{
 			 main.s(p, "That's not a number!");
 		 }
@@ -388,32 +457,32 @@ public class ElyStaff implements Listener {
 	    	  ItemStack full = p.getItemInHand();
 	    	  
 	    	  
-	    	  main.markkitYaml.set("Items." + name, null);
+	    	  main.api.getSystem().getMarkkit().set("Items." + name, null);
 	    	  
-	    	  main.markkitYaml.set("Items." + name + ".ID", full.getTypeId());
-	    	  main.markkitYaml.set("Items." + name + ".Damage", full.getDurability());
+	    	  main.api.getSystem().getMarkkit().set("Items." + name + ".ID", full.getTypeId());
+	    	  main.api.getSystem().getMarkkit().set("Items." + name + ".Damage", full.getDurability());
 			  
-	    	  main.markkitYaml.set("Items." + name + ".64.buyprice", buyprice);
-			  main.markkitYaml.set("Items." + name + ".64.sellprice", sellprice);
+	    	  main.api.getSystem().getMarkkit().set("Items." + name + ".64.buyprice", buyprice);
+			  main.api.getSystem().getMarkkit().set("Items." + name + ".64.sellprice", sellprice);
 			  
 	    	  if(buyprice/2 >= 1){
-	    		  main.markkitYaml.set("Items." + name + ".32.buyprice", buyprice/2);
-	    		  main.markkitYaml.set("Items." + name + ".32.sellprice", sellprice/2);
+	    		  main.api.getSystem().getMarkkit().set("Items." + name + ".32.buyprice", buyprice/2);
+	    		  main.api.getSystem().getMarkkit().set("Items." + name + ".32.sellprice", sellprice/2);
 	    	  }
 	    	  
 	    	  if(buyprice/4 >= 1){
-	    		  main.markkitYaml.set("Items." + name + ".16.buyprice", buyprice/4);
-	    		  main.markkitYaml.set("Items." + name + ".16.sellprice", sellprice/4);
+	    		  main.api.getSystem().getMarkkit().set("Items." + name + ".16.buyprice", buyprice/4);
+	    		  main.api.getSystem().getMarkkit().set("Items." + name + ".16.sellprice", sellprice/4);
 	    	  }
 	    	  
 	    	  if(buyprice/8 >= 1){
-	    		  main.markkitYaml.set("Items." + name + ".8.buyprice", buyprice/8);
-	    		  main.markkitYaml.set("Items." + name + ".8.sellprice", sellprice/8);
+	    		  main.api.getSystem().getMarkkit().set("Items." + name + ".8.buyprice", buyprice/8);
+	    		  main.api.getSystem().getMarkkit().set("Items." + name + ".8.sellprice", sellprice/8);
 	    	  }
 	    	 	    	  
 	    	  if(buyprice/64 >= 1){
-	    		  main.markkitYaml.set("Items." + name + ".1.buyprice", buyprice/64);
-	    		  main.markkitYaml.set("Items." + name + ".1.sellprice", sellprice/64);
+	    		  main.api.getSystem().getMarkkit().set("Items." + name + ".1.buyprice", buyprice/64);
+	    		  main.api.getSystem().getMarkkit().set("Items." + name + ".1.sellprice", sellprice/64);
 	    	  }
 			  main.s(p, "Added succesfully!");
 
@@ -425,13 +494,13 @@ public class ElyStaff implements Listener {
 	    	  ItemStack full = p.getItemInHand();
 	    	  
 	    	  
-	    	  main.markkitYaml.set("Items." + name, null);
+	    	  main.api.getSystem().getMarkkit().set("Items." + name, null);
 	    	  
-	    	  main.markkitYaml.set("Items." + name + ".ID", full.getTypeId());
-	    	  main.markkitYaml.set("Items." + name + ".Damage", full.getDurability());
+	    	  main.api.getSystem().getMarkkit().set("Items." + name + ".ID", full.getTypeId());
+	    	  main.api.getSystem().getMarkkit().set("Items." + name + ".Damage", full.getDurability());
 			  
-			  main.markkitYaml.set("Items." + name + ".1.buyprice", buyprice);
-			  main.markkitYaml.set("Items." + name + ".1.sellprice", sellprice);
+			  main.api.getSystem().getMarkkit().set("Items." + name + ".1.buyprice", buyprice);
+			  main.api.getSystem().getMarkkit().set("Items." + name + ".1.sellprice", sellprice);
 			  
 			  main.s(p, "Added succesfully!");
 		  }
@@ -940,32 +1009,15 @@ public class ElyStaff implements Listener {
 		}
 	}
 	
-	@DivCommand(perm = "wa.rank.townsman", aliases = {"ci"}, desc = "Clear Inventory (or restore inventory. Results may vary. TM)", help = "/ci [u]", player = true)
+	@DivCommand(perm = "wa.rank.townsman", aliases = {"ci"}, desc = "Clear Inventory (or restore inventory. Results may vary. TM)", help = "/ci [confirm]", player = true)
 	public void onCI(Player p, String[] args){
 		
-		DivinityPlayer dp = main.api.getDivPlayer(p);
-
 		if (args.length == 0){
-			if (p.getWorld().equals("world")){
-				dp.set(DPI.BACKUP_INVENTORY, p.getInventory().getContents());
-			}
-			p.getInventory().clear();
-			main.s(p, "&oInventory inceneration activated. Use /ci u to undo.");
-		} else if (dp.getStack(DPI.BACKUP_INVENTORY).size() > 0){
-			for (ItemStack i : dp.getStack(DPI.BACKUP_INVENTORY)){
-				if (i != null){
-					if (p.getInventory().firstEmpty() != -1){
-						p.getInventory().addItem(i);
-					} else {
-						p.getWorld().dropItem(p.getLocation(), i);
-					}
-				}
-			}
-			dp.set(DPI.BACKUP_INVENTORY, new ItemStack(){});
-			main.s(p, "&oInventory restoration completed");
+			main.s(p, "&cType /ci confirm to clear your inventory. &4This can't be reversed. We will not refund you.");
 		} else {
-			main.s(p, "&c&oNo backup inventory found.");
-		}		
+			p.getInventory().clear();
+			main.s(p, "&oInventory inceneration activated.");
+		}
 	}
 	
 	@SuppressWarnings("deprecation")

@@ -63,18 +63,20 @@ public class ElyWatch implements Runnable {
 	
 	private void creativeCheck(Player p){
 		
-		if (worlds.contains(p.getWorld().getName())){
-			if (!p.getGameMode().equals(GameMode.CREATIVE)){
-				p.setGameMode(GameMode.CREATIVE);
-			}
-			if (!p.getAllowFlight()){
-				p.setAllowFlight(true);
-			}
-			if (p.getWalkSpeed() < 0.2F){
-				p.setWalkSpeed(0.2F);
-			}
-			if (p.getFlySpeed() < 0.2F){
-				p.setFlySpeed(0.2F);
+		if (!main.api.getDivPlayer(p).getBool(DPI.IN_GAME)){	
+			if (worlds.contains(p.getWorld().getName())){
+				if (!p.getGameMode().equals(GameMode.CREATIVE)){
+					p.setGameMode(GameMode.CREATIVE);
+				}
+				if (!p.getAllowFlight()){
+					p.setAllowFlight(true);
+				}
+				if (p.getWalkSpeed() < 0.2F){
+					p.setWalkSpeed(0.2F);
+				}
+				if (p.getFlySpeed() < 0.2F){
+					p.setFlySpeed(0.2F);
+				}
 			}
 		}
 	}

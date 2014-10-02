@@ -16,6 +16,7 @@ import org.bukkit.Material;
 import org.bukkit.entity.ItemFrame;
 import org.bukkit.entity.Painting;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.SmallFireball;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -111,7 +112,7 @@ public class ElyProtect implements Listener {
 			Player p = (Player) e.getEntity();
 			String result = isInAnyRegion(e.getEntity().getLocation());
 			
-			if (hasFlag(result, DRF.TAKE_DAMAGE)){
+			if (hasFlag(result, DRF.TAKE_DAMAGE) || main.api.getDivPlayer(p).getBool(DPI.IN_GAME)){
 				if(e.getFoodLevel() < p.getFoodLevel()){
 					e.setCancelled(true);
 				}
@@ -140,7 +141,7 @@ public class ElyProtect implements Listener {
 		Location l = e.getClickedBlock() != null ? e.getClickedBlock().getLocation() : e.getPlayer().getLocation();
 		
 		if (hasFlag(result, DRF.INTERACT)){
-			if (!hasRegionPerms(p, result)){
+			if (!e.getAction().toString().contains("AIR") && !hasRegionPerms(p, result)){
 				e.setCancelled(true);
 			}
 		}
@@ -168,7 +169,7 @@ public class ElyProtect implements Listener {
 			Player p = (Player)e.getEntity();
 			String result = isInAnyRegion(p.getLocation());
 			
-			if (hasFlag(result, DRF.TAKE_DAMAGE)){
+			if (hasFlag(result, DRF.TAKE_DAMAGE) || e.getDamager() instanceof SmallFireball){
 				e.setCancelled(true);
 			}
 			
@@ -383,8 +384,14 @@ public class ElyProtect implements Listener {
 	}
 	
 	@SuppressWarnings("deprecation")
-	@DivCommand(aliases = {"protect", "pro"}, desc = "Elysian World Protection Command", help = "/pro help", perm = "wa.staff.mod2", player = true, min = 1)
+	@DivCommand(aliases = {"protect", "pro"}, desc = "Elysian World Protection Command", help = "/pro help", player = true, min = 1)
 	public void onProtect(final Player p, String[] args){
+		
+		if (!args[0].equals("info")){
+			if (!main.perms(p, "wa.staff.mod2")){
+				return;
+			}
+		}
 		
 		switch (args[0]){
 		

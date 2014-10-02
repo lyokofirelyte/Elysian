@@ -2,10 +2,11 @@ package com.github.lyokofirelyte.Elysian;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+
+import net.minecraft.util.gnu.trove.map.hash.THashMap;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -44,19 +45,22 @@ import com.github.lyokofirelyte.Elysian.Commands.ElyProtect;
 import com.github.lyokofirelyte.Elysian.Commands.ElyRings;
 import com.github.lyokofirelyte.Elysian.Commands.ElySpaceship;
 import com.github.lyokofirelyte.Elysian.Commands.ElyStaff;
+import com.github.lyokofirelyte.Elysian.Commands.ElyWealth;
 import com.github.lyokofirelyte.Elysian.Events.ElyChat;
 import com.github.lyokofirelyte.Elysian.Events.ElyLogger;
 import com.github.lyokofirelyte.Elysian.Events.ElyMobs;
 import com.github.lyokofirelyte.Elysian.Events.ElyTP;
 import com.github.lyokofirelyte.Elysian.Events.FriendlyReminder;
 import com.github.lyokofirelyte.Elysian.Games.Spleef.Spleef;
+import com.github.lyokofirelyte.Elysian.Games.Blink.Blink;
+import com.github.lyokofirelyte.Elysian.Games.Cranked.Cranked;
+import com.github.lyokofirelyte.Elysian.Games.Gotcha.Gotcha;
+import com.github.lyokofirelyte.Elysian.Games.TeamPVP.TeamPVP;
 import com.github.lyokofirelyte.Elysian.Gui.GuiCloset;
 import com.github.lyokofirelyte.Elysian.MMO.ElyMMO;
 import com.sk89q.worldedit.bukkit.WorldEditPlugin;
 
 public class Elysian extends DivinityAPI implements DivinityModule {
-	
-	public YamlConfiguration markkitYaml;
 	
 	public Divinity api;
 	public WorldEditPlugin we;
@@ -77,22 +81,34 @@ public class Elysian extends DivinityAPI implements DivinityModule {
 	public ElySetup setup;
 	public ElyMMO mmo;
 	public ElyMMOCleanup cleanup;
-	public Spleef spleef;
-	public FriendlyReminder friendlyReminder;
 	
 	public DivInvManager invManager;
-	
-	public Map<ElyTask, Integer> tasks = new HashMap<ElyTask, Integer>();
-	public Map<Location, List<List<String>>> queue = new HashMap<Location, List<List<String>>>();
-	public Map<Integer, GuiCloset> closets = new HashMap<>();
-	public List<String> numerals = new ArrayList<String>();
 
+	public FriendlyReminder friendlyReminder;
+	public ElyAutoSave autoSave;
+	public ElyWealth wealth;
+	public ElyMarkkitItem markkitItem;
+	
+	public Blink blink;
+	public TeamPVP teamPVP;
+	public Gotcha gotcha;
+	public Cranked cranked;
+	public Spleef spleef;
+
+	
+	public Map<ElyTask, Integer> tasks = new THashMap<ElyTask, Integer>();
+	public Map<Location, List<List<String>>> queue = new THashMap<Location, List<List<String>>>();
+	public Map<Integer, GuiCloset> closets = new THashMap<>();
+	public List<String> numerals = new ArrayList<String>();
+	public Map<String, ElySave> saveClasses = new THashMap<String, ElySave>();
+	public Map<Object, String> spellTasks = new THashMap<Object, String>();
+	public boolean hasSunDayBeenPerformedBefore = false;
+	
 	@Override
 	public void onEnable(){
 		setup = new ElySetup(this);
 		setup.start();
 		register(this);
-		markkitYaml = api.getSystem().getMarkkit();
 	}
 	
 	@Override
@@ -238,6 +254,12 @@ public class Elysian extends DivinityAPI implements DivinityModule {
 
 	public void s(CommandSender s, String type){
 		api.event(new DivinityPluginMessageEvent(s, type));
+	}
+	
+	public void s(CommandSender s, List<String> type){
+		for(String str : type){
+			api.event(new DivinityPluginMessageEvent(s, str));
+		}
 	}
 	
 	public void s(CommandSender s, String type, String message){

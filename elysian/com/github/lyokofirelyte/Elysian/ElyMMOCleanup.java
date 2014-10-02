@@ -14,7 +14,6 @@ public class ElyMMOCleanup implements Runnable {
 
 	@Override
 	public void run(){
-		
 		DivinitySystem dp = main.api.getSystem();
 		dp.set(MMO.INVALID_BLOCKS, new ArrayList<String>());
 	}

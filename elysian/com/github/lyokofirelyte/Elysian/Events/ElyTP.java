@@ -5,8 +5,6 @@ import java.util.List;
 import org.bukkit.Bukkit;
 import org.bukkit.Effect;
 import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -14,6 +12,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.util.Vector;
 
 import com.github.lyokofirelyte.Divinity.Events.DivinityTeleportEvent;
+import com.github.lyokofirelyte.Divinity.PublicUtils.ParticleEffect;
 import com.github.lyokofirelyte.Divinity.Storage.DPI;
 import com.github.lyokofirelyte.Divinity.Storage.DivinityPlayer;
 import com.github.lyokofirelyte.Elysian.Elysian;
@@ -71,18 +70,19 @@ public class ElyTP implements Listener {
 		prevLocs.add(f.getWorld().getName() + " " + v.getBlockX() + " " + v.getBlockY() + " " + v.getBlockZ() + " " + f.getYaw() + " " + f.getPitch());
 		
 		effects(p);
-		p.teleport(e.getTo());
-		effects(p);
-		
-		Vector toVector = e.getTo().toVector();
-		main.s(p, "&oArrived at &6" + toVector.getBlockX() + ", " + toVector.getBlockY() + ", " + toVector.getBlockZ() + "&b&o.");
+		tp(p, e.getTo());
 	}
 	
 	private void effects(Player p){
-		if (!main.api.getDivPlayer(p).getBool(DPI.VANISHED)){
-			for (Location l : main.api.divUtils.circle(p.getLocation(), 4, 4, true, true, 0)){
-				p.getWorld().playEffect(l, Effect.ENDER_SIGNAL, 0);
-			}
+		if (!main.api.getDivPlayer(p).getBool(DPI.VANISHED) && main.api.getDivPlayer(p).getBool(DPI.PARTICLES_TOGGLE)){
+			main.api.getDivPlayer(p).lockEffect("tp" + p.getName(), ParticleEffect.HAPPY_VILLAGER, 1, 1, 1, 1, 200, 16, 1L);
 		}
+	}
+	
+	public void tp(Player p, Location to){
+		p.teleport(to);
+		Vector toVector = to.toVector();
+		main.s(p, "&oArrived at &6" + toVector.getBlockX() + ", " + toVector.getBlockY() + ", " + toVector.getBlockZ() + "&b&o.");
+		main.api.schedule(main.api.getDivPlayer(p), "clearEffects", 20L, "clear" + p.getName());
 	}
 }

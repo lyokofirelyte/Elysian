@@ -40,6 +40,7 @@
       </plugin>
       <plugin>
         <artifactId>maven-compiler-plugin</artifactId>
+        <version>2.3.2</version>
         <configuration>
           <version>3.1</version>
           <source>1.7</source>
@@ -50,6 +51,7 @@
   </build>
   <repositories>
     <repository>
+<<<<<<< HEAD
       <id>sk89q-repo</id>
       <url>http://maven.sk89q.com/repo/</url>
     </repository>
@@ -62,17 +64,17 @@
       <url>http://repo.kitteh.org/content/groups/public</url>
     </repository>
     <repository>
+=======
+>>>>>>> FETCH_HEAD
       <id>confuser-repo</id>
       <url>http://ci.frostcast.net/plugin/repository/everything</url>
     </repository>
+    <repository>
+      <id>bukkit-repo</id>
+      <url>http://repo.bukkit.org/content/repositories/snapshots/</url>
+    </repository>
   </repositories>
   <dependencies>
-    <dependency>
-      <groupId>com.github.lyokofirelyte</groupId>
-      <artifactId>Divinity</artifactId>
-      <version>1.0</version>
-      <scope>compile</scope>
-    </dependency>
     <dependency>
       <groupId>com.sk89q</groupId>
       <artifactId>WorldEdit</artifactId>
@@ -89,12 +91,15 @@
       <groupId>org.bukkit</groupId>
       <artifactId>craftbukkit</artifactId>
       <version>1.7.9-R0.1-SNAPSHOT</version>
+<<<<<<< HEAD
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>org.kitteh</groupId>
       <artifactId>tagapi</artifactId>
       <version>2.6</version>
+=======
+>>>>>>> FETCH_HEAD
       <scope>compile</scope>
     </dependency>
     <dependency>

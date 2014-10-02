@@ -12,6 +12,7 @@ import com.github.lyokofirelyte.Divinity.Storage.DPI;
 import com.github.lyokofirelyte.Divinity.Storage.DivinityPlayer;
 import com.github.lyokofirelyte.Divinity.Storage.ElySkill;
 import com.github.lyokofirelyte.Elysian.Elysian;
+import com.github.lyokofirelyte.Elysian.MMO.MMO;
 
 public class ElyJoinQuit implements Listener {
 	
@@ -38,9 +39,25 @@ public class ElyJoinQuit implements Listener {
 		pl.setPlayerListName(main.AS(p.getStr(DPI.DISPLAY_NAME)));
 		pl.setDisplayName(p.getStr(DPI.DISPLAY_NAME));
 		
-		DivinityUtils.customBC("&2+ " + pl.getDisplayName() + " &e&o(" + p.getStr(DPI.JOIN_MESSAGE) + "&e&o)");
-		main.mail.checkMail(e.getPlayer());
+		DivinityUtils.customBC("&2<+> " + pl.getDisplayName() + " &e&o(" + p.getStr(DPI.JOIN_MESSAGE) + "&e&o)");
+		pl.sendMessage("");
+		String[] msg = new String[2];
+		msg[0] = "&3Welcome back! We're running Elysian & Divinity v1.1.";
+		
+		if (p.getList(DPI.MAIL).size() > 0){
+			msg[1] = "You've got mail! /mail read or /mail clear.";
+		} else {
+			msg[1] = "&7&oNo new messages.";
+		}
+		
 		defaultCheck(p);
+		
+		if (p.getBool(MMO.IS_SOUL_SPLITTING)){
+			main.mmo.soulSplit.stop(pl, p);
+		}
+		
+		p.s(msg[0]);
+		p.s(msg[1]);
 	}
 	
 	@EventHandler
@@ -65,7 +82,9 @@ public class ElyJoinQuit implements Listener {
 			main.mmo.patrols.getPatrolWithPlayer(pl).getMembers().remove(pl.getName());
 		}
 		
-		DivinityUtils.customBC("&4- " + pl.getDisplayName() + " &e&o(" + p.getStr(DPI.QUIT_MESSAGE) + "&e&o)");
+		DivinityUtils.customBC("&4<-> " + pl.getDisplayName() + " &e&o(" + p.getStr(DPI.QUIT_MESSAGE) + "&e&o)");
+		p.remHologram();
+		p.clearEffects();
 	}
 	
 	@EventHandler

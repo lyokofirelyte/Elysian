@@ -129,13 +129,13 @@ public class ElyLogger implements Listener, Runnable {
 			List<String> failedNames = new ArrayList<String>();
 			String failLine = "";
 			
-			if (!dp.getList(DPI.OWNED_CHESTS).contains(loc) && !main.silentPerms(e.getPlayer(), "wa.staff.mod2") && !names.get(0).equals("view")){
+			if (!dp.getList(DPI.OWNED_CHESTS).contains(loc) && !main.silentPerms(e.getPlayer(), "wa.staff.mod2") && !dp.getStr(DPI.CHEST_MODE).equals("view") && !dp.getStr(DPI.CHEST_MODE).equals("release")){
 				main.s(e.getPlayer(), "none", "&c&oThat is not yours to modify!");
 				return;
 			}
 			
 			for (String s : names){
-				if (!main.doesPartialPlayerExist(s) && !s.equals("view")){
+				if (!main.doesPartialPlayerExist(s) && !s.equals("view") && !s.equals("release")){
 					failedNames.add(s);
 				} else if (dp.getStr(DPI.CHEST_MODE).equals("add") && main.matchDivPlayer(s).getList(DPI.OWNED_CHESTS).contains(loc)){
 					failedNames.add(s);
@@ -152,6 +152,14 @@ public class ElyLogger implements Listener, Runnable {
 					main.s(e.getPlayer(), " ", users.replaceAll(" ", "&b, &3"));
 					dp.set(DPI.CHEST_MODE, "none");
 					dp.set(DPI.CHEST_NAMES, new ArrayList<String>());
+					return;
+				} else if (s.equals("release")){
+					for (DivinityStorage d : main.api.divManager.getAllUsers()){
+						if (d.getList(DPI.OWNED_CHESTS).contains(loc)){
+							d.getList(DPI.OWNED_CHESTS).remove(loc);
+						}
+					}
+					main.s(e.getPlayer(), "Released to the public!");
 					return;
 				}
 			}
@@ -264,6 +272,8 @@ public class ElyLogger implements Listener, Runnable {
 			case "help":
 				main.s(p, "none", "/chest add/remove player1 player2 player3 etc");
 				main.s(p, "none", "/chest view");
+				main.s(p, "none", "/chest massrelease <radius>");
+				main.s(p, "none", "/chest release");
 				main.s(p, "none", "/chest cancel");
 			break;
 			
@@ -272,6 +282,41 @@ public class ElyLogger implements Listener, Runnable {
 				dp.getList(DPI.CHEST_NAMES).add("view");
 				main.s(p, "none", "Left-click on a storage unit to view the owners.");
 				p.setGameMode(GameMode.SURVIVAL);
+			break;
+			
+			case "release":
+				
+				dp.set(DPI.CHEST_MODE, args[0]);
+				dp.getList(DPI.CHEST_NAMES).add("release");
+				main.s(p, "Left-click a chest to make it public.");
+				p.setGameMode(GameMode.SURVIVAL);
+				
+			break;
+			
+			case "massrelease":
+				
+				if (main.perms(p, "wa.staff.admin")){
+					if (args.length == 2 && main.api.divUtils.isInteger(args[1])){
+						String released = "";
+						int radius = Integer.parseInt(args[1]) <= 20 ? Integer.parseInt(args[1]) : 5;
+						for (Location l : main.api.divUtils.circle(p.getLocation(), radius, radius, false, false, 0)){
+							if (protectedMats.contains(l.getBlock().getType())){
+								String loc = l.getWorld().getName() + " " + l.toVector().getBlockX() + " " + l.toVector().getBlockY() + " " + l.toVector().getBlockZ();
+								for (DivinityStorage div : main.api.divManager.getAllUsers()){
+									if (div.getList(DPI.OWNED_CHESTS).contains(loc)){
+										div.getList(DPI.OWNED_CHESTS).remove(loc);
+										released = released.equals("") ? div.getStr(DPI.DISPLAY_NAME) : released + "&6, " + div.getStr(DPI.DISPLAY_NAME);
+									}
+								}
+							}
+						}
+						dp.s("Released the following chests: ");
+						dp.s(released.equals("") ? "&7&oNone found!" : released);
+					} else {
+						dp.err("Invalid args! /chest massrelease <radius>");
+					}
+				}
+				
 			break;
 			
 			case "cancel":
@@ -313,7 +358,11 @@ public class ElyLogger implements Listener, Runnable {
 					}
 				}
 			} else {
-				dp.getList(DPI.OWNED_CHESTS).remove(loc);
+				for (DivinityStorage DP : main.api.divManager.getAllUsers()){
+					if (DP.getList(DPI.OWNED_CHESTS).contains(loc)){
+						DP.getList(DPI.OWNED_CHESTS).remove(loc);
+					}
+				}
 			}
 		}
 		
@@ -465,7 +514,7 @@ public class ElyLogger implements Listener, Runnable {
 					
 				break;
 				
-				case "rollback": ///log rollback <radius> 5m/5h [player]
+				case "rollback": //log rollback <radius> 5m/5h [player]
 					
 					main.api.getSystem().set(DPI.ROLLBACK_IN_PROGRESS, true);
 					
@@ -736,7 +785,7 @@ public class ElyLogger implements Listener, Runnable {
 			
 			switch (wut[0].toLowerCase()){
 			
-				case "diamond_ore": case "lapis_ore": case "redstone_ore": case "emerald_ore": case "gold_ore":
+				case "diamond_ore": case "lapis_ore": case "emerald_ore": case "gold_ore": case "spawner":
 					
 					Player p = main.getPlayer(player.substring(2));
 					

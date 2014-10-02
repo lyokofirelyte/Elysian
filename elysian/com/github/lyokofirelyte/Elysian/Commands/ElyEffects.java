@@ -1,11 +1,13 @@
 package com.github.lyokofirelyte.Elysian.Commands;
 
 import org.bukkit.Color;
+import org.bukkit.FireworkEffect;
 import org.bukkit.FireworkEffect.Type;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
 import com.github.lyokofirelyte.Divinity.Commands.DivCommand;
+import com.github.lyokofirelyte.Divinity.PublicUtils.DivRocket;
 import com.github.lyokofirelyte.Divinity.Storage.DPI;
 import com.github.lyokofirelyte.Divinity.Storage.DivinityPlayer;
 import com.github.lyokofirelyte.Elysian.Elysian;
@@ -126,5 +128,11 @@ public class ElyEffects {
 			default:
 				return Color.WHITE;
 		}
+	}
+	
+	public void showFirework(Location l){
+		FireworkEffect.Builder builder = FireworkEffect.builder();
+		FireworkEffect effect = builder.flicker(false).trail(false).withColor(Color.RED).withFade(Color.BLUE).build();
+		DivRocket.spawn(l, effect);
 	}
 }
