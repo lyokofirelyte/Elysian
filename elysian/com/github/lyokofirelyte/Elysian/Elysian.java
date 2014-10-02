@@ -48,8 +48,8 @@ import com.github.lyokofirelyte.Elysian.Events.ElyChat;
 import com.github.lyokofirelyte.Elysian.Events.ElyLogger;
 import com.github.lyokofirelyte.Elysian.Events.ElyMobs;
 import com.github.lyokofirelyte.Elysian.Events.ElyTP;
+import com.github.lyokofirelyte.Elysian.Events.FriendlyReminder;
 import com.github.lyokofirelyte.Elysian.Games.Spleef.Spleef;
-import com.github.lyokofirelyte.Elysian.Games.Spleef.SpleefStorage;
 import com.github.lyokofirelyte.Elysian.Gui.GuiCloset;
 import com.github.lyokofirelyte.Elysian.MMO.ElyMMO;
 import com.sk89q.worldedit.bukkit.WorldEditPlugin;
@@ -78,6 +78,7 @@ public class Elysian extends DivinityAPI implements DivinityModule {
 	public ElyMMO mmo;
 	public ElyMMOCleanup cleanup;
 	public Spleef spleef;
+	public FriendlyReminder friendlyReminder;
 	
 	public DivInvManager invManager;
 	

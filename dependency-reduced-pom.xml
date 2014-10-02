@@ -5,6 +5,7 @@
   <artifactId>Elysian</artifactId>
   <name>Elysian</name>
   <version>1</version>
+  <url>com.github.lyokofirelyte.Elysian</url>
   <build>
     <sourceDirectory>elysian</sourceDirectory>
     <resources>
@@ -49,6 +50,10 @@
   </build>
   <repositories>
     <repository>
+      <id>sk89q-repo</id>
+      <url>http://maven.sk89q.com/repo/</url>
+    </repository>
+    <repository>
       <id>bukkit-repo</id>
       <url>http://repo.bukkit.org/content/repositories/snapshots/</url>
     </repository>
@@ -77,13 +82,13 @@
     <dependency>
       <groupId>org.bukkit</groupId>
       <artifactId>bukkit</artifactId>
-      <version>1.7.8-R0.1-SNAPSHOT</version>
+      <version>1.7.9-R0.1-SNAPSHOT</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>org.bukkit</groupId>
       <artifactId>craftbukkit</artifactId>
-      <version>1.7.8-R0.1-SNAPSHOT</version>
+      <version>1.7.9-R0.1-SNAPSHOT</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
@@ -100,8 +105,8 @@
     </dependency>
   </dependencies>
   <properties>
-    <craftbukkit>1.7.8-R0.1-SNAPSHOT</craftbukkit>
-    <bukkit>1.7.8-R0.1-SNAPSHOT</bukkit>
+    <craftbukkit>1.7.9-R0.1-SNAPSHOT</craftbukkit>
+    <bukkit>1.7.9-R0.1-SNAPSHOT</bukkit>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
 </project>

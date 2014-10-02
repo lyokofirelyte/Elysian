@@ -5,6 +5,7 @@ import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 
 import com.github.lyokofirelyte.Divinity.DivGui;
+import com.github.lyokofirelyte.Divinity.Storage.DivinityPlayer;
 import com.github.lyokofirelyte.Elysian.Elysian;
 
 import static com.github.lyokofirelyte.Divinity.Manager.DivInvManager.createItem;
@@ -31,6 +32,7 @@ public class GuiToggles extends DivGui {
 		this.addButton(3, createItem("&3FILTER", new String[] { "&aToggle chat censoring"}, Material.CAKE));
 		this.addButton(4, createItem("&4DEATH LOCATIONS", new String[] { "&bToggle displaying death", "&blocation on death" }, Material.ARROW));
 		this.addButton(5, createItem("&bHOME PARTICLES", new String[] { "&3Change home particle effects"}, Material.FIREBALL));
+		this.addButton(6, createItem("&5FRIENDLY REMINDERS", new String[] { "&bChange which reminder", "&bmessages you see" }, Material.BOOK_AND_QUILL));
 		this.addButton(8, createItem("&b( e l y s i a n )", new String[] { "&b< < <" }, Enchantment.DURABILITY, 10, Material.FLINT));
 		
 	}
@@ -62,6 +64,10 @@ public class GuiToggles extends DivGui {
 				
 			case 5:
 				p.performCommand("toggle particles");
+			break;
+			
+			case 6:
+				main.invManager.displayGui(p, new GuiFriendlyReminder(main, this, main.getDivPlayer(p)));
 			break;
 			
 			case 8:

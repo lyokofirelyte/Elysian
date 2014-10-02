@@ -5,11 +5,12 @@
 	<artifactId>Elysian</artifactId>
 	<version>1</version>
 	<packaging>jar</packaging>
+	<url>com.github.lyokofirelyte.Elysian</url>
 	<name>Elysian</name>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<bukkit>1.7.8-R0.1-SNAPSHOT</bukkit>
-		<craftbukkit>1.7.8-R0.1-SNAPSHOT</craftbukkit>
+		<bukkit>1.7.9-R0.1-SNAPSHOT</bukkit>
+		<craftbukkit>1.7.9-R0.1-SNAPSHOT</craftbukkit>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -49,6 +50,10 @@
 		</dependency>
 	</dependencies>
 	<repositories>
+  	    <repository>
+      		<id>sk89q-repo</id>
+      		<url>http://maven.sk89q.com/repo/</url>
+   		</repository>
 		<repository>
 			<id>bukkit-repo</id>
 			<url>http://repo.bukkit.org/content/repositories/snapshots/</url>

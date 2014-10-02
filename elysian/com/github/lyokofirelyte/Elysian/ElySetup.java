@@ -26,6 +26,7 @@ import com.github.lyokofirelyte.Elysian.Commands.ElyPerms;
 import com.github.lyokofirelyte.Elysian.Commands.ElyProtect;
 import com.github.lyokofirelyte.Elysian.Commands.ElyRanks;
 import com.github.lyokofirelyte.Elysian.Commands.ElyRings;
+import com.github.lyokofirelyte.Elysian.Commands.ElySomeCommand;
 import com.github.lyokofirelyte.Elysian.Commands.ElySpaceship;
 import com.github.lyokofirelyte.Elysian.Commands.ElySpectate;
 import com.github.lyokofirelyte.Elysian.Commands.ElyStaff;
@@ -40,10 +41,10 @@ import com.github.lyokofirelyte.Elysian.Events.ElyMobs;
 import com.github.lyokofirelyte.Elysian.Events.ElyMove;
 import com.github.lyokofirelyte.Elysian.Events.ElyScoreBoard;
 import com.github.lyokofirelyte.Elysian.Events.ElyTP;
+import com.github.lyokofirelyte.Elysian.Events.FriendlyReminder;
 import com.github.lyokofirelyte.Elysian.Games.Spleef.Spleef;
 import com.github.lyokofirelyte.Elysian.Games.Spleef.SpleefData.SpleefDataType;
 import com.github.lyokofirelyte.Elysian.Games.Spleef.SpleefData.SpleefGameData;
-import com.github.lyokofirelyte.Elysian.Games.Spleef.SpleefData.SpleefPlayerData;
 import com.github.lyokofirelyte.Elysian.Games.Spleef.SpleefStorage;
 import com.github.lyokofirelyte.Elysian.Gui.GuiCloset;
 import com.github.lyokofirelyte.Elysian.Gui.GuiRoot;
@@ -91,6 +92,8 @@ public class ElySetup {
 		main.mmo.holy = new HolyMackerel(main);
 		main.mmo.patrols = new ElyPatrol(main);
 		main.spleef = new Spleef(main);
+		main.friendlyReminder = new FriendlyReminder(main);
+		
 		
 		closet();
 		listener();
@@ -140,7 +143,8 @@ public class ElySetup {
 			main.rings,
 			main.invManager,
 			main.mmo,
-			main.spleef.active
+			main.spleef.active,
+			main.friendlyReminder
 		);
 	}
 	
