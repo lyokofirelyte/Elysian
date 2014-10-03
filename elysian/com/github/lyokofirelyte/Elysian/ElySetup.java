@@ -51,6 +51,7 @@ import com.github.lyokofirelyte.Elysian.Events.ElyMobs;
 import com.github.lyokofirelyte.Elysian.Events.ElyMove;
 import com.github.lyokofirelyte.Elysian.Events.ElyScoreBoard;
 import com.github.lyokofirelyte.Elysian.Events.ElyTP;
+import com.github.lyokofirelyte.Elysian.Events.FriendlyReminder;
 import com.github.lyokofirelyte.Elysian.Games.Blink.Blink;
 import com.github.lyokofirelyte.Elysian.Games.Cranked.Cranked;
 import com.github.lyokofirelyte.Elysian.Games.Gotcha.Gotcha;
@@ -115,6 +116,7 @@ public class ElySetup {
 		main.mmo.repair = new ElyAutoRepair(main);
 		main.autoSave = new ElyAutoSave(main);
 		main.spleef = new Spleef(main);
+		main.friendlyReminder = new FriendlyReminder(main);
 		main.wealth = new ElyWealth(main);
 		main.saveClasses.put("main.blink", new Blink(main));
 		main.saveClasses.put("main.teampvp", new TeamPVP(main));
@@ -199,6 +201,8 @@ public class ElySetup {
 			main.rings,
 			main.invManager,
 			main.mmo,
+			main.spleef.active,
+			main.friendlyReminder,
 			main.mmo.spellEvents,
 			main.mmo.repair,
 			main.spleef.active,

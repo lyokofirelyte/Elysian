@@ -94,9 +94,6 @@ public class ElyMMO extends THashMap<Material, MXP> implements Listener {
 		sm(Material.LOG_2, ElySkill.WOODCUTTING, 138, 15);
 		sm(Material.LEAVES, ElySkill.WOODCUTTING, 168, 30);
 		sm(Material.LEAVES_2, ElySkill.WOODCUTTING, 200, 45);
-		
-		//sm(Material.RAW_FISH, ElySkill.FISHERMAN, 200, 0);
-		
 		sm(Material.STONE, ElySkill.MINING, 15, 0);
 		sm(Material.NETHERRACK, ElySkill.MINING, 15, 0);
 		sm(Material.HARD_CLAY, ElySkill.MINING, 15, 0);
@@ -412,7 +409,6 @@ public class ElyMMO extends THashMap<Material, MXP> implements Listener {
 			case BUILDING: return "&6You literally get nothing for leveling this skill. Nothing.";
 			case FARMING: return "&bLevel 10: &6LIFE FORCE (right-click sapling)\n&7&oPlants a random tree.\n&7&oEvery level decreases cooldown by 1 second.";
 			case PATROL: return "&6More Shop Options";
-			//case FISHERMAN: return "&bLevel 10: &6HOLY MACKEREL! (right-click rod)\n&7&oWhip up a crazy fish-storm!\n&7&oThe cooldown for this does not change as you level.";
 			case SOLAR: return "&6Level up for new spells!\n&3&o0.4% damage increase per level";
 			case LUNAR: return "&6Level up for new spells!";
 		}
@@ -568,7 +564,7 @@ public class ElyMMO extends THashMap<Material, MXP> implements Listener {
 		
 		p.sendMessage(main.AS("&7&oHover for full skill layout."));
 	}
-
+	
 	@EventHandler (ignoreCancelled = true, priority = EventPriority.MONITOR)
 	public void onBreak(BlockBreakEvent e){
 		

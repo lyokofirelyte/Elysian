@@ -5,6 +5,7 @@
 	<artifactId>Elysian</artifactId>
 	<version>1</version>
 	<packaging>jar</packaging>
+	<url>com.github.lyokofirelyte.Elysian</url>
 	<name>Elysian</name>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -39,6 +40,10 @@
 		</dependency>
 	</dependencies>
 	<repositories>
+  	    <repository>
+      		<id>sk89q-repo</id>
+      		<url>http://maven.sk89q.com/repo/</url>
+   		</repository>
 		<repository>
 			<id>confuser-repo</id>
 			<url>http://ci.frostcast.net/plugin/repository/everything</url>

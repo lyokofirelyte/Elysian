@@ -5,6 +5,7 @@
   <artifactId>Elysian</artifactId>
   <name>Elysian</name>
   <version>1</version>
+  <url>com.github.lyokofirelyte.Elysian</url>
   <build>
     <sourceDirectory>elysian</sourceDirectory>
     <resources>
@@ -50,6 +51,21 @@
   </build>
   <repositories>
     <repository>
+<<<<<<< HEAD
+      <id>sk89q-repo</id>
+      <url>http://maven.sk89q.com/repo/</url>
+    </repository>
+    <repository>
+      <id>bukkit-repo</id>
+      <url>http://repo.bukkit.org/content/repositories/snapshots/</url>
+    </repository>
+    <repository>
+      <id>kitteh-repo</id>
+      <url>http://repo.kitteh.org/content/groups/public</url>
+    </repository>
+    <repository>
+=======
+>>>>>>> FETCH_HEAD
       <id>confuser-repo</id>
       <url>http://ci.frostcast.net/plugin/repository/everything</url>
     </repository>
@@ -75,6 +91,15 @@
       <groupId>org.bukkit</groupId>
       <artifactId>craftbukkit</artifactId>
       <version>1.7.9-R0.1-SNAPSHOT</version>
+<<<<<<< HEAD
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.kitteh</groupId>
+      <artifactId>tagapi</artifactId>
+      <version>2.6</version>
+=======
+>>>>>>> FETCH_HEAD
       <scope>compile</scope>
     </dependency>
     <dependency>
