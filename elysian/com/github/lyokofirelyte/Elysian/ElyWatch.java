@@ -181,21 +181,21 @@ public class ElyWatch implements Runnable {
 						List<String> lore = im.getLore();
 						lore.remove(main.AS("&3&oSuperbreaker active!"));
 						im.setLore(lore);
-						i.setItemMeta(im);
-						dp.err("&c&oSuperbreaker ended!");
 						for (Enchantment e : i.getItemMeta().getEnchants().keySet()){
-							i.removeEnchantment(e);
+							im.removeEnchant(e);
 						}
 						if (((Map<Enchantment,Integer>)dp.getRawInfo(MMO.SAVED_ENCHANTS)).size() > 0){
 							for (Enchantment e : ((Map<Enchantment,Integer>)dp.getRawInfo(MMO.SAVED_ENCHANTS)).keySet()){
-								i.addEnchantment(e, ((Map<Enchantment, Integer>)dp.getRawInfo(MMO.SAVED_ENCHANTS)).get(e));
+								im.addEnchant(e, ((Map<Enchantment, Integer>)dp.getRawInfo(MMO.SAVED_ENCHANTS)).get(e), false);
 							}
 						}
+						i.setItemMeta(im);
 						dp.set(MMO.IS_SUPER_BREAKING, false);
 						dp.set(MMO.IS_MINING, false);
+						dp.err("&c&oSuperbreaker ended!");
 					}
 				}
-			}			
+			}
 		}
 		
 		for (ItemStack i : p.getInventory().getContents()){
