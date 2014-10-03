@@ -2,9 +2,10 @@ package com.github.lyokofirelyte.Elysian.MMO.Abilities;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import net.minecraft.util.gnu.trove.map.hash.THashMap;
 
 import org.apache.commons.math3.util.Precision;
 import org.bukkit.Effect;
@@ -78,7 +79,7 @@ public class TreeFeller extends ElyMMO {
 		int bottom = l.getBlockY()-1;
 		int top = 0;
 		
-		Map<Integer, List<Block>> blocks = new HashMap<Integer, List<Block>>();
+		Map<Integer, List<Block>> blocks = new THashMap<Integer, List<Block>>();
 		
 		for (int i = l.getBlockY(); i < 256; i++){
 			Location testLoc = new Location(l.getWorld(), l.getX(), i, l.getZ());

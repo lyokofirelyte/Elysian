@@ -1,9 +1,10 @@
 package com.github.lyokofirelyte.Elysian.MMO.Abilities;
 
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import net.minecraft.util.gnu.trove.map.hash.THashMap;
 
 import org.bukkit.block.Block;
 import org.bukkit.enchantments.Enchantment;
@@ -56,7 +57,7 @@ public class SuperBreaker extends ElyMMO {
 		
 		ItemStack i = p.getItemInHand();
 		ItemMeta im = i.getItemMeta();
-		dp.set(MMO.SAVED_ENCHANTS, i != null && i.hasItemMeta() && i.getItemMeta().hasEnchants() ? i.getItemMeta().getEnchants() : new HashMap<Enchantment, Integer>());
+		dp.set(MMO.SAVED_ENCHANTS, i != null && i.hasItemMeta() && i.getItemMeta().hasEnchants() ? i.getItemMeta().getEnchants() : new THashMap<Enchantment, Integer>());
 		
 		List<Enchantment> enchants = Arrays.asList(Enchantment.DIG_SPEED, Enchantment.SILK_TOUCH, Enchantment.DURABILITY);
 		

@@ -13,7 +13,7 @@ public class MXP extends THashMap<ElySkill, Integer[]>{
 
 	private static final long serialVersionUID = 1L;
 	private Material material;
-	public Map<Material, Map<ElySkill, Integer>> toolReqs = new HashMap<>();
+	public Map<Material, Map<ElySkill, Integer>> toolReqs = new THashMap<>();
 	
 	public MXP(Material m, ElySkill skill, int level, int xp){
 		material = m;
@@ -53,7 +53,7 @@ public class MXP extends THashMap<ElySkill, Integer[]>{
 	}
 	
 	public void addTool(ElySkill skill, int level, Material tool){
-		if (!toolReqs.containsKey(tool)) { toolReqs.put(tool, new HashMap<ElySkill, Integer>()); }
+		if (!toolReqs.containsKey(tool)) { toolReqs.put(tool, new THashMap<ElySkill, Integer>()); }
 		toolReqs.get(tool).put(skill, level);
 	}
 }

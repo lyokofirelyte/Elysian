@@ -4,17 +4,18 @@ import java.io.IOException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 
+import net.minecraft.util.gnu.trove.map.hash.THashMap;
+
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
@@ -60,7 +61,7 @@ public class ElyCommand {
 		"&6&o/ely help"
 	};
 	
-	Map<String, String[]> help = new HashMap<String, String[]>();
+	Map<String, String[]> help = new THashMap<String, String[]>();
 	
 	private void fillMap(){
 		for (Object o : main.api.commandMap.values()){

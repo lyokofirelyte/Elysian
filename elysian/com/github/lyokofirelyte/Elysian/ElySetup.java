@@ -2,7 +2,8 @@ package com.github.lyokofirelyte.Elysian;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
+
+import net.minecraft.util.gnu.trove.map.hash.THashMap;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -52,7 +53,6 @@ import com.github.lyokofirelyte.Elysian.Events.ElyScoreBoard;
 import com.github.lyokofirelyte.Elysian.Events.ElyTP;
 import com.github.lyokofirelyte.Elysian.Games.Blink.Blink;
 import com.github.lyokofirelyte.Elysian.Games.Cranked.Cranked;
-import com.github.lyokofirelyte.Elysian.Games.Cranked.CrankedCommand;
 import com.github.lyokofirelyte.Elysian.Games.Gotcha.Gotcha;
 import com.github.lyokofirelyte.Elysian.Games.Spleef.Spleef;
 import com.github.lyokofirelyte.Elysian.Games.Spleef.SpleefData.SpleefDataType;
@@ -168,7 +168,7 @@ public class ElySetup {
 	private void games(DivGame... games){
 		for (DivGame g : games){
 			if (!main.api.divManager.data.containsKey(g.toDivGame().getFullPath())){
-				main.api.divManager.data.put(g.toDivGame().getFullPath(), new HashMap<String, DivinityStorage>());
+				main.api.divManager.data.put(g.toDivGame().getFullPath(), new THashMap<String, DivinityStorage>());
 			}
 			main.api.divManager.data.get(g.toDivGame().getFullPath()).put(g.toDivGame().name(), g.toDivGame());
 		}

@@ -2,10 +2,11 @@ package com.github.lyokofirelyte.Elysian.Commands;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+
+import net.minecraft.util.gnu.trove.map.hash.THashMap;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
@@ -107,8 +108,8 @@ public class ElyRings implements Listener {
 		int startY = v.getBlockY();
 		int startZ = v.getBlockZ();
 	
-		Map<Integer, List<Location>> locs = new HashMap<Integer, List<Location>>();
-		Map<Integer, List<FallingBlock>> blocks = new HashMap<Integer, List<FallingBlock>>();
+		Map<Integer, List<Location>> locs = new THashMap<Integer, List<Location>>();
+		Map<Integer, List<FallingBlock>> blocks = new THashMap<Integer, List<FallingBlock>>();
 		
 		dest.setInOperation(true);
 		
