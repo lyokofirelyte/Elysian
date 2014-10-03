@@ -1,9 +1,10 @@
 package com.github.lyokofirelyte.Elysian.Events;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import net.minecraft.util.gnu.trove.map.hash.THashMap;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -41,7 +42,7 @@ public class ElyChat implements Listener {
 		fillMap();
 	}
 	
-	private Map<String, String[]> qc = new HashMap<String, String[]>();
+	private Map<String, String[]> qc = new THashMap<String, String[]>();
 	
 	private void fillMap(){
 		qc.put("duels", s("I have won % duels!", DPI.DUEL_WINS.s()));
@@ -281,7 +282,7 @@ public class ElyChat implements Listener {
 					main.api.event(new DivinityPluginMessageEvent(p, "globalChat", new String[]{"&7" + e.getPlayer().getDisplayName() + "&f: &7&o" + e.getMessage()}));
 				}
 				
-				Map<String, Object> map = new HashMap<String, Object>();
+				Map<String, Object> map = new THashMap<String, Object>();
 				map.put("user", ChatColor.stripColor(main.AS(p.getStr(DPI.DISPLAY_NAME))));
 				map.put("message", ChatColor.stripColor(main.AS(e.getMessage())));
 				map.put("type", "minecraft_insert");

@@ -1,10 +1,11 @@
 package com.github.lyokofirelyte.Elysian.Games.Spleef;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+
+import net.minecraft.util.gnu.trove.map.hash.THashMap;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -14,12 +15,11 @@ import org.bukkit.entity.Player;
 import com.github.lyokofirelyte.Elysian.Games.Spleef.SpleefData.SpleefDataType;
 import com.github.lyokofirelyte.Elysian.Games.Spleef.SpleefData.SpleefGame;
 import com.github.lyokofirelyte.Elysian.Games.Spleef.SpleefData.SpleefPlayer;
-import com.github.lyokofirelyte.Elysian.Games.Spleef.SpleefData.SpleefSystem;
 
 public class SpleefModule {
 	
 	private Spleef main;
-	public static Map<String, SpleefStorage> data = new HashMap<String, SpleefStorage>();
+	public static Map<String, SpleefStorage> data = new THashMap<String, SpleefStorage>();
 
 	public SpleefModule(Spleef i){
 		main = i;

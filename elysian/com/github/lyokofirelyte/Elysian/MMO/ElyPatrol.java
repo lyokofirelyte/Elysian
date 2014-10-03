@@ -2,9 +2,10 @@ package com.github.lyokofirelyte.Elysian.MMO;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import net.minecraft.util.gnu.trove.map.hash.THashMap;
 
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -28,7 +29,7 @@ public class ElyPatrol {
 		main = i;
 	}
 
-	Map<String, Patrol> patrols = new HashMap<>();
+	Map<String, Patrol> patrols = new THashMap<>();
 	
 	public void createPatrol(final String name){
 		
@@ -36,7 +37,7 @@ public class ElyPatrol {
 			patrols.put(name, new Patrol(){
 				
 				private List<String> members = new ArrayList<String>();
-				private Map<String, List<String>> kickVotes = new HashMap<>();
+				private Map<String, List<String>> kickVotes = new THashMap<>();
 				private String memberString = "";
 				private String n = name;
 				

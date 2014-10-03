@@ -4,10 +4,11 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+
+import net.minecraft.util.gnu.trove.map.hash.THashMap;
 
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
@@ -774,7 +775,7 @@ public class ElyProtect implements Listener {
 	
 	public String isInAnyRegion(Location l){
 		
-		Map<Integer, DivinityRegion> foundRegions = new HashMap<Integer, DivinityRegion>();
+		Map<Integer, DivinityRegion> foundRegions = new THashMap<Integer, DivinityRegion>();
 		
 		for (DivinityStorage rg : main.api.divManager.getMap(DivinityManager.regionsDir).values()){
 			if (isInRegion(l, rg.name())){

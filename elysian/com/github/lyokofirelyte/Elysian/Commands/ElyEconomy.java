@@ -2,9 +2,10 @@ package com.github.lyokofirelyte.Elysian.Commands;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import net.minecraft.util.gnu.trove.map.hash.THashMap;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -127,7 +128,7 @@ public class ElyEconomy {
 	 private void balTop(Player sendTo){
 		 
 		 List<Integer> balances = new ArrayList<>();
-		 Map<Integer, DivinityPlayer> players = new HashMap<Integer, DivinityPlayer>();
+		 Map<Integer, DivinityPlayer> players = new THashMap<Integer, DivinityPlayer>();
 		 int serverTotal = 0;
 		 
 		 for (DivinityStorage p : main.api.divManager.getAllUsers()){

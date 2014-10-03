@@ -1,10 +1,10 @@
 package com.github.lyokofirelyte.Elysian.Events;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
+import net.minecraft.util.gnu.trove.map.hash.THashMap;
 import net.minecraft.util.org.apache.commons.lang3.StringUtils;
 
 import org.bukkit.Bukkit;
@@ -163,7 +163,7 @@ public class ElyMobs implements Listener {
 			} else if (e.getEntity() instanceof Player && e.getEntity().getKiller() instanceof Player){
 				
 				Player dead = (Player)e.getEntity();
-				Map<String, String> replacements = new HashMap<String, String>();
+				Map<String, String> replacements = new THashMap<String, String>();
 				
 				for (TeamPVPGame game : main.teamPVP.values()){
 					if (game.hasPlayer(dead.getName())){

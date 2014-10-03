@@ -9,6 +9,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import net.minecraft.util.gnu.trove.map.hash.THashMap;
+
+import org.apache.commons.math3.util.Precision;
 import org.bukkit.Bukkit;
 import org.bukkit.Effect;
 import org.bukkit.GameMode;
@@ -32,7 +35,6 @@ import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.inventory.ItemStack;
-import org.apache.commons.math3.util.Precision;
 
 import com.github.lyokofirelyte.Divinity.Commands.DivCommand;
 import com.github.lyokofirelyte.Divinity.Events.DivinityChannelEvent;
@@ -65,26 +67,29 @@ public class ElyLogger implements Listener, Runnable {
 		Material.TRAPPED_CHEST
 	);
 	
-	private Map<String, List<String>> recent = new HashMap<String, List<String>>();
-	private Map<Player, Map<String, Integer>> warnings = new HashMap<Player, Map<String, Integer>>();
+	private Map<String, List<String>> recent = new THashMap<String, List<String>>();
+	private Map<Player, Map<String, Integer>> warnings = new THashMap<Player, Map<String, Integer>>();
+	private Map<Player, Map<Material, Integer>> lightlevel = new THashMap<Player, Map<Material, Integer>>();
 	
 	@Override
 	public void run(){
 		if (main.queue.size() > 0){
-			initLog(new HashMap<Location, List<List<String>>>(main.queue));
-			main.queue = new HashMap<Location, List<List<String>>>();
-			recent = new HashMap<String, List<String>>();
+			initLog(new THashMap<Location, List<List<String>>>(main.queue));
+			main.queue = new THashMap<Location, List<List<String>>>();
+			recent = new THashMap<String, List<String>>();
 		}
 		if (warnings.size() > 0){
-			Map<Player, Map<String, Integer>> warningsCurrent = new HashMap<Player, Map<String, Integer>>(warnings);
+			Map<Player, Map<String, Integer>> warningsCurrent = new THashMap<Player, Map<String, Integer>>(warnings);
 			for (Player p : warningsCurrent.keySet()){
 				for (String mat : warningsCurrent.get(p).keySet()){
 					if (p != null && p.isOnline()){
-						main.api.event(new DivinityChannelEvent("&6System", "wa.staff.intern", "&c&oOh! &4\u2744", p.getDisplayName() + " &c&ofound " + warningsCurrent.get(p).get(mat) + " &6&o" + mat, "&c"));
+						main.api.event(new DivinityChannelEvent("&6System", "wa.staff.intern", "&c&oOh! &4\u2744", p.getDisplayName() + " &c&ofound " + warningsCurrent.get(p).get(mat) + " &6&o" + mat + "&c&o by &6&o" + Math.ceil(lightlevel.get(p).get(Material.getMaterial(mat.toUpperCase()))*6.666666) + "% &c&o light.", "&c"));
+					
 					}
 				}
 			}
-			warnings = new HashMap<Player, Map<String, Integer>>();
+			warnings = new THashMap<Player, Map<String, Integer>>();
+			lightlevel = new THashMap<Player, Map<Material, Integer>>();
 		}
 	}
 	
@@ -368,6 +373,18 @@ public class ElyLogger implements Listener, Runnable {
 		
 		if (e.getBlock().getWorld().getName().equals("world")){
 			addToQue(e.getBlock().getLocation(), "&b" + e.getPlayer().getName(), "&cdestroyed &b" + matName, "break", matName + "split" + e.getBlock().getData(), "AIRsplit0");
+			if(Arrays.asList(Material.DIAMOND_ORE, Material.LAPIS_ORE, Material.EMERALD_ORE, Material.GOLD_ORE, Material.MOB_SPAWNER).contains(e.getBlock().getType())){
+				if(!lightlevel.containsKey(e.getPlayer())){
+					Map<Material, Integer> m = new THashMap<Material, Integer>();
+					lightlevel.put(e.getPlayer(), m);
+				}
+				if(!lightlevel.get(e.getPlayer()).containsKey(e.getBlock().getType())){
+					lightlevel.get(e.getPlayer()).put(e.getBlock().getType(), Integer.parseInt(e.getPlayer().getLocation().getBlock().getLightLevel() + ""));
+				}else{
+					lightlevel.get(e.getPlayer()).put(e.getBlock().getType(), (e.getPlayer().getLocation().getBlock().getLightLevel() + lightlevel.get(e.getPlayer()).get(e.getBlock().getType()))/2);
+
+				}
+			}
 		}
 	}
 	
@@ -547,11 +564,11 @@ public class ElyLogger implements Listener, Runnable {
 								Location pLoc = new Location(p.getWorld(), p.getLocation().getX(), p.getLocation().getY()-radius, p.getLocation().getZ());
 								
 								final List<String> locs = main.api.divUtils.strCircle(pLoc, radius, radius*2, false, false, 0);
-								final Map<Location, Material> newBlocks = new HashMap<Location, Material>();
-								final Map<Location, Byte> newBlockIds = new HashMap<Location, Byte>();
+								final Map<Location, Material> newBlocks = new THashMap<Location, Material>();
+								final Map<Location, Byte> newBlockIds = new THashMap<Location, Byte>();
 								
-								Map<String, YamlConfiguration> filesToCheck = new HashMap<String, YamlConfiguration>();
-								Map<String, Map<Integer, List<String>>> results = new HashMap<String, Map<Integer, List<String>>>();
+								Map<String, YamlConfiguration> filesToCheck = new THashMap<String, YamlConfiguration>();
+								Map<String, Map<Integer, List<String>>> results = new THashMap<String, Map<Integer, List<String>>>();
 								List<String> allowedEvents = Arrays.asList("break", "place");
 								
 								for (String l : locs){
@@ -562,7 +579,7 @@ public class ElyLogger implements Listener, Runnable {
 									
 									if (file.exists()){
 										filesToCheck.put(loc, YamlConfiguration.loadConfiguration(file));
-										results.put(loc, new HashMap<Integer, List<String>>());
+										results.put(loc, new THashMap<Integer, List<String>>());
 									}
 								}
 								
@@ -594,8 +611,8 @@ public class ElyLogger implements Listener, Runnable {
 								
 								for (String loc : results.keySet()){
 									for (int yCoord : results.get(loc).keySet()){
-										Map<Long, String> resultTimes = new HashMap<Long, String>();
-										Map<Long, String> finalTimes = new HashMap<Long, String>();
+										Map<Long, String> resultTimes = new THashMap<Long, String>();
+										Map<Long, String> finalTimes = new THashMap<Long, String>();
 										List<Long> times = new ArrayList<Long>();
 										
 										for (String result : results.get(loc).get(yCoord)){
@@ -790,7 +807,7 @@ public class ElyLogger implements Listener, Runnable {
 					Player p = main.getPlayer(player.substring(2));
 					
 					if (!warnings.containsKey(p)){
-						warnings.put(p, new HashMap<String, Integer>());
+						warnings.put(p, new THashMap<String, Integer>());
 					}
 					
 					String what = wut[0].toLowerCase();
@@ -805,7 +822,7 @@ public class ElyLogger implements Listener, Runnable {
 			}
 		}
 		
-		recent = new HashMap<String, List<String>>();
+		recent = new THashMap<String, List<String>>();
 
 		try {
 			yaml.save(file);

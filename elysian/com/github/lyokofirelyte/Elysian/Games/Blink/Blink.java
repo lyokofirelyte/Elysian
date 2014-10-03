@@ -40,8 +40,8 @@ public class Blink implements DivGame, ElySave {
 			
 			games.put(name, new BlinkGame(){
 				
-				private Map<Integer, BlinkSlot> slots = new HashMap<Integer, BlinkSlot>();
-				private Map<Integer, String[]> locations = new HashMap<Integer, String[]>();
+				private Map<Integer, BlinkSlot> slots = new THashMap<Integer, BlinkSlot>();
+				private Map<Integer, String[]> locations = new THashMap<Integer, String[]>();
 				
 				public BlinkSlot getSlot(int slot){
 					return slots.get(slot);

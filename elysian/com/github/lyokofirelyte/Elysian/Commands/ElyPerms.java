@@ -3,14 +3,13 @@ package com.github.lyokofirelyte.Elysian.Commands;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.bukkit.FireworkEffect.Type;
+import net.minecraft.util.gnu.trove.map.hash.THashMap;
+
 import org.bukkit.command.CommandSender;
 
-import com.github.lyokofirelyte.Divinity.DivinityUtils;
 import com.github.lyokofirelyte.Divinity.Commands.DivCommand;
 import com.github.lyokofirelyte.Divinity.Storage.DPI;
 import com.github.lyokofirelyte.Divinity.Storage.DivinityPlayer;
@@ -49,7 +48,7 @@ public class ElyPerms {
 		"intern"
 	 );
 	 
-	 public Map<String, String> rankNames = new HashMap<String, String>();
+	 public Map<String, String> rankNames = new THashMap<String, String>();
 	 
 	 private void fillMap(){
 		 rankNames.put("member", "&7 % App % 2 % Build, Community Access, /sethome, /bal top");
