@@ -176,6 +176,10 @@ public class Elysian extends DivinityAPI implements DivinityModule {
 		return Bukkit.getPlayer(matchDivPlayer(p).uuid());
 	}
 	
+	public Player getPlayer(Player p){
+		return Bukkit.getPlayer(matchDivPlayer(p.getName()).uuid());
+	}
+	
 	public String AS(String s){
 		return ChatColor.translateAlternateColorCodes('&', s);
 	}

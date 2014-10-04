@@ -208,7 +208,8 @@ public class ElySetup {
 			main.spleef.active,
 			main.blink.blinkCommand,
 			main.teamPVP.active,
-			main.gotcha.active
+			main.gotcha.active,
+			main.cranked.active
 		);
 	}
 	
