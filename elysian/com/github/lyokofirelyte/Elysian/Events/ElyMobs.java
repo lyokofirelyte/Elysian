@@ -10,7 +10,10 @@ import net.minecraft.util.org.apache.commons.lang3.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.enchantments.Enchantment;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Item;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Monster;
 import org.bukkit.entity.Player;
@@ -30,6 +33,8 @@ import com.github.lyokofirelyte.Divinity.DivinityUtils;
 import com.github.lyokofirelyte.Divinity.Commands.DivCommand;
 import com.github.lyokofirelyte.Divinity.Events.DivinityChannelEvent;
 import com.github.lyokofirelyte.Divinity.Events.DivinityTeleportEvent;
+import com.github.lyokofirelyte.Divinity.Manager.DivInvManager;
+import com.github.lyokofirelyte.Divinity.PublicUtils.ParticleEffect;
 import com.github.lyokofirelyte.Divinity.Storage.DPI;
 import com.github.lyokofirelyte.Divinity.Storage.DivinityPlayer;
 import com.github.lyokofirelyte.Elysian.Elysian;
@@ -100,12 +105,38 @@ public class ElyMobs implements Listener {
 			e.setCustomNameVisible(false);
 		}
 	}
+	
+	public void eggBow(Item i){
+		if (!i.isDead()){
+			main.api.getSystem().playEffect(ParticleEffect.RED_DUST, 0, 10, 0, 1, 100, i.getLocation(), 16);
+		} else {
+			main.api.cancelTask("eggbow");
+		}
+	}
+	
+	private Location getDragonLoc(Entity e){
+		
+		Location dragonLoc = e.getLocation();
+		Location l = null;
+		
+		for (int i = e.getLocation().getBlockY(); i > 1; i--){
+			if (!(l = new Location(dragonLoc.getWorld(), dragonLoc.getBlockX(), i, dragonLoc.getBlockZ())).getBlock().getType().equals(Material.AIR)){
+				l.setY(i+1);
+				return l;
+			}
+		}
+		
+		return dragonLoc;
+	}
 
 	@EventHandler
 	public void onMobDeath(final EntityDeathEvent e){
 		
 		if (e.getEntity().getType().equals(EntityType.ENDER_DRAGON)){
 			main.api.getSystem().set(DPI.ENDERDRAGON_DEAD, false);
+			ItemStack egg = DivInvManager.createItem("&a&oDRAGON EGG", new String[]{ "&3&oIt's... so shiny!" }, Enchantment.DURABILITY, 10, Material.DRAGON_EGG, 1);
+			Item i = e.getEntity().getWorld().dropItem(getDragonLoc(e.getEntity()), egg);
+			main.api.repeat(this, "eggBow", 0L, 1L, "eggbow", i);
 		}
 		
 		if (e.getEntity().getType().equals(EntityType.HORSE) && e.getEntity().getKiller() != null && e.getEntity().getKiller() instanceof Player){

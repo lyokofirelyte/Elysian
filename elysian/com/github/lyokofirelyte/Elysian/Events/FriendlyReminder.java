@@ -10,7 +10,6 @@ import java.util.Random;
 import net.minecraft.util.gnu.trove.map.hash.THashMap;
 
 import org.apache.commons.math3.util.Precision;
-import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -29,7 +28,13 @@ import com.github.lyokofirelyte.Divinity.Storage.DPI;
 import com.github.lyokofirelyte.Divinity.Storage.DivinityPlayer;
 import com.github.lyokofirelyte.Elysian.Elysian;
 
-public class FriendlyReminder implements Listener{
+/**
+ * 
+ * @author I_WUV_UR_TACO
+ *
+ */
+
+public class FriendlyReminder implements Listener {
 	
 	private Elysian main;
 	private Map<DPI, List<String>> messages = new THashMap<DPI, List<String>>();
@@ -67,7 +72,7 @@ public class FriendlyReminder implements Listener{
 	}
 	
 	private void Msg( DivinityPlayer dp, DPI dpi ) {
-		dp.s(ChatColor.GREEN + ( messages.containsKey(dpi) ? messages.get(dpi).get(new Random().nextInt(messages.get(dpi).size())) : "Not Found!"));
+		dp.s("&a" + ( messages.containsKey(dpi) ? messages.get(dpi).get(new Random().nextInt(messages.get(dpi).size())) : "Not Found!"));
 		dp.set(dpi.toString().replace("TOGGLE", "COOLDOWN"), System.currentTimeMillis() + 5 * 6000L);
 	}
 	
@@ -106,15 +111,16 @@ public class FriendlyReminder implements Listener{
 	@EventHandler(ignoreCancelled = true)
 	public void onCreeperExplosion(EntityExplodeEvent e) {
 		List<Entity> entities = e.getEntity().getNearbyEntities(8, 4, 8);
-		for( Entity E: entities) {
+		for(Entity E: entities) {
 			if(E.getType() == EntityType.PLAYER) {
 				CnM(main.getDivPlayer((Player) E), DPI.FR_CH_TOGGLE);
 			}
 		}
 	}
-	
+
 	@EventHandler(ignoreCancelled = true)
 	public void onBlockBreak (BlockBreakEvent e) {
+		
 		if(e.getBlock().getType().equals(Material.CROPS)) {
 			CnM(main.getDivPlayer(e.getPlayer()), DPI.FR_CR_TOGGLE);
 		}
@@ -141,5 +147,4 @@ public class FriendlyReminder implements Listener{
 			}
 		}
 	}
-
 }

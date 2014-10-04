@@ -28,8 +28,10 @@ public class SuperBreaker extends ElyMMO {
 	}
 
 	public void r(Player p, DivinityPlayer dp, MMO isVar){
-		dp.set(isVar, !dp.getBool(isVar));
-		dp.s("Super breaker " + (dp.getBool(isVar) + "").replace("true", "&aactive! Left click a block to rek it!").replace("false", "&cinactive."));
+		if (!dp.getBool(MMO.IS_MINING) && !dp.getBool(MMO.IS_DIGGING)){
+			dp.set(isVar, !dp.getBool(isVar));
+			dp.s("Super breaker " + (dp.getBool(isVar) + "").replace("true", "&aactive! Left click a block to rek it!").replace("false", "&cinactive."));
+		}
 	}
 
 	public void l(Player p, DivinityPlayer dp, Block b, MMO isVar, MMO isVar2, MMO cdVar, ElySkill skill){
@@ -80,24 +82,27 @@ public class SuperBreaker extends ElyMMO {
 	@SuppressWarnings("unchecked")
 	public void removeEnchants(Player p, DivinityPlayer dp, ItemStack i, ItemMeta im){
 		
-		List<String> lore = im.getLore();
-		lore.remove(main.AS("&3&oSuperbreaker active!"));
-		im.setLore(lore);
-		i.setItemMeta(im);
-		
-		dp.set(MMO.IS_SUPER_BREAKING, false);
-		dp.set(MMO.IS_MINING, false);
-		
-		for (Enchantment e : i.getItemMeta().getEnchants().keySet()){
-			i.removeEnchantment(e);
-		}
-		
-		if (((Map<Enchantment,Integer>)dp.getRawInfo(MMO.SAVED_ENCHANTS)).size() > 0){
-			for (Enchantment e : ((Map<Enchantment,Integer>)dp.getRawInfo(MMO.SAVED_ENCHANTS)).keySet()){
-				i.addUnsafeEnchantment(e, ((Map<Enchantment, Integer>)dp.getRawInfo(MMO.SAVED_ENCHANTS)).get(e));
+		if (p.isOnline()){
+			List<String> lore = im.getLore();
+			lore.remove(main.AS("&3&oSuperbreaker active!"));
+			im.setLore(lore);
+			i.setItemMeta(im);
+			
+			for (Enchantment e : i.getItemMeta().getEnchants().keySet()){
+				i.removeEnchantment(e);
 			}
+			
+			if (((Map<Enchantment,Integer>)dp.getRawInfo(MMO.SAVED_ENCHANTS)).size() > 0){
+				for (Enchantment e : ((Map<Enchantment,Integer>)dp.getRawInfo(MMO.SAVED_ENCHANTS)).keySet()){
+					i.addUnsafeEnchantment(e, ((Map<Enchantment, Integer>)dp.getRawInfo(MMO.SAVED_ENCHANTS)).get(e));
+				}
+			}
+			
+			
+			dp.set(MMO.IS_SUPER_BREAKING, false);
+			dp.set(MMO.IS_MINING, false);
+			
+			dp.set(MMO.SAVED_ENCHANTS, new THashMap<Enchantment, Integer>());
 		}
-		
-		dp.set(MMO.SAVED_ENCHANTS, "none");
 	}
 }

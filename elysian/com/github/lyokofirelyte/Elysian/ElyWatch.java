@@ -173,7 +173,7 @@ public class ElyWatch implements Runnable {
 	@SuppressWarnings({ "unchecked", "deprecation" })
 	private void invCheck(Player p, DivinityPlayer dp){
 		
-		if ((!dp.getBool(MMO.IS_MINING) && dp.getLong(MMO.SUPER_BREAKER_CD) > System.currentTimeMillis()) || dp.getLong(MMO.SUPER_BREAKER_CD) <= System.currentTimeMillis()){
+		if (!dp.getBool(MMO.IS_MINING) && !dp.getBool(MMO.IS_DIGGING)){
 			for (ItemStack i : p.getInventory().getContents()){
 				if (i != null && i.hasItemMeta() && i.getItemMeta().hasLore()){
 					if (i.getItemMeta().getLore().contains(main.AS("&3&oSuperbreaker active!"))){
@@ -181,21 +181,24 @@ public class ElyWatch implements Runnable {
 						List<String> lore = im.getLore();
 						lore.remove(main.AS("&3&oSuperbreaker active!"));
 						im.setLore(lore);
-						i.setItemMeta(im);
-						dp.err("&c&oSuperbreaker ended!");
 						for (Enchantment e : i.getItemMeta().getEnchants().keySet()){
 							i.removeEnchantment(e);
 						}
-						if (((Map<Enchantment,Integer>)dp.getRawInfo(MMO.SAVED_ENCHANTS)).size() > 0){
-							for (Enchantment e : ((Map<Enchantment,Integer>)dp.getRawInfo(MMO.SAVED_ENCHANTS)).keySet()){
-								i.addEnchantment(e, ((Map<Enchantment, Integer>)dp.getRawInfo(MMO.SAVED_ENCHANTS)).get(e));
+						try {
+							if (((Map<Enchantment,Integer>)dp.getRawInfo(MMO.SAVED_ENCHANTS)).size() > 0){
+								for (Enchantment e : ((Map<Enchantment,Integer>)dp.getRawInfo(MMO.SAVED_ENCHANTS)).keySet()){
+									i.addUnsafeEnchantment(e, ((Map<Enchantment, Integer>)dp.getRawInfo(MMO.SAVED_ENCHANTS)).get(e));
+								}
 							}
-						}
+						} catch (Exception e){}
+						i.setItemMeta(im);
+						p.updateInventory();
 						dp.set(MMO.IS_SUPER_BREAKING, false);
 						dp.set(MMO.IS_MINING, false);
+						dp.err("&c&oSuperbreaker ended!");
 					}
 				}
-			}			
+			}
 		}
 		
 		for (ItemStack i : p.getInventory().getContents()){

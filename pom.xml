@@ -24,11 +24,6 @@
 			<version>${bukkit}</version>
 		</dependency>
 		<dependency>
-			<groupId>org.bukkit</groupId>
- 			<artifactId>craftbukkit</artifactId>
- 			<version>${craftbukkit}</version>
- 		</dependency>
-		<dependency>
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-math3</artifactId>
 			<version>3.0</version>
@@ -47,10 +42,6 @@
 		<repository>
 			<id>confuser-repo</id>
 			<url>http://ci.frostcast.net/plugin/repository/everything</url>
-		</repository>
-		<repository>
-			<id>bukkit-repo</id>
-			<url>http://repo.bukkit.org/content/repositories/snapshots/</url>
 		</repository>
 	</repositories>
 	<build>
