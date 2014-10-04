@@ -83,15 +83,10 @@ public class ElyLogger implements Listener, Runnable {
 			Map<Player, Map<String, Integer>> lightLevelsCurrent = new THashMap<Player, Map<String, Integer>>(lightLevels);
 			for (Player p : warningsCurrent.keySet()){
 				for (String mat : warningsCurrent.get(p).keySet()){
-					if (p != null && p.isOnline()){
-<<<<<<< HEAD
-						main.api.event(new DivinityChannelEvent("&6System", "wa.staff.intern", "&c&oOh! &4\u2744", p.getDisplayName() + " &c&ofound " + warningsCurrent.get(p).get(mat) + " &6&o" + mat + "&c&o @ &6&o" + Math.ceil(lightlevel.get(p).get(Material.getMaterial(mat.toUpperCase()))*6.666666) + "% &c&o light.", "&c"));
-					
-=======
+					if (p != null && p.isOnline()){			
 						double li = (lightLevelsCurrent.get(p).get(mat)/15.0)*100;
 						String light = (li + "").length() > 5 ? (li + "").substring(0, 5) : li + "";
 						main.api.event(new DivinityChannelEvent("&6System", "wa.staff.intern", "&c&oOh! &4\u2744", p.getDisplayName() + " &c&ofound " + warningsCurrent.get(p).get(mat) + " &6&o" + mat + " &c&o@ &6&o" + light + "% &c&olight", "&c"));
->>>>>>> 0d760b68ae2dc08fa41b130f00bf7338e15948a3
 					}
 				}
 			}
