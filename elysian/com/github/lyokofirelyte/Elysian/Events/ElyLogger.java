@@ -69,7 +69,7 @@ public class ElyLogger implements Listener, Runnable {
 	
 	private Map<String, List<String>> recent = new THashMap<String, List<String>>();
 	private Map<Player, Map<String, Integer>> warnings = new THashMap<Player, Map<String, Integer>>();
-	private Map<Player, Map<Material, Integer>> lightlevel = new THashMap<Player, Map<Material, Integer>>();
+	private Map<Player, Map<String, Integer>> lightLevels = new THashMap<Player, Map<String, Integer>>();
 	
 	@Override
 	public void run(){
@@ -80,16 +80,18 @@ public class ElyLogger implements Listener, Runnable {
 		}
 		if (warnings.size() > 0){
 			Map<Player, Map<String, Integer>> warningsCurrent = new THashMap<Player, Map<String, Integer>>(warnings);
+			Map<Player, Map<String, Integer>> lightLevelsCurrent = new THashMap<Player, Map<String, Integer>>(lightLevels);
 			for (Player p : warningsCurrent.keySet()){
 				for (String mat : warningsCurrent.get(p).keySet()){
 					if (p != null && p.isOnline()){
-						main.api.event(new DivinityChannelEvent("&6System", "wa.staff.intern", "&c&oOh! &4\u2744", p.getDisplayName() + " &c&ofound " + warningsCurrent.get(p).get(mat) + " &6&o" + mat + "&c&o by &6&o" + Math.ceil(lightlevel.get(p).get(Material.getMaterial(mat.toUpperCase()))*6.666666) + "% &c&o light.", "&c"));
-					
+						double li = (lightLevelsCurrent.get(p).get(mat)/15.0)*100;
+						String light = (li + "").length() > 5 ? (li + "").substring(0, 5) : li + "";
+						main.api.event(new DivinityChannelEvent("&6System", "wa.staff.intern", "&c&oOh! &4\u2744", p.getDisplayName() + " &c&ofound " + warningsCurrent.get(p).get(mat) + " &6&o" + mat + " &c&o@ &6&o" + light + "% &c&olight", "&c"));
 					}
 				}
 			}
 			warnings = new THashMap<Player, Map<String, Integer>>();
-			lightlevel = new THashMap<Player, Map<Material, Integer>>();
+			lightLevels = new THashMap<Player, Map<String, Integer>>();
 		}
 	}
 	
@@ -284,7 +286,7 @@ public class ElyLogger implements Listener, Runnable {
 			
 			case "view":
 				dp.set(DPI.CHEST_MODE, args[0]);
-				dp.getList(DPI.CHEST_NAMES).add("view");
+				dp.set(DPI.CHEST_NAMES, "view");
 				main.s(p, "none", "Left-click on a storage unit to view the owners.");
 				p.setGameMode(GameMode.SURVIVAL);
 			break;
@@ -292,7 +294,7 @@ public class ElyLogger implements Listener, Runnable {
 			case "release":
 				
 				dp.set(DPI.CHEST_MODE, args[0]);
-				dp.getList(DPI.CHEST_NAMES).add("release");
+				dp.set(DPI.CHEST_NAMES, "release");
 				main.s(p, "Left-click a chest to make it public.");
 				p.setGameMode(GameMode.SURVIVAL);
 				
@@ -372,19 +374,7 @@ public class ElyLogger implements Listener, Runnable {
 		}
 		
 		if (e.getBlock().getWorld().getName().equals("world")){
-			addToQue(e.getBlock().getLocation(), "&b" + e.getPlayer().getName(), "&cdestroyed &b" + matName, "break", matName + "split" + e.getBlock().getData(), "AIRsplit0");
-			if(Arrays.asList(Material.DIAMOND_ORE, Material.LAPIS_ORE, Material.EMERALD_ORE, Material.GOLD_ORE, Material.MOB_SPAWNER).contains(e.getBlock().getType())){
-				if(!lightlevel.containsKey(e.getPlayer())){
-					Map<Material, Integer> m = new THashMap<Material, Integer>();
-					lightlevel.put(e.getPlayer(), m);
-				}
-				if(!lightlevel.get(e.getPlayer()).containsKey(e.getBlock().getType())){
-					lightlevel.get(e.getPlayer()).put(e.getBlock().getType(), Integer.parseInt(e.getPlayer().getLocation().getBlock().getLightLevel() + ""));
-				}else{
-					lightlevel.get(e.getPlayer()).put(e.getBlock().getType(), (e.getPlayer().getLocation().getBlock().getLightLevel() + lightlevel.get(e.getPlayer()).get(e.getBlock().getType()))/2);
-
-				}
-			}
+			addToQue(e.getBlock().getLocation(), "&b" + e.getPlayer().getName(), "&cdestroyed &b" + matName, "break", matName + "split" + e.getBlock().getData() + "split" + (new Integer(Integer.parseInt("" + e.getPlayer().getLocation().getBlock().getLightLevel()))), "AIRsplit0");
 		}
 	}
 	
@@ -808,12 +798,14 @@ public class ElyLogger implements Listener, Runnable {
 					
 					if (!warnings.containsKey(p)){
 						warnings.put(p, new THashMap<String, Integer>());
+						lightLevels.put(p, new THashMap<String, Integer>());
 					}
 					
 					String what = wut[0].toLowerCase();
 					
 					if (!warnings.get(p).containsKey(what)){
 						warnings.get(p).put(what, 1);
+						lightLevels.get(p).put(what, Integer.parseInt(wut[2]));
 					} else {
 						warnings.get(p).put(what, (warnings.get(p).get(what)+1));
 					}
