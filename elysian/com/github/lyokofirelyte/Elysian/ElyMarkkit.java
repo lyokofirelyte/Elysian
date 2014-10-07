@@ -46,6 +46,7 @@ public class ElyMarkkit implements Listener {
 	private Map<String, Integer> totalPrice = new THashMap<String, Integer>();
 	private Map<String, Integer> showPrice = new THashMap<String, Integer>();
 	private Map<String, Location> chestLocation = new THashMap<String, Location>();
+	
 	public ElyMarkkit(Elysian i){
 		main = i;
 		system = main.api.getSystem();
@@ -507,11 +508,12 @@ public class ElyMarkkit implements Listener {
 			if(im.getInStock() < 0){
 				im.setInStock(0);
 			}
+
 			Inventory inv;
 			if(im.isSellDoubled()){
 				inv = Bukkit.createInventory(null, 54, main.AS("&40 stocked. Double price!"));
 			}else{
-				inv = Bukkit.createInventory(null, 54, main.AS("&6" + im.getInStock() + "&b items stocked."));
+				inv = Bukkit.createInventory(null, 54, main.AS("&6" + im.getInStockSignName() + "&b items stocked."));
 			}
 			
 			

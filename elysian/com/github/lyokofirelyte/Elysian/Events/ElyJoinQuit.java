@@ -36,7 +36,11 @@ public class ElyJoinQuit implements Listener {
 		}
 		
 		p.set(DPI.LAST_LOGIN, main.api.divUtils.getTimeFull());
-		pl.setPlayerListName(main.AS(p.getStr(DPI.DISPLAY_NAME)));
+		if (pl.getName().length() > 11){
+    		pl.setPlayerListName(main.AS(p.getStr(DPI.DISPLAY_NAME).substring(0, 11)));
+        }else{
+    		pl.setPlayerListName(main.AS(p.getStr(DPI.DISPLAY_NAME)));
+        }
 		pl.setDisplayName(p.getStr(DPI.DISPLAY_NAME));
 		
 		DivinityUtils.customBC("&2<+> " + pl.getDisplayName() + " &e&o(" + p.getStr(DPI.JOIN_MESSAGE) + "&e&o)");

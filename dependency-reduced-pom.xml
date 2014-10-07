@@ -73,15 +73,6 @@
       <scope>compile</scope>
     </dependency>
     <dependency>
-<<<<<<< HEAD
-      <groupId>org.bukkit</groupId>
-      <artifactId>craftbukkit</artifactId>
-      <version>1.7.9-R0.1-SNAPSHOT</version>
-      <scope>compile</scope>
-    </dependency>
-    <dependency>
-=======
->>>>>>> 0d760b68ae2dc08fa41b130f00bf7338e15948a3
       <groupId>me.confuser</groupId>
       <artifactId>BarAPI</artifactId>
       <version>3.0</version>

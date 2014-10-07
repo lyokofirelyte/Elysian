@@ -38,6 +38,15 @@ public class ElyMarkkitItem {
 		return material.getId();
 	}
 	
+	public String getInStockSignName(){
+		String name = main.api.getSystem().getMarkkit().getInt("Items." + getSignName() + ".inStock") + "";
+		if(name.length() >= 4){
+			return name.substring(0, name.length() - 3) + "K";
+		}else{
+			return name;
+		}
+	}
+	
 	public int getStackSellPrice(){
 		return main.api.getSystem().getMarkkit().getInt("Items." + getSignName() + "." + 64 + ".sellprice");
 	}
