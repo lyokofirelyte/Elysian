@@ -56,22 +56,18 @@ public class CrankedActive implements Listener{
 	
 	@EventHandler(priority = EventPriority.LOWEST)
 	public void onHit(EntityDamageByEntityEvent e){
-			System.out.println("yes we are ");
 		if(e.getDamager() instanceof Player && e.getEntity() instanceof Player){
 			Player damager = (Player) e.getDamager();
 			Player player = (Player) e.getEntity();
-			System.out.println("yes we are 2");
 
 			if(root.isPlaying(damager) && root.isPlaying(player) && root.isStarted){
 				if(damager.getName() == player.getName()){
 					e.setCancelled(true);
-					System.out.println("yes we are3 ");
 
 					return;
 				}
 				
 				e.setCancelled(false);
-				System.out.println("yes we are 3w");
 
 			}
 		}
