@@ -77,6 +77,7 @@ public class TeamPVPActive implements Listener {
 				if (game.isInProgress() && game.hasPlayer(attacked.getName()) && game.hasPlayer(attacker.getName())){
 					TeamPVPPlayer you = game.getPlayer(attacker.getName());
 					TeamPVPPlayer them = game.getPlayer(attacked.getName());
+					//will this always be cancelled since your partner is always them? :o
 					if (you.getPartner().name().equals(them.name())){
 						e.setCancelled(true);
 					}

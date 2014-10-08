@@ -3,10 +3,11 @@ package com.github.lyokofirelyte.Elysian.Commands;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import net.minecraft.server.v1_7_R4.ShapedRecipes;
+import net.minecraft.server.v1_7_R4.ShapelessRecipes;
 import net.minecraft.util.com.google.common.collect.Lists;
 import net.minecraft.util.gnu.trove.map.hash.THashMap;
 
@@ -19,6 +20,7 @@ import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.craftbukkit.v1_7_R4.entity.CraftItem;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.ItemFrame;
@@ -29,6 +31,9 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.server.ServerListPingEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.Recipe;
+import org.bukkit.inventory.ShapedRecipe;
+import org.bukkit.inventory.ShapelessRecipe;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
@@ -44,7 +49,6 @@ import com.github.lyokofirelyte.Divinity.Storage.DAI;
 import com.github.lyokofirelyte.Divinity.Storage.DPI;
 import com.github.lyokofirelyte.Divinity.Storage.DivinityPlayer;
 import com.github.lyokofirelyte.Divinity.Storage.DivinityStorage;
-import com.github.lyokofirelyte.Elysian.ElyMarkkitItem;
 import com.github.lyokofirelyte.Elysian.Elysian;
 import com.github.lyokofirelyte.Elysian.Gui.GuiChest;
 
@@ -55,6 +59,72 @@ public class ElyStaff implements Listener {
 	 public ElyStaff(Elysian i){
 		 main = i;
 	 }
+	 
+	 
+	 
+//	 @DivCommand(perm = "wa.staff.admin", aliases = {"test"}, desc = "File Backup Command", help = "/backup", player = false)
+//	 public void onTest(CommandSender cs, String[] args){
+//		Player p = (Player) cs;
+//		
+//		List<Recipe> l = Bukkit.getRecipesFor(p.getItemInHand());
+//		for(Recipe r : l){
+//			if(r instanceof ShapedRecipe){
+//				ShapedRecipe s = (ShapedRecipe) r;
+//				System.out.println("shaped");
+//				System.out.println(s.getIngredientMap());
+//				System.out.println("///////////////////////////////");
+//				for(char i : s.getIngredientMap().keySet()){
+//					try{
+//						System.out.println(s.getIngredientMap().get(i).getType());
+//						System.out.println("\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\");
+//						List<Recipe> l2 = Bukkit.getRecipesFor(new ItemStack(s.getIngredientMap().get(i).getType()));
+//
+//						for(Recipe r2 : l2){
+//							if(r2 instanceof ShapedRecipe){
+//								ShapedRecipe s2 = (ShapedRecipe) r2;
+//								System.out.println("shaped");
+//								System.out.println(s.getIngredientMap());
+//								System.out.println("///////////////////////////////");
+//								for(char i2 : s2.getIngredientMap().keySet()){
+//									try{
+//										System.out.println("to make wood" + s2.getIngredientMap().get(i2).getType());
+//										System.out.println(s2.getIngredientMap().get(i2).getAmount());
+//										
+//										System.out.println("\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\");
+//
+//									}catch(NullPointerException e2){}
+//								}
+//							}else  if(r2 instanceof ShapelessRecipe){
+//								ShapelessRecipe s2 = (ShapelessRecipe) r2;
+//								System.out.println("shapeless");
+//								System.out.println(s2.getIngredientList());
+//								System.out.println("///////////////////////////////////");
+//								for(ItemStack i2 : s2.getIngredientList()){
+//									System.out.println(i2.getType());
+//								}
+//							}else{
+//								System.out.println("none of both");
+//							}
+////							System.out.println(r.);
+//						}
+//						
+//					}catch(NullPointerException e){}
+//				}
+//			}else  if(r instanceof ShapelessRecipe){
+//				ShapelessRecipe s = (ShapelessRecipe) r;
+//				System.out.println("shapeless");
+//				System.out.println(s.getIngredientList());
+//				System.out.println("///////////////////////////////////");
+//				for(ItemStack i : s.getIngredientList()){
+//					System.out.println(i.getType());
+//				}
+//			}else{
+//				System.out.println("none of both");
+//			}
+////			System.out.println(r.);
+//		}
+//	 }
+	 
 	 
 	 @DivCommand(perm = "wa.staff.admin", aliases = {"backup"}, desc = "File Backup Command", help = "/backup", player = false)
 	 public void onBackup(CommandSender cs, String[] args){

@@ -2,12 +2,15 @@ package com.github.lyokofirelyte.Elysian.Games.Cranked;
 
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 
+import com.github.lyokofirelyte.Divinity.Events.DivinityTeleportEvent;
 import com.github.lyokofirelyte.Elysian.Elysian;
 
 public class CrankedActive implements Listener{
@@ -51,10 +54,35 @@ public class CrankedActive implements Listener{
 		}		
 	}
 	
-	@EventHandler
+	@EventHandler(priority = EventPriority.LOWEST)
+	public void onHit(EntityDamageByEntityEvent e){
+			System.out.println("yes we are ");
+		if(e.getDamager() instanceof Player && e.getEntity() instanceof Player){
+			Player damager = (Player) e.getDamager();
+			Player player = (Player) e.getEntity();
+			System.out.println("yes we are 2");
+
+			if(root.isPlaying(damager) && root.isPlaying(player) && root.isStarted){
+				if(damager.getName() == player.getName()){
+					e.setCancelled(true);
+					System.out.println("yes we are3 ");
+
+					return;
+				}
+				
+				e.setCancelled(false);
+				System.out.println("yes we are 3w");
+
+			}
+		}
+		
+	}
+	
+	@EventHandler (priority = EventPriority.LOWEST)
 	public void onRespawn(PlayerRespawnEvent e){
 		if(root.isPlaying(e.getPlayer()) && root.isStarted){
-			e.getPlayer().teleport(root.getRandomLocation());
+			System.out.println("teleporting " + e.getPlayer().getName());
+			main.api.event(new DivinityTeleportEvent(e.getPlayer(), root.getRandomLocation()));
 		}
 	}
 }

@@ -1,7 +1,7 @@
 package com.github.lyokofirelyte.Elysian.Games.Cranked;
 
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
+import java.util.List;
+
 import org.bukkit.entity.Player;
 
 import com.github.lyokofirelyte.Divinity.Commands.DivCommand;
@@ -69,7 +69,9 @@ public class CrankedCommand {
 						root.toDivGame().createSection("Arenas." + args[1] + ".locations");
 						System.out.println("is null");
 					}
-					root.toDivGame().getStringList("Arenas." + args[1] + ".locations").add(p.getWorld().getName() + " " + p.getLocation().getBlockX() + " " + p.getLocation().getBlockY() + " " + p.getLocation().getBlockZ());
+					List<String> locations = root.toDivGame().getStringList("Arenas." + args[1] + ".locations");
+					locations.add(p.getWorld().getName() + " " + p.getLocation().getBlockX() + " " + p.getLocation().getBlockY() + " " + p.getLocation().getBlockZ());
+					root.toDivGame().set("Arenas." + args[1] + ".locations", locations);
 					dp.s("Spawnpoint added!");
 					System.out.println(root.toDivGame().getStringList("Arenas." + args[1] + ".locations"));
 				}else{
@@ -97,6 +99,8 @@ public class CrankedCommand {
 			
 			case "start":
 				root.setStarted(true);
+				root.currentGame = args[1];
+				
 				break;
 		}
 	}
