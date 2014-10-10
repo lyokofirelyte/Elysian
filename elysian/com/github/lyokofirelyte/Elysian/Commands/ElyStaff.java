@@ -256,7 +256,7 @@ public class ElyStaff implements Listener {
 	 
 	 @DivCommand(perm = "wa.staff.admin", aliases = {"sunday"}, desc = "Sunday Balance Increase", help = "/sunday", player = false)
 	 public void onSunday(CommandSender cs, String[] args){
-		 
+		 int total = 0;
 		 String who = cs instanceof Player ? ((Player)cs).getDisplayName() : "&6Console";
 		 if(main.hasSunDayBeenPerformedBefore == false){
 			 main.hasSunDayBeenPerformedBefore = true;
@@ -268,6 +268,7 @@ public class ElyStaff implements Listener {
 						 float amt = Float.parseFloat(main.perms.rankNames.get(group).split(" % ")[2])/100;
 						 float amount = dp.getInt(DPI.BALANCE)*amt;
 						 dp.set(DPI.BALANCE, dp.getInt(DPI.BALANCE) + Math.round(amount));
+						 total = total + Math.round(amount);
 						 dp.getList(DPI.MAIL).add("personal" + "%SPLIT%" + who + "%SPLIT%" + "Sunday balance updated! You were given " + Math.round(amount) + " this week!");
 						 
 						 if (Bukkit.getPlayer(dp.uuid()) != null){
@@ -281,6 +282,14 @@ public class ElyStaff implements Listener {
 		 }else{
 			 main.s(cs, "Sunday balance has already been done!");
 		 }
+		 
+		ConfigurationSection configSection = main.api.getSystem().getMarkkit().getConfigurationSection("Items");
+		for (String path : configSection.getKeys(false)){
+			 if(main.api.getSystem().getMarkkit().getInt("Items." + path + ".inStock") == 0){
+				 main.api.getSystem().getMarkkit().set("Items." + path + ".inStock", total/1000);
+			 }
+		 }
+		
 	 }
 	 
 	 @DivCommand(perm = "wa.staff.mod2", aliases = {"clear"}, desc = "Clear items on floor (and monsters)", help = "/clear <radius>", player = true, min = 1)

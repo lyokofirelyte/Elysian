@@ -18,6 +18,7 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -445,13 +446,38 @@ public class ElyCommand {
 		if(player.getLong(DPI.RAIN_TOGGLE) == 0 || player.getLong(DPI.RAIN_TOGGLE) <= System.currentTimeMillis() - 3 * 60 * 60 * 1000){
 			player.set(DPI.RAIN_TOGGLE, System.currentTimeMillis());
 			w.setStorm(false);
-			main.api.divUtils.bc(player.getStr(DPI.DISPLAY_NAME) + " has turned off the rain!");
+			main.api.divUtils.bc(player.getStr(DPI.DISPLAY_NAME) + " &bhas turned off the rain!");
 		}else{
 			player.s("You have to wait " + ((player.getLong(DPI.RAIN_TOGGLE) + 1000 * 60 * 60 * 3) - System.currentTimeMillis()) / 1000 / 60 + " more minutes");
 		}
 		
 	}
 		
+	
+	@DivCommand(perm = "wa.rank.districtman", aliases = {"near"}, desc = "See nearby players!", help = "/near", player = true, min = 0)
+	public void onNear(Player p, String[] args){
+		StringBuilder players = new StringBuilder();
+		int count = 0;
+		for(Entity e : p.getNearbyEntities(100, 100, 100)){
+			if(e instanceof Player){
+				Player found = (Player) e;
+				DivinityPlayer pl = main.matchDivPlayer(found.getName());
+				if(found.getName() != p.getName()){
+				count = count + 1;
+				players.append(pl.getStr(DPI.DISPLAY_NAME) + ", &b");
+				}
+			}
+		}
+		
+		if(count == 0){
+			main.s(p, "No nearby players found");
+		}else{
+			main.s(p, count + " player(s) found: " + players);
+		}
+		
+	}
+	
+	
 	@DivCommand(aliases = {"bio"}, desc = "Modify your hover-over description", help = "/bio <message>", player = true, min = 1)
 	public void onBio(Player p, String[] args){
 	
