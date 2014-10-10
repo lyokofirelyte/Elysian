@@ -16,6 +16,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
@@ -432,7 +433,25 @@ public class ElyCommand {
 			 }
 		 }
 	 }
-	 
+ 
+	@DivCommand(perm = "wa.rank.regional", aliases = {"rainoff"}, desc = "Turn off that rain!", help = "/rainoff", player = true)
+	public void onRainoff(Player p, String[] args){
+		DivinityPlayer player = main.matchDivPlayer(p.getName());
+		World w = p.getWorld();
+		if(!w.hasStorm()){
+			player.s("There is no rain!");
+			return;
+		}
+		if(player.getLong(DPI.RAIN_TOGGLE) == 0 || player.getLong(DPI.RAIN_TOGGLE) <= System.currentTimeMillis() - 3 * 60 * 60 * 1000){
+			player.set(DPI.RAIN_TOGGLE, System.currentTimeMillis());
+			w.setStorm(false);
+			main.api.divUtils.bc(player.getStr(DPI.DISPLAY_NAME) + " has turned off the rain!");
+		}else{
+			player.s("You have to wait " + ((player.getLong(DPI.RAIN_TOGGLE) + 1000 * 60 * 60 * 3) - System.currentTimeMillis()) / 1000 / 60 + " more minutes");
+		}
+		
+	}
+		
 	@DivCommand(aliases = {"bio"}, desc = "Modify your hover-over description", help = "/bio <message>", player = true, min = 1)
 	public void onBio(Player p, String[] args){
 	

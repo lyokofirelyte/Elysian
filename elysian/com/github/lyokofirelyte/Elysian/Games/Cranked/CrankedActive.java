@@ -54,7 +54,7 @@ public class CrankedActive implements Listener{
 		}		
 	}
 	
-	@EventHandler(priority = EventPriority.LOWEST)
+	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
 	public void onHit(EntityDamageByEntityEvent e){
 		if(e.getDamager() instanceof Player && e.getEntity() instanceof Player){
 			Player damager = (Player) e.getDamager();

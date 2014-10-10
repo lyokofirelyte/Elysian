@@ -58,7 +58,7 @@ public class ElyMarkkit implements Listener {
 		Player p = e.getPlayer();
 			
 		if (main.silentPerms(p, "wa.staff.mod2") == true && e.getLine(0).equalsIgnoreCase("markkit") && e.getLine(1) != null && !e.getLine(1).equals("")){
-			e.setLine(0, main.AS("&dWC &5Markkit"));
+			e.setLine(0, main.AS("§bEly §3Markkit"));
 			e.setLine(1, main.AS("&f" + e.getLine(1)));
 		} else if(main.silentPerms(p, "wa.staff.intern") == true && e.getLine(0).equalsIgnoreCase("playershop") && e.getLine(1) != null && !e.getLine(1).equals("")){
 			org.bukkit.material.Sign sign = (org.bukkit.material.Sign) e.getBlock().getState().getData();
@@ -553,11 +553,12 @@ public class ElyMarkkit implements Listener {
 			inv.setItem(53, calculateRight);
 			inv.setItem(45, calculateLeft);
 
-			for(int i : ((system.getMarkkit().get("Items." + name + ".64") == null) ? new int[]{1} : new int[]{64, 32, 16, 8, 1})){
+			for(int i : new int[]{64, 32, 16, 8, 1}){
 				if(system.getMarkkit().contains("Items." + name + "." + i)){
 					if(im.getBuyPrice(i) > 0){
 						ItemStack item = new ItemStack(mat, i, damage);
 						ItemMeta itemMeta = item.getItemMeta();
+
 						if(im.isSellDoubled()){
 							itemMeta.setLore(Arrays.asList((ChatColor.GREEN + "Buy"), (im.getBuyPrice(i)*2) + "", (ChatColor.RED + "Sell"), im.getSellPrice(i) + ""));
 						}else{
@@ -565,8 +566,10 @@ public class ElyMarkkit implements Listener {
 						}
 						item.setItemMeta(itemMeta);
 						for(int slot : new int[]{4, 13, 22, 31, 40}){
+
 							if(inv.getItem(slot) == null || inv.getItem(slot).getType() == Material.AIR){
 								inv.setItem(slot, item);
+
 								break;
 							}
 						}

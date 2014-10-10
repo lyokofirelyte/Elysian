@@ -44,6 +44,9 @@ import com.github.lyokofirelyte.Divinity.DivinityUtils;
 import com.github.lyokofirelyte.Divinity.Commands.DivCommand;
 import com.github.lyokofirelyte.Divinity.Events.DivinityChannelEvent;
 import com.github.lyokofirelyte.Divinity.Events.DivinityTeleportEvent;
+import com.github.lyokofirelyte.Divinity.JSON.JSONChatClickEventType;
+import com.github.lyokofirelyte.Divinity.JSON.JSONChatExtra;
+import com.github.lyokofirelyte.Divinity.JSON.JSONChatMessage;
 import com.github.lyokofirelyte.Divinity.Manager.DivinityManager;
 import com.github.lyokofirelyte.Divinity.Storage.DAI;
 import com.github.lyokofirelyte.Divinity.Storage.DPI;
@@ -59,71 +62,6 @@ public class ElyStaff implements Listener {
 	 public ElyStaff(Elysian i){
 		 main = i;
 	 }
-	 
-	 
-	 
-//	 @DivCommand(perm = "wa.staff.admin", aliases = {"test"}, desc = "File Backup Command", help = "/backup", player = false)
-//	 public void onTest(CommandSender cs, String[] args){
-//		Player p = (Player) cs;
-//		
-//		List<Recipe> l = Bukkit.getRecipesFor(p.getItemInHand());
-//		for(Recipe r : l){
-//			if(r instanceof ShapedRecipe){
-//				ShapedRecipe s = (ShapedRecipe) r;
-//				System.out.println("shaped");
-//				System.out.println(s.getIngredientMap());
-//				System.out.println("///////////////////////////////");
-//				for(char i : s.getIngredientMap().keySet()){
-//					try{
-//						System.out.println(s.getIngredientMap().get(i).getType());
-//						System.out.println("\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\");
-//						List<Recipe> l2 = Bukkit.getRecipesFor(new ItemStack(s.getIngredientMap().get(i).getType()));
-//
-//						for(Recipe r2 : l2){
-//							if(r2 instanceof ShapedRecipe){
-//								ShapedRecipe s2 = (ShapedRecipe) r2;
-//								System.out.println("shaped");
-//								System.out.println(s.getIngredientMap());
-//								System.out.println("///////////////////////////////");
-//								for(char i2 : s2.getIngredientMap().keySet()){
-//									try{
-//										System.out.println("to make wood" + s2.getIngredientMap().get(i2).getType());
-//										System.out.println(s2.getIngredientMap().get(i2).getAmount());
-//										
-//										System.out.println("\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\");
-//
-//									}catch(NullPointerException e2){}
-//								}
-//							}else  if(r2 instanceof ShapelessRecipe){
-//								ShapelessRecipe s2 = (ShapelessRecipe) r2;
-//								System.out.println("shapeless");
-//								System.out.println(s2.getIngredientList());
-//								System.out.println("///////////////////////////////////");
-//								for(ItemStack i2 : s2.getIngredientList()){
-//									System.out.println(i2.getType());
-//								}
-//							}else{
-//								System.out.println("none of both");
-//							}
-////							System.out.println(r.);
-//						}
-//						
-//					}catch(NullPointerException e){}
-//				}
-//			}else  if(r instanceof ShapelessRecipe){
-//				ShapelessRecipe s = (ShapelessRecipe) r;
-//				System.out.println("shapeless");
-//				System.out.println(s.getIngredientList());
-//				System.out.println("///////////////////////////////////");
-//				for(ItemStack i : s.getIngredientList()){
-//					System.out.println(i.getType());
-//				}
-//			}else{
-//				System.out.println("none of both");
-//			}
-////			System.out.println(r.);
-//		}
-//	 }
 	 
 	 
 	 @DivCommand(perm = "wa.staff.admin", aliases = {"backup"}, desc = "File Backup Command", help = "/backup", player = false)
@@ -170,6 +108,21 @@ public class ElyStaff implements Listener {
 		 }else{
 			 main.s(cs, "&cCouldn't find player " + args[0]);
 		 }
+	 }
+	 
+	 
+	 @DivCommand(perm = "wa.staff.intern", aliases = {"rules"}, desc = "Send the rules link", help = "/rules", player = false, min = 0)
+	 public void onRules(CommandSender p, String[] args){
+		 
+		 DivinityUtils.bc("--------------------------------------------");
+		 
+		 JSONChatMessage msg = new JSONChatMessage("", null, null);
+		 JSONChatExtra extra = new JSONChatExtra(main.AS("&aClick here for the rules!"), null, null);
+		 extra.setClickEvent(JSONChatClickEventType.OPEN_URL, "http://ohsototes.com/?p=rules");
+		 msg.addExtra(extra);
+		 msg.sendToAllPlayers();
+		 
+		 DivinityUtils.bc("--------------------------------------------");
 	 }
 	 
 	 @DivCommand(perm = "wa.staff.admin", aliases = {"ts3auth"}, desc = "Set TS3Auth Info", help = "/ts3auth <user> <pass>", player = false, min = 2)

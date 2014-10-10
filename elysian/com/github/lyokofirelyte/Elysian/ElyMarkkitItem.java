@@ -48,7 +48,15 @@ public class ElyMarkkitItem {
 	}
 	
 	public int getStackSellPrice(){
-		return main.api.getSystem().getMarkkit().getInt("Items." + getSignName() + "." + 64 + ".sellprice");
+		int price = main.api.getSystem().getMarkkit().getInt("Items." + getSignName() + "." + 64 + ".sellprice");
+		int inStock = getInStock();
+		if(inStock >= 10000){
+			return (int) Math.ceil(price * 0.5);
+		}else if(inStock >= 1000){
+			return (int) Math.ceil(price * ((100-inStock/1000*10.0/2)/100));
+		}else{
+			return price;
+		}
 	}
 	
 	public int getStackBuyPrice(){
@@ -56,11 +64,19 @@ public class ElyMarkkitItem {
 	}
 	
 	public int getSellPrice(int i){
-		return main.api.getSystem().getMarkkit().getInt("Items." + getSignName() + "." + 64 + ".sellprice") * i / 64;
+		int price = main.api.getSystem().getMarkkit().getInt("Items." + getSignName() + "." + 64 + ".sellprice") * i / 64;
+		int inStock = getInStock();
+		if(inStock >= 10000){
+			return (int) Math.ceil(price * 0.5);
+		}else if(inStock >= 1000){
+			return (int) Math.ceil(price * ((100-inStock/1000*10.0/2)/100));
+		}else{
+			return price;
+		}	
 	}
 	
 	public int getBuyPrice(int i){
-		return main.api.getSystem().getMarkkit().getInt("Items." + getSignName() + "." + 64 + ".buyprice") * i / 64;
+		return main.api.getSystem().getMarkkit().getInt("Items." + getSignName() + "." + 1 + ".buyprice") * i;
 	}
 	
 	public int getInStock(){
